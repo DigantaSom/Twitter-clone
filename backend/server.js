@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -12,14 +13,16 @@ const PORT = process.env.PORT || 5001;
 
 connectDB();
 
-app.use('/', express.static(path.join(__dirname, 'public')));
-
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+app.use('/', express.static(path.join(__dirname, 'public')));
+
 // Routes
 app.use('/', require('./routes/root.routes'));
+app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/users', require('./routes/user.routes'));
 
 // Fallback
 app.all('*', (req, res) => {
