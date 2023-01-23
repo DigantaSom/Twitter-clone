@@ -12,6 +12,8 @@ import Feed from './components/Feed';
 import Explore from './components/Explore';
 import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
+import BottomNavigation from './components/BottomNavigation';
+import BottomAuth from './components/BottomAuth';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -33,6 +35,10 @@ const App = () => {
       )}
 
       {(isComposeTweetShown || authModal.isShown) && <DarkOverlay />}
+
+      {isAuthenticated && <BottomNavigation />}
+
+      {!isAuthenticated && <BottomAuth />}
     </div>
   );
 };
