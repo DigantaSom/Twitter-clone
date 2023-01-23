@@ -35,7 +35,7 @@ const Trending = () => {
     dispatch(showWhatsHappening());
     dispatch(showWhoToFollow());
     setSelectedTrendId(whatsHappening[0]?.id);
-  }, []);
+  }, [dispatch, whatsHappening]);
 
   // TODO: we'll do more with this function when we'll implement the search functionality
   const handleSearch = (title: string) => {

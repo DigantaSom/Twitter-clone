@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { RootState } from '../../api/store';
+import { RootState } from '../../app/store';
 import { TrendingState } from './trending.types';
 
 import whatsHappening from '../../demo-data/trending/whats-happening';
