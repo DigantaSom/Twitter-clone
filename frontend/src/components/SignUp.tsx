@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
-// import { useAppDispatch } from '../../hooks/redux-hooks';
-// import { toggleAuthModal } from '../ui/ui.slice';
+import { useAppDispatch } from '../hooks/redux-hooks';
+import { toggleAuthModal } from '../features/ui/ui.slice';
 
 const SignUp = () => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -28,7 +28,7 @@ const SignUp = () => {
               <p className='font-semibold'>Sign up with Google</p>
             </div>
             <div
-              // onClick={() => dispatch(toggleAuthModal('signup'))}
+              onClick={() => dispatch(toggleAuthModal('signup'))}
               className='hover:bg-gray-200 border-[1px] border-gray-300 p-2 space-x-2 hover:cursor-pointer rounded-full'
             >
               <p className='font-semibold text-center'>
@@ -76,7 +76,9 @@ const SignUp = () => {
             <FiMoreHorizontal className='pl-1 pt-[3px]' />
           </Link>
         </div>
-        <span>&copy; {new Date().getFullYear()} Twitter Clone, Inc.</span>
+        <span>
+          &copy; {new Date().getFullYear()} Twitter Clone, Diganta Som.
+        </span>
       </div>
     </>
   );
