@@ -1,14 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
+import { apiSlice } from './api/api.slice';
 import uiReducer from '../features/ui/ui.slice';
+import authReducer from '../features/auth/auth.slice';
 import trendingReducer from '../features/trending/trending.slice';
 
 export const store = configureStore({
   reducer: {
+    [apiSlice.reducerPath]: apiSlice.reducer,
     ui: uiReducer,
+    auth: authReducer,
     trending: trendingReducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
   devTools: true,
 });
 

@@ -11,14 +11,30 @@ import { FaRegUser } from 'react-icons/fa';
 import { CgMoreO } from 'react-icons/cg';
 import { FiMoreHorizontal, FiSettings } from 'react-icons/fi';
 
+import { TokenPayloadUser } from '../types';
+import { useAppSelector } from '../hooks/redux-hooks';
+import useAuth from '../hooks/useAuth';
+import { useSendLogoutMutation } from '../features/auth/auth.api-slice';
+import { selectIsAuthenticated } from '../features/auth/auth.slice';
+
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
 
 const Navigation = () => {
-  const isAuthenticated = false; // TODO: dynamic
-  const isLoading = false; // TODO: dynamic
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const auth = useAuth();
+  const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
 
-  const handleLogout = () => {};
+  const handleLogout = async () => {
+    if (window.confirm('Are you sure that you want to logout?')) {
+      await sendLogout(undefined);
+
+      if (isError) {
+        console.log('Error logging out:', error);
+        alert('Error logging out');
+      }
+    }
+  };
 
   return (
     <div className='mr-[15%]'>
@@ -109,29 +125,25 @@ const Navigation = () => {
           )}
         </div>
 
-        {/* TODO: {isAuthenticated && auth.isAuth && ( */}
-        {isAuthenticated && (
+        {isAuthenticated && auth.isAuth && (
           <div
             onClick={handleLogout}
-            className='absolute bottom-0 w-full hover:bg-gray-200 hover:cursor-pointer rounded-full  flex items-center px-2 py-3 ml-1 mb-6'
+            className='absolute bottom-0 w-full hover:xl:bg-gray-200 hover:cursor-pointer rounded-full  flex items-center xl:px-2 xl:py-3 ml-1 mb-6'
           >
             {isLoading ? (
               <PulseLoader color='#111' />
             ) : (
               <>
                 <ProfilePicture
-                  // uri={(auth as TokenPayloadUser).profilePicture}
-                  uri={''}
+                  uri={(auth as TokenPayloadUser).profilePicture}
                   disableGoToProfile={true}
                 />
                 <div className='hidden xl:flex xl:flex-col xl:flex-1 xl:ml-3'>
                   <span className='font-bold text-sm'>
-                    {/* {(auth as TokenPayloadUser).fullName} */}
-                    Diganta Som
+                    {(auth as TokenPayloadUser).fullName}
                   </span>
                   <span className='text-gray-600 text-sm'>
-                    {/* @{(auth as TokenPayloadUser).twitterHandle} */}
-                    @ItsDsom111
+                    @{(auth as TokenPayloadUser).twitterHandle}
                   </span>
                 </div>
                 <FiMoreHorizontal className='hidden xl:block' />

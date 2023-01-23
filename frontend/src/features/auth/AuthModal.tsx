@@ -8,8 +8,8 @@ import { FcGoogle } from 'react-icons/fc';
 
 import { AuthModalType } from '../ui/ui.types';
 import { useAppDispatch } from '../../hooks/redux-hooks';
-// import { useLoginMutation } from './auth-api.slice';
-// import { setCredentials } from './auth.slice';
+import { useLoginMutation } from './auth.api-slice';
+import { setCredentials } from './auth.slice';
 import { toggleAuthModal } from '../ui/ui.slice';
 
 import SignUpForm from './SignUpForm';
@@ -24,9 +24,9 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
   const [twitterHandle, setTwitterHandle] = useState('');
   const [password, setPassword] = useState('');
 
-  // const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
-  // if (isLoading) return <PulseLoader color='#fff' />;
+  if (isLoading) return <PulseLoader color='#fff' />;
 
   const handleClickNext = () => {
     if (twitterHandle !== '') {
@@ -37,13 +37,13 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
   const handleClickLogin = async () => {
     if (twitterHandle !== '' && password !== '') {
       try {
-        // const { accessToken } = await login({
-        //   handle: twitterHandle,
-        //   password,
-        // }).unwrap();
+        const { accessToken } = await login({
+          handle: twitterHandle,
+          password,
+        }).unwrap();
         setTwitterHandle('');
         setPassword('');
-        // dispatch(setCredentials({ accessToken }));
+        dispatch(setCredentials({ accessToken }));
         dispatch(toggleAuthModal(''));
       } catch (err: any) {
         console.log(err);

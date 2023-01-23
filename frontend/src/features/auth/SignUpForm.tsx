@@ -9,8 +9,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { useGetDays, useGetYears } from '../../hooks/date-hooks';
 import { toggleAuthModal } from '../ui/ui.slice';
-// import { useSignUpMutation } from '../user/user-api.slice';
-// import { setCredentials } from './auth.slice';
+import { useSignUpMutation } from '../user/user.api-slice';
+import { setCredentials } from './auth.slice';
 
 import { MonthType } from '../../types';
 
@@ -28,7 +28,7 @@ const SignUpForm = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(email?.split('@')[0].trim() || '');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
@@ -39,7 +39,7 @@ const SignUpForm = () => {
   const yearsList = useGetYears();
   const daysList = useGetDays(selectedMonth as MonthType, +selectedYear);
 
-  // const [signUp, { isLoading }] = useSignUpMutation();
+  const [signUp, { isLoading }] = useSignUpMutation();
 
   const handleIncreaseStep = () => {
     setStep(prevState => prevState + 1);
@@ -74,7 +74,7 @@ const SignUpForm = () => {
         setIsNextButtonDisabled(false);
       }
     } else if (step === 4) {
-      if (password === '') {
+      if (password.length < 5) {
         setIsNextButtonDisabled(true);
       } else {
         setIsNextButtonDisabled(false);
@@ -99,6 +99,12 @@ const SignUpForm = () => {
       handleSignUp();
     }
   };
+
+  useEffect(() => {
+    if (phoneOrEmail === 'email' && email.length) {
+      setUsername(email.split('@')[0].trim());
+    }
+  }, [phoneOrEmail, email]);
 
   useEffect(() => {
     handleNextButtonDisabled();
@@ -140,19 +146,25 @@ const SignUpForm = () => {
 
   const handleSignUp = async () => {
     try {
-      // const res = await signUp({
-      //   name: fullName,
-      //   email,
-      //   password,
-      //   handle: username,
-      // }).unwrap();
+      const res = await signUp({
+        name: fullName,
+        email,
+        password,
+        handle: username,
+      }).unwrap();
+
+      if (res.isError) {
+        console.log('Error signing in:', res);
+        alert('Error signing in');
+        return;
+      }
       setFullName('');
       setUsername('');
       setSelectedDay('');
       setSelectedMonth('');
       setSelectedYear('');
       setPassword('');
-      // dispatch(setCredentials({ accessToken: res.accessToken }));
+      dispatch(setCredentials({ accessToken: res.accessToken }));
       dispatch(toggleAuthModal(''));
     } catch (err: any) {
       console.log(err);
@@ -167,7 +179,7 @@ const SignUpForm = () => {
     }
   };
 
-  // if (isLoading) return <PulseLoader color='#fff' />;
+  if (isLoading) return <PulseLoader color='#fff' />;
 
   return (
     <div className='h-full'>
@@ -445,12 +457,12 @@ const SignUpForm = () => {
           </>
         )}
 
-        {/* TODO: Body for step 4 */}
+        {/* Body for step 4 */}
         {step === 4 && (
           <>
             <h1 className='text-3xl font-bold mb-3'>You'll need a password</h1>
             <p className='text-gray-600 mb-5'>
-              Make sure it's 8 characters or more
+              Make sure it's 5 characters or more
             </p>
             <div
               className={`h-14 w-full px-4 rounded-[4px] flex items-center 
@@ -489,7 +501,7 @@ const SignUpForm = () => {
         {(step === 1 || step === 2 || step === 4) && (
           <button
             onClick={handleClickNext}
-            // disabled={isNextButtonDisabled}
+            disabled={step === 2 ? false : isNextButtonDisabled}
             className={`mt-6 bg-black text-white font-semibold w-full py-3 px-2 rounded-full hover:opacity-80 hover:cursor-pointer ${
               isNextButtonDisabled &&
               'opacity-50 hover:opacity-50 hover:cursor-not-allowed'

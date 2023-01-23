@@ -11,3 +11,14 @@ export type MonthType =
   | 'October'
   | 'November'
   | 'December';
+
+export interface TokenPayloadUser {
+  id: string;
+  twitterHandle: string;
+  fullName: string;
+  profilePicture: string;
+}
+
+export interface TokenPayload {
+  user: TokenPayloadUser;
+}

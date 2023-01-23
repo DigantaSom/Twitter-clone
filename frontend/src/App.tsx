@@ -5,6 +5,7 @@ import {
   selectAuthModal,
   selectIsComposeTweetShown,
 } from './features/ui/ui.slice';
+import { selectIsAuthenticated } from './features/auth/auth.slice';
 
 import HomePage from './pages/HomePage';
 import Feed from './components/Feed';
@@ -13,7 +14,7 @@ import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
 
 const App = () => {
-  const isAuthenticated = false; // TODO: dynamic
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
   const authModal = useAppSelector(selectAuthModal);
 

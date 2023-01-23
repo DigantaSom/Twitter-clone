@@ -1,11 +1,14 @@
 import { Outlet } from 'react-router-dom';
 
+import { useAppSelector } from '../hooks/redux-hooks';
+import { selectIsAuthenticated } from '../features/auth/auth.slice';
+
 import Navigation from '../components/Navigation';
 import Trending from '../features/trending/Trending';
 import SignUp from '../components/SignUp';
 
 const HomePage = () => {
-  const isAuthenticated = false; // TODO: dynamic
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   return (
     <div className='max-w-[664px] md2:max-w-[90vw] xl:max-w-7xl m-auto flex h-screen'>
