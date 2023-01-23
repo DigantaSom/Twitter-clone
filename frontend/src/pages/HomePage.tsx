@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 
 import Navigation from '../components/Navigation';
-import Trending from '../components/Trending';
+import Trending from '../features/trending/Trending';
 import SignUp from '../components/SignUp';
 
 const HomePage = () => {
