@@ -21,10 +21,10 @@ const createUser = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  if (handle.length > 15) {
+  if (handle.length < 5 || handle.length > 15) {
     return res
       .status(400)
-      .json({ message: 'Username must not be more than characters long' });
+      .json({ message: 'Username must be between 5 and 15 characters' });
   }
 
   if (password.length < 5) {
