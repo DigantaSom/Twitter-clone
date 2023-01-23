@@ -1,8 +1,18 @@
+import { Routes, Route } from 'react-router-dom';
+
+import HomePage from './pages/HomePage';
+import Feed from './components/Feed';
+import Explore from './components/Explore';
+
 const App = () => {
+  const isAuthenticated = false; // TODO: dynamic
+
   return (
-    <div>
-      <h2 className='text-red-500 text-3xl'>Twitter Frontend</h2>
-    </div>
+    <Routes>
+      <Route path='/' element={<HomePage />}>
+        <Route index element={isAuthenticated ? <Feed /> : <Explore />} />
+      </Route>
+    </Routes>
   );
 };
 
