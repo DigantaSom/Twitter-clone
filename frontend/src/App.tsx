@@ -7,6 +7,7 @@ import {
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 
+import PersistLogin from './features/auth/PersistLogin';
 import HomePage from './pages/HomePage';
 import Feed from './components/Feed';
 import Explore from './components/Explore';
@@ -23,8 +24,10 @@ const App = () => {
   return (
     <div className='relative'>
       <Routes>
-        <Route path='/' element={<HomePage />}>
-          <Route index element={isAuthenticated ? <Feed /> : <Explore />} />
+        <Route element={<PersistLogin />}>
+          <Route path='/' element={<HomePage />}>
+            <Route index element={isAuthenticated ? <Feed /> : <Explore />} />
+          </Route>
         </Route>
       </Routes>
 

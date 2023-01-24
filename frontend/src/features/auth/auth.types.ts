@@ -11,3 +11,7 @@ export type LoginMutationArg = {
   handle: string;
   password: string;
 };
+
+export type AuthResponse = {
+  accessToken: string;
+};
