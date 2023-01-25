@@ -64,7 +64,7 @@ const createTweet = async (req, res) => {
     twitterHandle: user.handle,
     profilePicture: user.profilePicture || '',
     caption: req.body.caption,
-    media: req.body.images || [''],
+    media: req.body.media || [''],
   });
   const tweet = await newTweet.save();
   res.status(200).json(tweet);

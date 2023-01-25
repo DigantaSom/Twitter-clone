@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 5001;
 
 connectDB();
 
-app.use(express.json());
 app.use(cors(corsOptions));
+app.use(express.json({ limit: '2mb' })); // limiting the media upload size
 app.use(cookieParser());
 
 app.use('/', express.static(path.join(__dirname, 'public')));
