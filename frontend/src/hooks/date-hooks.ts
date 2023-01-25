@@ -41,3 +41,25 @@ export const useGetDays = (month: MonthType, year: number): number[] => {
   }
   return days;
 };
+
+// Get post date
+// TODO: implement 'time from'
+export const useGetPostDate = (date: string | undefined) => {
+  if (!date) {
+    return '';
+  }
+
+  const day = new Date(date).toLocaleString('en-IN', {
+    day: 'numeric',
+  });
+  const month = new Date(date).toLocaleString('en-IN', {
+    month: 'short',
+  });
+  const year = new Date(date).toLocaleString('en-IN', {
+    year: 'numeric',
+  });
+
+  const final = `${month} ${day}, ${year}`;
+
+  return final;
+};

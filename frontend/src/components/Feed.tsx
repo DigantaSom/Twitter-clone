@@ -6,7 +6,7 @@ const Feed = () => {
   return (
     <>
       <Header />
-      <CreateTweet />
+      <CreateTweet from='Feed' />
       <TweetList />
     </>
   );

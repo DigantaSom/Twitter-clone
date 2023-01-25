@@ -13,6 +13,8 @@ import Feed from './components/Feed';
 import Explore from './components/Explore';
 import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
+import TweetComposeButton from './components/TweetComposeButton';
+import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
 
@@ -38,6 +40,18 @@ const App = () => {
       )}
 
       {(isComposeTweetShown || authModal.isShown) && <DarkOverlay />}
+
+      {isAuthenticated && (
+        <div className='ph:hidden absolute bottom-20 right-2 ph_sm:right-4 z-30'>
+          <TweetComposeButton from='App' />
+        </div>
+      )}
+
+      {isComposeTweetShown && (
+        <div className='absolute z-50 top-0 left-0 ph:top-8 ph:left-[50%] ph:-translate-x-[50%]'>
+          <ComposeTweet />
+        </div>
+      )}
 
       {isAuthenticated && <BottomNavigation />}
 

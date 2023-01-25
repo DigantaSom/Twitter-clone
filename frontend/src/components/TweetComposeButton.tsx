@@ -1,15 +1,15 @@
 import { FC } from 'react';
 import { FiFeather } from 'react-icons/fi';
 
-// import { useAppDispatch } from '../hooks/redux-hooks';
-// import { toggleComposeTweet } from '../features/ui/ui.slice';
+import { useAppDispatch } from '../hooks/redux-hooks';
+import { toggleComposeTweet } from '../features/ui/ui.slice';
 
 interface TweetComposeButtonProps {
   from: 'App' | 'Navigation';
 }
 
 const TweetComposeButton: FC<TweetComposeButtonProps> = ({ from }) => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   let button_dyanmicStyles = '';
 
@@ -21,7 +21,7 @@ const TweetComposeButton: FC<TweetComposeButtonProps> = ({ from }) => {
 
   return (
     <button
-      // onClick={() => dispatch(toggleComposeTweet())}
+      onClick={() => dispatch(toggleComposeTweet())}
       className={`text-white bg-twitter hover:bg-twitter-dark p-2 xl:p-3 
             ${button_dyanmicStyles} xl:w-full rounded-full text-base xl:text-lg font-semibold flex items-center justify-center`}
     >
