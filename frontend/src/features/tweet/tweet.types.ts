@@ -1,6 +1,10 @@
 import { UserID } from '../user/user.types';
 import { Reply } from '../../types';
 
+export interface TweetState {
+  newTweetData: AddNewTweetArg;
+}
+
 export interface Tweet {
   _id: string;
   userId: string;

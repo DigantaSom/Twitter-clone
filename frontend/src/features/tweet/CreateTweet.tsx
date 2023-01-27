@@ -1,4 +1,12 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import imageCompression from 'browser-image-compression';
 
 import {
@@ -11,9 +19,14 @@ import { GrEmoji } from 'react-icons/gr';
 import { CgPin } from 'react-icons/cg';
 import { IoCloseSharp } from 'react-icons/io5';
 
-import { useAppDispatch } from '../../hooks/redux-hooks';
-import { handleSubmitDisabled } from '../ui/ui.slice';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import {
+  selectIsComposeTweetShown,
+  toggleComposeTweet,
+  handleSubmitDisabled,
+} from '../ui/ui.slice';
 import { useAddNewTweetMutation } from './tweet.api-slice';
+import { setNewTweetData, clearNewTweetData } from './tweet.slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetSubmitButton from './TweetSubmitButton';
@@ -23,15 +36,27 @@ import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 
 interface CreateTweetProps {
   from: 'Feed' | 'ComposeTweet';
+  setIsMediaSet?: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateTweet: FC<CreateTweetProps> = ({ from }) => {
+const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
   const dispatch = useAppDispatch();
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
   const [imageToPost, setImageToPost] = useState('');
-
+  const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
   const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
+
+  useEffect(() => {
+    if (text) {
+      dispatch(
+        setNewTweetData({
+          caption: text,
+          media: [imageToPost],
+        })
+      );
+    }
+  }, [dispatch, text, imageToPost]);
 
   useEffect(() => {
     dispatch(handleSubmitDisabled(text === '') || isLoading);
@@ -56,6 +81,9 @@ const CreateTweet: FC<CreateTweetProps> = ({ from }) => {
         const compressedFile = await imageCompression(file, compressionOptions);
         const base64 = await convertBlobToBase64(compressedFile);
         setImageToPost(base64 as string);
+        if (from === 'ComposeTweet' && setIsMediaSet) {
+          setIsMediaSet(true);
+        }
       } catch (error) {
         console.log('Error uploading image:', error);
         alert('Error uploading image. Please try again later.');
@@ -64,12 +92,20 @@ const CreateTweet: FC<CreateTweetProps> = ({ from }) => {
   };
 
   const handleRemoveImage = () => {
-    if (window.confirm('Remove image?')) {
-      setImageToPost('');
+    if (!isLoading) {
+      if (window.confirm('Remove image?')) {
+        setImageToPost('');
+        if (from === 'ComposeTweet' && setIsMediaSet) {
+          setIsMediaSet(false);
+        }
+      }
     }
   };
 
   const handleSubmitTweet = async () => {
+    if (isLoading) {
+      return;
+    }
     try {
       const res = await addNewTweet({
         caption: text,
@@ -82,6 +118,10 @@ const CreateTweet: FC<CreateTweetProps> = ({ from }) => {
       }
       setText('');
       setImageToPost('');
+      dispatch(clearNewTweetData());
+      if (isComposeTweetShown) {
+        dispatch(toggleComposeTweet());
+      }
     } catch (err: any) {
       console.log(err);
       let errMsg = '';
@@ -129,13 +169,15 @@ const CreateTweet: FC<CreateTweetProps> = ({ from }) => {
 
         {imageToPost && (
           <div className='relative pt-3 pb-2'>
-            <div
-              title='Remove'
-              onClick={handleRemoveImage}
-              className='absolute z-30 rounded-full bg-black w-8 h-8 flex items-center justify-center ml-1 mt-1 hover:cursor-pointer'
-            >
-              <IoCloseSharp className='text-white text-lg' />
-            </div>
+            {!isLoading && (
+              <div
+                title='Remove'
+                onClick={handleRemoveImage}
+                className='absolute z-30 rounded-full bg-black w-8 h-8 flex items-center justify-center ml-1 mt-1 hover:cursor-pointer'
+              >
+                <IoCloseSharp className='text-white text-lg' />
+              </div>
+            )}
             <img
               src={imageToPost}
               alt='Post'

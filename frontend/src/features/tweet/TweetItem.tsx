@@ -51,7 +51,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
               className='flex items-center space-x-2'
               onClick={navigateToPost}
             >
-              <div className='flex flex-col ph_sm:flex-row ph_sm:items-center ph_sm:space-x-2'>
+              <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2'>
                 <h3 className='font-bold'>{fullName}</h3>
                 <div className='flex items-center space-x-1'>
                   <span className='text-gray-500'>@{twitterHandle}</span>

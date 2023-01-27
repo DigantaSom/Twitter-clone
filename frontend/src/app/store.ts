@@ -4,6 +4,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { apiSlice } from './api/api.slice';
 import uiReducer from '../features/ui/ui.slice';
 import authReducer from '../features/auth/auth.slice';
+import tweetReducer from '../features/tweet/tweet.slice';
 import trendingReducer from '../features/trending/trending.slice';
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
     ui: uiReducer,
     auth: authReducer,
+    tweet: tweetReducer,
     trending: trendingReducer,
   },
   middleware: getDefaultMiddleware =>
