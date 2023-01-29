@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
@@ -9,6 +9,7 @@ import { useGetPostDate } from '../../hooks/date-hooks';
 
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetActions from './TweetActions';
+import PostOptions from './PostOptions';
 
 interface TweetItemProps {
   tweetId: string;
@@ -16,6 +17,7 @@ interface TweetItemProps {
 
 const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   const navigate = useNavigate();
+  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
   const { tweet } = useGetTweetsQuery(undefined, {
     selectFromResult: ({ data }) => ({
@@ -37,9 +39,13 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
     navigate(`/${twitterHandle}/status/${tweetId}/photo`);
   };
 
+  const handleToggleOptions = () => {
+    setShowOptionsPopup(prevState => !prevState);
+  };
+
   return (
     <div
-      className='p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer 
+      className='relative p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer 
       border-b-[1px] border-gray-200'
     >
       <div className='flex items-start'>
@@ -60,10 +66,18 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
                 </div>
               </div>
             </div>
-            <FiMoreHorizontal
-              className='text-xl ph:text-2xl text-gray-500'
-              onClick={() => {}}
-            />
+            <div
+              className={`w-8 h-8 rounded-full  hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center 
+                ${
+                  showOptionsPopup
+                    ? 'text-twitter bg-twitter-light'
+                    : 'text-gray-500'
+                }
+              `}
+              onClick={handleToggleOptions}
+            >
+              <FiMoreHorizontal className='text-xl ph:text-2xl' />
+            </div>
           </div>
 
           <p className='mt-1 ph_sm:mt-[2px]' onClick={navigateToPost}>
@@ -83,6 +97,10 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
           <TweetActions tweet={tweet} />
         </div>
       </div>
+
+      {showOptionsPopup && (
+        <PostOptions postId={tweetId} authorUsername={twitterHandle} />
+      )}
     </div>
   );
 };
