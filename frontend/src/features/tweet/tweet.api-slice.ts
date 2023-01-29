@@ -1,7 +1,13 @@
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
 import { apiSlice } from '../../app/api/api.slice';
-import { Tweet, TweetResponse, AddNewTweetArg } from './tweet.types';
+import {
+  Tweet,
+  TweetResponse,
+  AddNewTweetArg,
+  LikeResponse,
+  LikeTweetArg,
+} from './tweet.types';
 
 const tweetsAdapter = createEntityAdapter<Tweet>({
   // sorting: latest tweet comes first
@@ -48,8 +54,23 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       // forcing to invalidate the Tweet list in the cache
       invalidatesTags: [{ type: 'Tweet', id: 'LIST' }],
     }),
+
+    likeTweet: builder.mutation<LikeResponse, LikeTweetArg>({
+      query: arg => ({
+        url: `api/tweets/like/${arg.tweetId}`,
+        method: 'PUT',
+      }),
+      // invalidating only the updated Tweet object in the cache
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Tweet', id: arg.tweetId },
+      ],
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useGetTweetsQuery, useAddNewTweetMutation } = tweetApiSlice;
+export const {
+  useGetTweetsQuery,
+  useAddNewTweetMutation,
+  useLikeTweetMutation,
+} = tweetApiSlice;

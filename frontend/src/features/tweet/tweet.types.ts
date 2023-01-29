@@ -28,3 +28,9 @@ export type AddNewTweetArg = {
   caption: string;
   media: [string];
 };
+
+export type LikeTweetArg = {
+  tweetId: string;
+};
+
+export type LikeResponse = { userId: UserID }[];
