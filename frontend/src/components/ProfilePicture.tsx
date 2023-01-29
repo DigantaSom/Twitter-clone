@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import constants from '../constants';
 
 interface ProfilePictureProps {
-  uri: string;
+  uri: string | undefined;
   disableGoToProfile?: boolean;
 }
 
@@ -24,7 +24,7 @@ const ProfilePicture: FC<ProfilePictureProps> = ({
     <div onClick={handleGotToProfile}>
       <div className='relative w-10 h-10 ph_sm:w-12 ph_sm:h-12 hover:cursor-pointer'>
         <img
-          src={uri !== '' ? uri : constants.placeholder_profilePicture}
+          src={uri && uri !== '' ? uri : constants.placeholder_profilePicture}
           alt='User'
           className='w-full h-full rounded-full'
         />

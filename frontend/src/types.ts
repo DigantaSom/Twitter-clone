@@ -22,7 +22,7 @@ export interface TokenPayloadUser {
 }
 
 export interface TokenPayload {
-  user: TokenPayloadUser;
+  user: TokenPayloadUser | null;
 }
 
 export interface Reply extends Tweet {

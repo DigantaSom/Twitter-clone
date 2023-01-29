@@ -7,7 +7,6 @@ import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
 import { Tweet } from './tweet.types';
-import { TokenPayloadUser } from '../../types';
 
 import useAuth from '../../hooks/useAuth';
 import { useLikeTweetMutation } from './tweet.api-slice';
@@ -27,7 +26,7 @@ const TweetActions: FC<TweetActionsProps> = ({
 
   useEffect(() => {
     // if the post is liked by the current logged in user
-    if (likes.some(like => like.userId === (auth as TokenPayloadUser).id)) {
+    if (likes.some(like => like.userId === auth.user?.id)) {
       setIsLiked(true);
     } else {
       setIsLiked(false);
