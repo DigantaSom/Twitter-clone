@@ -7,31 +7,32 @@ import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
 import { Tweet } from './tweet.types';
+import { TokenPayloadUser } from '../../types';
 
-import useAuth from '../../hooks/useAuth';
 import { useLikeTweetMutation } from './tweet.api-slice';
 
 interface TweetActionsProps {
   tweet: Tweet;
+  currentUser: TokenPayloadUser;
 }
 
 const TweetActions: FC<TweetActionsProps> = ({
   tweet: { _id: tweetId, twitterHandle, replies, retweets, likes },
+  currentUser,
 }) => {
   const navigate = useNavigate();
-  const auth = useAuth();
   const [isLiked, setIsLiked] = useState(false);
 
   const [likeTweet, { isLoading }] = useLikeTweetMutation();
 
   useEffect(() => {
     // if the post is liked by the current logged in user
-    if (likes.some(like => like.userId === auth.user?.id)) {
+    if (likes.some(like => like.userId === currentUser.id)) {
       setIsLiked(true);
     } else {
       setIsLiked(false);
     }
-  }, [likes, auth]);
+  }, [likes, currentUser.id]);
 
   const navigateToPost = () => {
     navigate(`/${twitterHandle}/status/${tweetId}`);

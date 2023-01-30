@@ -4,8 +4,9 @@ import { apiSlice } from '../../app/api/api.slice';
 import {
   Tweet,
   TweetResponse,
-  AddNewTweetArg,
   LikeResponse,
+  AddNewTweetArg,
+  DeleteTweetArg,
   LikeTweetArg,
 } from './tweet.types';
 
@@ -55,6 +56,17 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'Tweet', id: 'LIST' }],
     }),
 
+    deleteTweet: builder.mutation<any, DeleteTweetArg>({
+      query: arg => ({
+        url: `/api/tweets/${arg.tweetId}`,
+        method: 'DELETE',
+      }),
+      // invalidating only the deleted Tweet object in the cache
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Tweet', id: arg.tweetId },
+      ],
+    }),
+
     likeTweet: builder.mutation<LikeResponse, LikeTweetArg>({
       query: arg => ({
         url: `api/tweets/like/${arg.tweetId}`,
@@ -72,5 +84,6 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetTweetsQuery,
   useAddNewTweetMutation,
+  useDeleteTweetMutation,
   useLikeTweetMutation,
 } = tweetApiSlice;

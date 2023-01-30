@@ -29,6 +29,10 @@ export type AddNewTweetArg = {
   media: [string];
 };
 
+export type DeleteTweetArg = {
+  tweetId: string;
+};
+
 export type LikeTweetArg = {
   tweetId: string;
 };

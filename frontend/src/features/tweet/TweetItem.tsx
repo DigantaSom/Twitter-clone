@@ -1,10 +1,11 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { useGetTweetsQuery } from './tweet.api-slice';
+import useAuth from '../../hooks/useAuth';
+import { useGetTweetsQuery, useDeleteTweetMutation } from './tweet.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
 import ProfilePicture from '../../components/ProfilePicture';
@@ -17,6 +18,7 @@ interface TweetItemProps {
 
 const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
   const { tweet } = useGetTweetsQuery(undefined, {
@@ -24,6 +26,19 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
       tweet: data?.entities[tweetId],
     }),
   });
+
+  const [
+    deleteTweet,
+    { isError: isDeleteTweetError, error: deleteTweetError },
+  ] = useDeleteTweetMutation();
+
+  useEffect(() => {
+    if (isDeleteTweetError && deleteTweetError) {
+      if ('data' in deleteTweetError) {
+        alert((deleteTweetError.data as any).message);
+      }
+    }
+  }, [isDeleteTweetError, deleteTweetError]);
 
   const createdAt = useGetPostDate(tweet?.creationDate);
 
@@ -41,6 +56,11 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
 
   const handleToggleOptions = () => {
     setShowOptionsPopup(prevState => !prevState);
+  };
+
+  const handleDeleteTweet = async () => {
+    await deleteTweet({ tweetId });
+    setShowOptionsPopup(false);
   };
 
   return (
@@ -94,12 +114,16 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
             </div>
           )}
 
-          <TweetActions tweet={tweet} />
+          {auth.user && <TweetActions tweet={tweet} currentUser={auth.user} />}
         </div>
       </div>
 
-      {showOptionsPopup && (
-        <PostOptions postId={tweetId} authorUsername={twitterHandle} />
+      {showOptionsPopup && auth.user && (
+        <PostOptions
+          currentUser={auth.user}
+          authorUsername={twitterHandle}
+          handleDeletePost={handleDeleteTweet}
+        />
       )}
     </div>
   );
