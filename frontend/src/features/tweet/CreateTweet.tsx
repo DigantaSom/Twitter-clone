@@ -48,7 +48,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
   const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
   useEffect(() => {
-    if (text) {
+    if (isComposeTweetShown && text) {
       dispatch(
         setNewTweetData({
           caption: text,
@@ -56,7 +56,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
         })
       );
     }
-  }, [dispatch, text, imageToPost]);
+  }, [isComposeTweetShown, text, imageToPost, dispatch]);
 
   useEffect(() => {
     dispatch(handleSubmitDisabled(text === '') || isLoading);
