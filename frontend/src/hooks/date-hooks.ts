@@ -63,3 +63,17 @@ export const useGetPostDate = (date: string | undefined) => {
 
   return final;
 };
+
+// Get post time
+export const useGetPostTime = (date: string | undefined) => {
+  if (!date) {
+    return '';
+  }
+
+  const time = new Date(date).toLocaleString('en-IN', {
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+
+  return time;
+};

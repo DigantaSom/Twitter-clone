@@ -8,15 +8,20 @@ import {
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 
 import PersistLogin from './features/auth/PersistLogin';
+
 import HomePage from './pages/HomePage';
 import Feed from './components/Feed';
 import Explore from './components/Explore';
+
+import TweetPage from './pages/TweetPage';
+
 import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
 import TweetComposeButton from './components/TweetComposeButton';
 import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
+import TweetPhotoPage from './pages/TweetPhotoPage';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -29,7 +34,12 @@ const App = () => {
         <Route element={<PersistLogin />}>
           <Route path='/' element={<HomePage />}>
             <Route index element={isAuthenticated ? <Feed /> : <Explore />} />
+            <Route path=':username/status/:tweetId' element={<TweetPage />} />
           </Route>
+          <Route
+            path=':username/status/:tweetId/photo/:photoIndex'
+            element={<TweetPhotoPage />}
+          />
         </Route>
       </Routes>
 

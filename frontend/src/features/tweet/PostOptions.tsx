@@ -12,12 +12,14 @@ import { RiFlag2Line } from 'react-icons/ri';
 import { TokenPayloadUser } from '../../types';
 
 interface PostOptionsProps {
+  from: 'TweetItem' | 'TweetPage';
   currentUser: TokenPayloadUser;
   authorUsername: string;
   handleDeletePost: () => void;
 }
 
 const PostOptions: FC<PostOptionsProps> = ({
+  from,
   currentUser,
   authorUsername,
   handleDeletePost,
@@ -125,8 +127,18 @@ const PostOptions: FC<PostOptionsProps> = ({
     );
   }
 
+  let contentTopStyles = '';
+
+  if (from === 'TweetItem') {
+    contentTopStyles = 'top-9 ph_sm:top-16 ph:top-14';
+  } else if (from === 'TweetPage') {
+    contentTopStyles = 'top-24';
+  }
+
   return (
-    <div className='absolute right-0 ph_xs:right-2 ph_sm:right-4 top-9 ph_sm:top-16 ph:top-14 z-10 bg-white shadow-xl rounded-lg font-bold overflow-hidden'>
+    <div
+      className={`absolute right-0 ph_xs:right-2 ph_sm:right-4 ${contentTopStyles} z-10 bg-white shadow-xl rounded-lg font-bold overflow-hidden`}
+    >
       {content}
     </div>
   );

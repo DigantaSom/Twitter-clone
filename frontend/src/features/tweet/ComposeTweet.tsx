@@ -59,6 +59,7 @@ const ComposeTweet = () => {
           </div>
           <div className='ph:hidden'>
             <TweetSubmitButton
+              type='Tweet'
               isDisabled={isSubmitDisabled}
               isLoading={isLoading}
               handleSubmitTweet={handleSubmitTweet}

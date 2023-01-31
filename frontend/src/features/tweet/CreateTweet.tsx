@@ -70,15 +70,12 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
     const files = e.target.files;
     const file = files ? files[0] : null;
 
-    const compressionOptions = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-    };
-
     if (file) {
       try {
-        const compressedFile = await imageCompression(file, compressionOptions);
+        const compressedFile = await imageCompression(
+          file,
+          constants.imageCompression_options
+        );
         const base64 = await convertBlobToBase64(compressedFile);
         setImageToPost(base64 as string);
         if (from === 'ComposeTweet' && setIsMediaSet) {
@@ -224,6 +221,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
 
           <div className='hidden ph:block'>
             <TweetSubmitButton
+              type='Tweet'
               isDisabled={text === '' || isLoading}
               isLoading={isLoading}
               handleSubmitTweet={handleSubmitTweet}

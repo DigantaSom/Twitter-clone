@@ -106,7 +106,7 @@ const TweetActions: FC<TweetActionsProps> = ({
       )}
 
       <div className='text-gray-500'>
-        <div className=' ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full pb-[2px] ph:pb-1 hover:bg-twitter-light hover:text-twitter flex items-center justify-end ph:justify-center flex-1'>
+        <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full pb-[2px] ph:pb-1 hover:bg-twitter-light hover:text-twitter flex items-center justify-end ph:justify-center flex-1'>
           <MdIosShare className='ph_sm:text-xl' />
         </div>
       </div>

@@ -51,7 +51,8 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   };
 
   const navigateToPostFullScreen = () => {
-    navigate(`/${twitterHandle}/status/${tweetId}/photo`);
+    // TODO: change the photoIndex from '1' to dynamic
+    navigate(`/${twitterHandle}/status/${tweetId}/photo/1`);
   };
 
   const handleToggleOptions = () => {
@@ -120,6 +121,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
 
       {showOptionsPopup && auth.user && (
         <PostOptions
+          from='TweetItem'
           currentUser={auth.user}
           authorUsername={twitterHandle}
           handleDeletePost={handleDeleteTweet}
