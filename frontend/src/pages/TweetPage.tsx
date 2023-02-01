@@ -8,7 +8,11 @@ import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
 import useAuth from '../hooks/useAuth';
-import { useGetTweetsQuery } from '../features/tweet/tweet.api-slice';
+import {
+  useGetTweetsQuery,
+  useDeleteTweetMutation,
+  useLikeTweetMutation,
+} from '../features/tweet/tweet.api-slice';
 import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
 
 import TweetPageHeader from '../components/TweetPageHeader';
@@ -32,7 +36,10 @@ const TweetPage = () => {
     }),
   });
 
-  const isLikeLoading = false; // dynamic
+  const [deleteTweet, { isLoading: isDeleteTweetLoading }] =
+    useDeleteTweetMutation();
+
+  const [likeTweet, { isLoading: isLikeTweetLoading }] = useLikeTweetMutation();
 
   const createdAt_time = useGetPostTime(tweet?.creationDate).toUpperCase();
   const createdAt_date = useGetPostDate(tweet?.creationDate);
@@ -54,6 +61,7 @@ const TweetPage = () => {
   if (!tweet) return null;
 
   const {
+    id,
     profilePicture,
     fullName,
     twitterHandle,
@@ -65,16 +73,61 @@ const TweetPage = () => {
 
   const navigateToPostFullScreen = () => {
     // TODO: change the photoIndex from '1' to dynamic
-    navigate(`/${twitterHandle}/status/${tweetId}/photo/1`);
+    navigate(`/${twitterHandle}/status/${id}/photo/1`);
   };
 
   const handleToggleOptions = () => {
     setShowOptionsPopup(prevState => !prevState);
   };
 
-  const handleDeleteTweet = () => {};
+  const handleDeleteTweet = async () => {
+    if (isDeleteTweetLoading) return;
 
-  const handleLikeTweet = () => {};
+    try {
+      const res = await deleteTweet({ tweetId: id }).unwrap();
+
+      if (res?.isError) {
+        alert(res?.message);
+        return;
+      }
+      setShowOptionsPopup(false);
+      navigate('/');
+    } catch (err: any) {
+      console.log(err);
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      setShowOptionsPopup(false);
+      alert(errMsg);
+    }
+  };
+
+  const handleLikeTweet = async () => {
+    if (isLikeTweetLoading) return;
+
+    try {
+      const res = await likeTweet({ tweetId: id }).unwrap();
+
+      if ((res as any)?.isError) {
+        alert((res as any)?.message);
+        return;
+      }
+    } catch (err: any) {
+      console.log(err);
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
+    }
+  };
 
   return (
     <div className='relative pb-60'>
@@ -153,7 +206,7 @@ const TweetPage = () => {
             <AiOutlineRetweet className='ph_sm:text-xl' />
           </div>
 
-          {isLikeLoading ? (
+          {isLikeTweetLoading ? (
             <ClipLoader
               color='#F91880' // same as 'like' color
               size={25}

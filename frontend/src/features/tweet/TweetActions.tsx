@@ -6,18 +6,18 @@ import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
-import { Tweet } from './tweet.types';
+import { TweetDisplay } from './tweet.types';
 import { TokenPayloadUser } from '../../types';
 
 import { useLikeTweetMutation } from './tweet.api-slice';
 
 interface TweetActionsProps {
-  tweet: Tweet;
+  tweet: TweetDisplay;
   currentUser: TokenPayloadUser;
 }
 
 const TweetActions: FC<TweetActionsProps> = ({
-  tweet: { _id: tweetId, twitterHandle, replies, retweets, likes },
+  tweet: { id: tweetId, twitterHandle, replies, retweets, likes },
   currentUser,
 }) => {
   const navigate = useNavigate();

@@ -11,7 +11,6 @@ import PersistLogin from './features/auth/PersistLogin';
 
 import HomePage from './pages/HomePage';
 import Feed from './components/Feed';
-import Explore from './components/Explore';
 
 import TweetPage from './pages/TweetPage';
 
@@ -33,7 +32,7 @@ const App = () => {
       <Routes>
         <Route element={<PersistLogin />}>
           <Route path='/' element={<HomePage />}>
-            <Route index element={isAuthenticated ? <Feed /> : <Explore />} />
+            <Route index element={<Feed />} />
             <Route path=':username/status/:tweetId' element={<TweetPage />} />
           </Route>
           <Route
