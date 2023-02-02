@@ -137,7 +137,7 @@ const CreateReply: FC<CreateReplyProps> = ({
               value={text}
               onChange={handleChangeText}
               onKeyUp={textAreaAdjust}
-              className='w-full ph_xs:text-lg ph:text-xl focus:outline-none placeholder:text-gray-600'
+              className='w-full resize-none ph_xs:text-lg ph:text-xl focus:outline-none placeholder:text-gray-600'
             ></textarea>
           </div>
 
@@ -162,6 +162,7 @@ const CreateReply: FC<CreateReplyProps> = ({
           )}
 
           {/* Reply add-ons */}
+          {/* TODO: replace this block of code with the 'CreateTweetAdOns' component */}
           {showHelperOptions && (
             <div className='flex items-center justify-between'>
               <div className='flex items-center ph_xs:space-x-1 text-twitter text-xl'>
@@ -196,7 +197,7 @@ const CreateReply: FC<CreateReplyProps> = ({
                 type='Reply'
                 isDisabled={isSubmitButtonDisabled}
                 isLoading={isLoading}
-                handleSubmitTweet={handleSubmitReply}
+                handleSubmit={handleSubmitReply}
               />
             </div>
           )}
@@ -207,7 +208,7 @@ const CreateReply: FC<CreateReplyProps> = ({
             type='Reply'
             isDisabled={isSubmitButtonDisabled}
             isLoading={isLoading}
-            handleSubmitTweet={handleSubmitReply}
+            handleSubmit={handleSubmitReply}
           />
         )}
       </div>

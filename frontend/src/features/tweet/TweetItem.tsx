@@ -46,6 +46,8 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
 
   const { twitterHandle, profilePicture, fullName, caption, media } = tweet;
 
+  const isMediaPresent = media.length > 0 && media[0] !== '';
+
   const navigateToPost = () => {
     navigate(`/${twitterHandle}/status/${tweetId}`);
   };
@@ -105,7 +107,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
             {caption}
           </p>
 
-          {media.length > 0 && media[0] !== '' && (
+          {isMediaPresent && (
             <div onClick={navigateToPostFullScreen} className='pt-3 pb-2'>
               <img
                 src={media[0]}
@@ -115,7 +117,14 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
             </div>
           )}
 
-          {auth.user && <TweetActions tweet={tweet} currentUser={auth.user} />}
+          {auth.user && (
+            <TweetActions
+              currentUser={auth.user}
+              tweet={tweet}
+              isMediaPresent={isMediaPresent}
+              tweetCreationDate={createdAt}
+            />
+          )}
         </div>
       </div>
 

@@ -11,6 +11,7 @@ const initialState: UiState = {
     type: '', // in our logic, type: '' = isShown: false
   },
   isSubmitDisabled: true,
+  isCreateReplyPopupShown: false,
 };
 
 const uiSlice = createSlice({
@@ -27,16 +28,28 @@ const uiSlice = createSlice({
     handleSubmitDisabled: (state, action: PayloadAction<boolean>) => {
       state.isSubmitDisabled = action.payload;
     },
+    toggleCreateReplyPopup: (state, action: PayloadAction<boolean>) => {
+      state.isCreateReplyPopupShown = action.payload;
+    },
   },
 });
 
 export const selectIsComposeTweetShown = (state: RootState) =>
   state.ui.isComposeTweetShown;
+
 export const selectAuthModal = (state: RootState) => state.ui.authModal;
+
 export const selectIsSubmitDisabled = (state: RootState) =>
   state.ui.isSubmitDisabled;
 
-export const { toggleComposeTweet, toggleAuthModal, handleSubmitDisabled } =
-  uiSlice.actions;
+export const selectIsCreateReplyPopupShown = (state: RootState) =>
+  state.ui.isCreateReplyPopupShown;
+
+export const {
+  toggleComposeTweet,
+  toggleAuthModal,
+  handleSubmitDisabled,
+  toggleCreateReplyPopup,
+} = uiSlice.actions;
 
 export default uiSlice.reducer;

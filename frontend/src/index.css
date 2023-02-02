@@ -25,3 +25,25 @@ a {
 *::-webkit-scrollbar {
   width: 0 !important;
 }
+
+.dp-custom-styles-with-thread-line {
+  position: relative;
+}
+.dp-custom-styles-with-thread-line::after {
+  content: '';
+  position: absolute;
+  top: 3.2rem;
+  left: 1.25rem; /* according to the ProfilePicture component's dimensions */
+  width: 2px;
+  height: 90%;
+  background: #d3d3d3;
+  pointer-events: none;
+}
+@media (min-width: 401px) {
+  .dp-custom-styles-with-thread-line {
+    margin-bottom: 1.5rem;
+  }
+  .dp-custom-styles-with-thread-line::after {
+    left: 1.5rem; /* according to the ProfilePicture component's dimensions */
+  }
+}

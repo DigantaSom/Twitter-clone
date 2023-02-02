@@ -4,28 +4,30 @@ import { useAppSelector } from './hooks/redux-hooks';
 import {
   selectAuthModal,
   selectIsComposeTweetShown,
+  selectIsCreateReplyPopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 
 import PersistLogin from './features/auth/PersistLogin';
 
 import HomePage from './pages/HomePage';
-import Feed from './components/Feed';
-
 import TweetPage from './pages/TweetPage';
+import TweetPhotoPage from './pages/TweetPhotoPage';
 
+import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
 import TweetComposeButton from './components/TweetComposeButton';
 import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
-import TweetPhotoPage from './pages/TweetPhotoPage';
+import CreateReplyPopup from './features/reply/CreateReplyPopup';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
   const authModal = useAppSelector(selectAuthModal);
+  const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
 
   return (
     <div className='relative'>
@@ -48,7 +50,15 @@ const App = () => {
         </div>
       )}
 
-      {(isComposeTweetShown || authModal.isShown) && <DarkOverlay />}
+      {(isComposeTweetShown ||
+        authModal.isShown ||
+        isCreateReplyPopupShown) && (
+        <DarkOverlay
+          isComposeTweetShown={isComposeTweetShown}
+          isAuthModalShown={authModal.isShown}
+          isCreateReplyPopupShown={isCreateReplyPopupShown}
+        />
+      )}
 
       {isAuthenticated && (
         <div className='ph:hidden absolute bottom-20 right-2 ph_sm:right-4 z-30'>
@@ -61,6 +71,8 @@ const App = () => {
           <ComposeTweet />
         </div>
       )}
+
+      {isCreateReplyPopupShown && <CreateReplyPopup />}
 
       {isAuthenticated && <BottomNavigation />}
 

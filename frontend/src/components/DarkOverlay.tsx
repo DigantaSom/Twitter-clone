@@ -1,21 +1,34 @@
-import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
+import { FC } from 'react';
+
+import { useAppDispatch } from '../hooks/redux-hooks';
 import {
-  selectIsComposeTweetShown,
-  selectAuthModal,
   toggleComposeTweet,
   toggleAuthModal,
+  toggleCreateReplyPopup,
 } from '../features/ui/ui.slice';
+import { clearCreateReplyPopupData } from '../features/reply/reply.slice';
 
-const DarkOverlay = () => {
-  const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
-  const authModal = useAppSelector(selectAuthModal);
+interface DarkOverlayProps {
+  isComposeTweetShown: boolean;
+  isAuthModalShown: boolean;
+  isCreateReplyPopupShown: boolean;
+}
+
+const DarkOverlay: FC<DarkOverlayProps> = ({
+  isComposeTweetShown,
+  isAuthModalShown,
+  isCreateReplyPopupShown,
+}) => {
   const dispatch = useAppDispatch();
 
   const handleCloseModal = () => {
     if (isComposeTweetShown) {
       dispatch(toggleComposeTweet());
-    } else if (authModal.isShown) {
+    } else if (isAuthModalShown) {
       dispatch(toggleAuthModal(''));
+    } else if (isCreateReplyPopupShown) {
+      dispatch(clearCreateReplyPopupData());
+      dispatch(toggleCreateReplyPopup(false));
     }
   };
 

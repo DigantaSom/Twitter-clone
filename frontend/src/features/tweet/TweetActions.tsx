@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
@@ -9,18 +8,35 @@ import { TbMessageCircle2 } from 'react-icons/tb';
 import { TweetDisplay } from './tweet.types';
 import { TokenPayloadUser } from '../../types';
 
+import { useAppDispatch } from '../../hooks/redux-hooks';
 import { useLikeTweetMutation } from './tweet.api-slice';
 
+import { setCreateReplyPopupData } from '../reply/reply.slice';
+import { toggleCreateReplyPopup } from '../ui/ui.slice';
+
 interface TweetActionsProps {
-  tweet: TweetDisplay;
   currentUser: TokenPayloadUser;
+  tweet: TweetDisplay;
+  isMediaPresent: boolean;
+  tweetCreationDate: string;
 }
 
 const TweetActions: FC<TweetActionsProps> = ({
-  tweet: { id: tweetId, twitterHandle, replies, retweets, likes },
   currentUser,
+  tweet: {
+    id: tweetId,
+    twitterHandle,
+    fullName,
+    profilePicture,
+    caption,
+    replies,
+    retweets,
+    likes,
+  },
+  isMediaPresent,
+  tweetCreationDate,
 }) => {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isLiked, setIsLiked] = useState(false);
 
   const [likeTweet, { isLoading }] = useLikeTweetMutation();
@@ -34,8 +50,21 @@ const TweetActions: FC<TweetActionsProps> = ({
     }
   }, [likes, currentUser.id]);
 
-  const navigateToPost = () => {
-    navigate(`/${twitterHandle}/status/${tweetId}`);
+  const handleClickReplyButton = () => {
+    dispatch(
+      setCreateReplyPopupData({
+        currentUser,
+        replyingTo: {
+          profilePicture,
+          fullName,
+          username: twitterHandle,
+        },
+        caption,
+        isMediaPresent,
+        creationDate: tweetCreationDate,
+      })
+    );
+    dispatch(toggleCreateReplyPopup(true));
   };
 
   const handleLikeTweet = async () => {
@@ -64,7 +93,7 @@ const TweetActions: FC<TweetActionsProps> = ({
   return (
     <div className='grid grid-cols-4 items-center'>
       <div
-        onClick={navigateToPost}
+        onClick={handleClickReplyButton}
         className='flex items-center text-gray-500 hover:text-twitter group'
       >
         <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-twitter-light ph_sm:mr-2'>

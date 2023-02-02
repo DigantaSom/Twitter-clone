@@ -7,6 +7,7 @@ import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
+import { useAppDispatch } from '../hooks/redux-hooks';
 import useAuth from '../hooks/useAuth';
 import {
   useGetTweetsQuery,
@@ -14,6 +15,9 @@ import {
   useLikeTweetMutation,
 } from '../features/tweet/tweet.api-slice';
 import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
+
+import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
+import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
 import TweetPageHeader from '../components/TweetPageHeader';
 import PostOptions from '../features/tweet/PostOptions';
@@ -23,10 +27,11 @@ import CreateReply from '../features/reply/CreateReply';
 const TweetPage = () => {
   const { tweetId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const topMostDivRef = useRef<HTMLDivElement>(null);
-  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
   const auth = useAuth();
 
@@ -78,6 +83,25 @@ const TweetPage = () => {
 
   const handleToggleOptions = () => {
     setShowOptionsPopup(prevState => !prevState);
+  };
+
+  const handleClickReplyButton = () => {
+    if (auth.user) {
+      dispatch(
+        setCreateReplyPopupData({
+          currentUser: auth.user,
+          replyingTo: {
+            profilePicture,
+            fullName,
+            username: twitterHandle,
+          },
+          caption,
+          isMediaPresent: media.length > 0 && media[0] !== '',
+          creationDate: createdAt_date,
+        })
+      );
+      dispatch(toggleCreateReplyPopup(true));
+    }
   };
 
   const handleDeleteTweet = async () => {
@@ -198,7 +222,10 @@ const TweetPage = () => {
 
         {/* Tweet Actions */}
         <div className='py-1 flex items-center justify-around'>
-          <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:text-twitter hover:bg-twitter-light ph_sm:mr-2'>
+          <div
+            onClick={handleClickReplyButton}
+            className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:text-twitter hover:bg-twitter-light ph_sm:mr-2'
+          >
             <TbMessageCircle2 className='ph_sm:text-xl' />
           </div>
 
@@ -243,6 +270,7 @@ const TweetPage = () => {
 
       <hr />
 
+      {/* Tweet-options popup */}
       {showOptionsPopup && auth.user && (
         <PostOptions
           from='TweetPage'
