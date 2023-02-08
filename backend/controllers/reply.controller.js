@@ -67,7 +67,7 @@ const createReply = async (req, res) => {
       twitterHandle: user.handle,
       profilePicture: user.profilePicture || '',
       text: req.body.text,
-      media: req.body.images || [''],
+      media: req.body.media || [''],
     };
     tweet.replies.unshift(newReply);
 

@@ -1,5 +1,3 @@
-import { Tweet } from './features/tweet/tweet.types';
-
 export type MonthType =
   | 'January'
   | 'February'
@@ -23,8 +21,4 @@ export interface TokenPayloadUser {
 
 export interface TokenPayload {
   user: TokenPayloadUser | null;
-}
-
-export interface Reply extends Tweet {
-  inner_replies: Reply[];
 }

@@ -54,6 +54,7 @@ const TweetActions: FC<TweetActionsProps> = ({
     dispatch(
       setCreateReplyPopupData({
         currentUser,
+        tweetId,
         replyingTo: {
           profilePicture,
           fullName,

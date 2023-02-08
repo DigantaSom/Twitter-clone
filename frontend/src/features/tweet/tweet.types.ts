@@ -1,5 +1,5 @@
 import { UserID } from '../user/user.types';
-import { Reply } from '../../types';
+import { Reply } from '../reply/reply.types';
 
 export interface TweetState {
   newTweetData: AddNewTweetArg;

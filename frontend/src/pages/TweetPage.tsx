@@ -90,6 +90,7 @@ const TweetPage = () => {
       dispatch(
         setCreateReplyPopupData({
           currentUser: auth.user,
+          tweetId: id,
           replyingTo: {
             profilePicture,
             fullName,
@@ -263,6 +264,7 @@ const TweetPage = () => {
         <hr />
 
         <CreateReply
+          tweetId={id}
           profilePicture={profilePicture}
           tweetAuthorUsername={twitterHandle}
         />

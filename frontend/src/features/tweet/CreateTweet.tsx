@@ -113,7 +113,6 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
         dispatch(toggleComposeTweet());
       }
     } catch (err: any) {
-      console.log(err);
       let errMsg = '';
 
       if (!err.status) {

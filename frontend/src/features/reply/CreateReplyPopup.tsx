@@ -5,9 +5,13 @@ import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 import { BsDot } from 'react-icons/bs';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { useAddNewReplyMutation } from './reply.api-slice';
 
 import { toggleCreateReplyPopup } from '../ui/ui.slice';
-import { selectCreateReplyPopupData } from '../reply/reply.slice';
+import {
+  selectCreateReplyPopupData,
+  clearCreateReplyPopupData,
+} from '../reply/reply.slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetSubmitButton from '../tweet/TweetSubmitButton';
@@ -18,8 +22,14 @@ import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 
 const CreateReplyPopup = () => {
   const dispatch = useAppDispatch();
-  const { currentUser, replyingTo, caption, isMediaPresent, creationDate } =
-    useAppSelector(selectCreateReplyPopupData);
+  const {
+    currentUser,
+    tweetId,
+    replyingTo,
+    caption,
+    isMediaPresent,
+    creationDate,
+  } = useAppSelector(selectCreateReplyPopupData);
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
@@ -28,7 +38,7 @@ const CreateReplyPopup = () => {
   const [imageToPost, setImageToPost] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  const isLoading = false; // TODO: dynamic, according to useCreateReplyMutation()
+  const [addNewReply, { isLoading }] = useAddNewReplyMutation();
 
   useEffect(() => {
     if (isLoading) {
@@ -79,7 +89,35 @@ const CreateReplyPopup = () => {
     }
   };
 
-  const handleSubmitReply = () => {};
+  const handleSubmitReply = async () => {
+    if (isLoading) return;
+
+    try {
+      const res = await addNewReply({
+        text,
+        media: [imageToPost],
+        tweetId,
+      }).unwrap();
+
+      if (res?.isError) {
+        alert(res?.message);
+        return;
+      }
+      setText('');
+      setImageToPost('');
+      dispatch(toggleCreateReplyPopup(false));
+      dispatch(clearCreateReplyPopupData());
+    } catch (err: any) {
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
+    }
+  };
 
   return (
     <div className='absolute z-50 top-0 left-0 ph:top-12 ph:left-[50%] ph:-translate-x-[50%]'>

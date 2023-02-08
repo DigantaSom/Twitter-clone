@@ -6,6 +6,7 @@ import { ReplyState, CreateReplyPopupData } from './reply.types';
 const initialState: ReplyState = {
   createReplyPopupData: {
     currentUser: null,
+    tweetId: '',
     replyingTo: {
       profilePicture: '',
       fullName: '',

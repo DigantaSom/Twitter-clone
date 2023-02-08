@@ -6,6 +6,8 @@ import { GrEmoji } from 'react-icons/gr';
 import { CgPin } from 'react-icons/cg';
 import { IoCloseSharp } from 'react-icons/io5';
 
+import { useAddNewReplyMutation } from './reply.api-slice';
+
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetSubmitButton from '../tweet/TweetSubmitButton';
 
@@ -13,11 +15,13 @@ import constants from '../../constants';
 import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 
 interface CreateReplyProps {
+  tweetId: string;
   profilePicture: string;
   tweetAuthorUsername: string;
 }
 
 const CreateReply: FC<CreateReplyProps> = ({
+  tweetId,
   profilePicture,
   tweetAuthorUsername,
 }) => {
@@ -29,7 +33,7 @@ const CreateReply: FC<CreateReplyProps> = ({
   const [imageToPost, setImageToPost] = useState('');
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
 
-  const isLoading = false; // TODO: according to useCreateReplyMutation()
+  const [addNewReply, { isLoading }] = useAddNewReplyMutation();
 
   const textAreaAdjust = () => {
     if (textAreaRef.current) {
@@ -52,13 +56,11 @@ const CreateReply: FC<CreateReplyProps> = ({
   }, [isLoading, text, imageToPost]);
 
   const handleCancelReply = () => {
-    if (window.confirm('Cancel reply?')) {
-      setShowHelperOptions(false);
-      setText('');
-      setImageToPost('');
-      if (textAreaRef.current) {
-        textAreaRef.current.style.height = 'auto'; // revert textarea's height to normal
-      }
+    setShowHelperOptions(false);
+    setText('');
+    setImageToPost('');
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = 'auto'; // revert textarea's height to normal
     }
   };
 
@@ -99,7 +101,32 @@ const CreateReply: FC<CreateReplyProps> = ({
 
   const handleClickReplyingTo = () => {};
 
-  const handleSubmitReply = () => {};
+  const handleSubmitReply = async () => {
+    if (isLoading) return;
+
+    try {
+      const res = await addNewReply({
+        text,
+        media: [imageToPost],
+        tweetId,
+      }).unwrap();
+
+      if (res?.isError) {
+        alert(res?.message);
+        return;
+      }
+      handleCancelReply(); // not cancelling, but does the same job here
+    } catch (err: any) {
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
+    }
+  };
 
   return (
     <div className='py-3 ph:py-4 flex flex-col space-y-3'>
