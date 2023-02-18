@@ -129,7 +129,7 @@ const CreateReply: FC<CreateReplyProps> = ({
   };
 
   return (
-    <div className='py-3 ph:py-4 flex flex-col space-y-3'>
+    <div className='py-3 ph:py-4'>
       <div
         className={`flex items-start ${constants.profilePicture_info_gap_style}`}
       >

@@ -14,8 +14,10 @@ export const replyApiSlice = apiSlice.injectEndpoints({
           media: replyData.media,
         },
       }),
-      // forcing to invalidate the Reply list in the cache
-      invalidatesTags: [{ type: 'Reply', id: 'LIST' }],
+      // forcing to invalidate the whole Tweet item in the cache
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Tweet', id: arg.tweetId },
+      ],
     }),
   }),
   overrideExisting: true,

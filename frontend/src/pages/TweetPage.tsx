@@ -23,6 +23,7 @@ import TweetPageHeader from '../components/TweetPageHeader';
 import PostOptions from '../features/tweet/PostOptions';
 import PostInfo from '../components/PostInfo';
 import CreateReply from '../features/reply/CreateReply';
+import ReplyList from '../features/reply/ReplyList';
 
 const TweetPage = () => {
   const { tweetId } = useParams();
@@ -66,7 +67,7 @@ const TweetPage = () => {
   if (!tweet) return null;
 
   const {
-    id,
+    _id,
     profilePicture,
     fullName,
     twitterHandle,
@@ -74,11 +75,12 @@ const TweetPage = () => {
     media,
     retweets,
     likes,
+    replies,
   } = tweet;
 
   const navigateToPostFullScreen = () => {
     // TODO: change the photoIndex from '1' to dynamic
-    navigate(`/${twitterHandle}/status/${id}/photo/1`);
+    navigate(`/${twitterHandle}/status/${_id}/photo/1`);
   };
 
   const handleToggleOptions = () => {
@@ -90,7 +92,7 @@ const TweetPage = () => {
       dispatch(
         setCreateReplyPopupData({
           currentUser: auth.user,
-          tweetId: id,
+          tweetId: _id,
           replyingTo: {
             profilePicture,
             fullName,
@@ -109,7 +111,7 @@ const TweetPage = () => {
     if (isDeleteTweetLoading) return;
 
     try {
-      const res = await deleteTweet({ tweetId: id }).unwrap();
+      const res = await deleteTweet({ tweetId: _id }).unwrap();
 
       if (res?.isError) {
         alert(res?.message);
@@ -135,7 +137,7 @@ const TweetPage = () => {
     if (isLikeTweetLoading) return;
 
     try {
-      const res = await likeTweet({ tweetId: id }).unwrap();
+      const res = await likeTweet({ tweetId: _id }).unwrap();
 
       if ((res as any)?.isError) {
         alert((res as any)?.message);
@@ -156,6 +158,16 @@ const TweetPage = () => {
 
   return (
     <div className='relative pb-60'>
+      {/* Tweet-options popup */}
+      {showOptionsPopup && auth.user && (
+        <PostOptions
+          from='TweetPage'
+          currentUser={auth.user}
+          authorUsername={twitterHandle}
+          handleDeletePost={handleDeleteTweet}
+        />
+      )}
+
       <div ref={topMostDivRef}></div>
 
       <TweetPageHeader />
@@ -264,7 +276,7 @@ const TweetPage = () => {
         <hr />
 
         <CreateReply
-          tweetId={id}
+          tweetId={_id}
           profilePicture={profilePicture}
           tweetAuthorUsername={twitterHandle}
         />
@@ -272,15 +284,7 @@ const TweetPage = () => {
 
       <hr />
 
-      {/* Tweet-options popup */}
-      {showOptionsPopup && auth.user && (
-        <PostOptions
-          from='TweetPage'
-          currentUser={auth.user}
-          authorUsername={twitterHandle}
-          handleDeletePost={handleDeleteTweet}
-        />
-      )}
+      <ReplyList replies={replies} tweetAuthorUsername={twitterHandle} />
     </div>
   );
 };

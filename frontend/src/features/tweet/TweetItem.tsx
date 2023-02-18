@@ -8,9 +8,10 @@ import useAuth from '../../hooks/useAuth';
 import { useGetTweetsQuery, useDeleteTweetMutation } from './tweet.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
+import PostOptions from './PostOptions';
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetActions from './TweetActions';
-import PostOptions from './PostOptions';
+import TweetItemMedia from '../../components/TweetItemMedia';
 
 interface TweetItemProps {
   tweetId: string;
@@ -18,8 +19,9 @@ interface TweetItemProps {
 
 const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   const navigate = useNavigate();
-  const auth = useAuth();
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
+
+  const auth = useAuth();
 
   const { tweet } = useGetTweetsQuery(undefined, {
     selectFromResult: ({ data }) => ({
@@ -50,11 +52,6 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
 
   const navigateToPost = () => {
     navigate(`/${twitterHandle}/status/${tweetId}`);
-  };
-
-  const navigateToPostFullScreen = () => {
-    // TODO: change the photoIndex from '1' to dynamic
-    navigate(`/${twitterHandle}/status/${tweetId}/photo/1`);
   };
 
   const handleToggleOptions = () => {
@@ -108,17 +105,16 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
           </p>
 
           {isMediaPresent && (
-            <div onClick={navigateToPostFullScreen} className='pt-3 pb-2'>
-              <img
-                src={media[0]}
-                alt='Post'
-                className='w-full h-full rounded-xl'
-              />
-            </div>
+            <TweetItemMedia
+              tweetId={tweetId}
+              media={media}
+              twitterHandle={twitterHandle}
+            />
           )}
 
           {auth.user && (
             <TweetActions
+              postType='Tweet'
               currentUser={auth.user}
               tweet={tweet}
               isMediaPresent={isMediaPresent}

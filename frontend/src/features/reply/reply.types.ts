@@ -19,6 +19,8 @@ export interface CreateReplyPopupData {
 }
 
 export interface Reply extends Tweet {
+  id: string;
+  text: string;
   inner_replies: Reply[];
 }
 

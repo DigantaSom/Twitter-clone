@@ -5,8 +5,8 @@ import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
-import { TweetDisplay } from './tweet.types';
-import { TokenPayloadUser } from '../../types';
+import { PostType, TokenPayloadUser } from '../../types';
+import { Tweet } from './tweet.types';
 
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { useLikeTweetMutation } from './tweet.api-slice';
@@ -15,27 +15,29 @@ import { setCreateReplyPopupData } from '../reply/reply.slice';
 import { toggleCreateReplyPopup } from '../ui/ui.slice';
 
 interface TweetActionsProps {
+  postType: PostType;
   currentUser: TokenPayloadUser;
-  tweet: TweetDisplay;
+  tweet: Tweet;
   isMediaPresent: boolean;
   tweetCreationDate: string;
 }
 
 const TweetActions: FC<TweetActionsProps> = ({
+  postType,
   currentUser,
-  tweet: {
-    id: tweetId,
-    twitterHandle,
-    fullName,
-    profilePicture,
-    caption,
-    replies,
-    retweets,
-    likes,
-  },
+  tweet,
   isMediaPresent,
   tweetCreationDate,
 }) => {
+  const {
+    _id: tweetId,
+    twitterHandle,
+    fullName,
+    profilePicture,
+    likes,
+    retweets,
+  } = tweet;
+
   const dispatch = useAppDispatch();
   const [isLiked, setIsLiked] = useState(false);
 
@@ -60,7 +62,7 @@ const TweetActions: FC<TweetActionsProps> = ({
           fullName,
           username: twitterHandle,
         },
-        caption,
+        caption: postType === 'Tweet' ? tweet.caption : tweet.text,
         isMediaPresent,
         creationDate: tweetCreationDate,
       })
@@ -70,29 +72,33 @@ const TweetActions: FC<TweetActionsProps> = ({
 
   const handleLikeTweet = async () => {
     if (!isLoading) {
-      try {
-        const res = await likeTweet({ tweetId }).unwrap();
+      if (postType === 'Tweet') {
+        try {
+          const res = await likeTweet({ tweetId }).unwrap();
 
-        if ((res as any)?.isError) {
-          alert((res as any)?.message);
-          return;
-        }
-      } catch (err: any) {
-        console.log(err);
-        let errMsg = '';
+          if ((res as any)?.isError) {
+            alert((res as any)?.message);
+            return;
+          }
+        } catch (err: any) {
+          console.log(err);
+          let errMsg = '';
 
-        if (!err.status) {
-          errMsg = 'No Server Response';
-        } else {
-          errMsg = err.data?.message;
+          if (!err.status) {
+            errMsg = 'No Server Response';
+          } else {
+            errMsg = err.data?.message;
+          }
+          alert(errMsg);
         }
-        alert(errMsg);
+      } else if (postType === 'Reply') {
+        // TODO: handle like reply
       }
     }
   };
 
   return (
-    <div className='grid grid-cols-4 items-center'>
+    <div className='-ml-3 grid grid-cols-4 items-center'>
       <div
         onClick={handleClickReplyButton}
         className='flex items-center text-gray-500 hover:text-twitter group'
@@ -100,7 +106,11 @@ const TweetActions: FC<TweetActionsProps> = ({
         <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-twitter-light ph_sm:mr-2'>
           <TbMessageCircle2 className='ph_sm:text-xl' />
         </div>
-        <span className='text-xs ph_sm:text-sm'>{replies.length}</span>
+        <span className='text-xs ph_sm:text-sm'>
+          {postType === 'Tweet'
+            ? tweet.replies?.length
+            : tweet.inner_replies?.length}
+        </span>
       </div>
 
       <div className='flex items-center text-gray-500 hover:text-twitter group'>

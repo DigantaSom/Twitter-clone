@@ -5,30 +5,25 @@ export interface TweetState {
   newTweetData: AddNewTweetArg;
 }
 
-interface TweetSkeleton {
+export interface Tweet {
+  _id: string;
   userId: string;
   fullName: string;
   twitterHandle: string;
   profilePicture: string;
   caption: string;
+  text: string;
   media: string[];
   creationDate: string;
   likes: UserID[];
-  replies: Reply[];
   retweets: UserID[];
-}
-
-export interface Tweet extends TweetSkeleton {
-  _id: string;
-}
-
-export interface TweetDisplay extends TweetSkeleton {
-  id: string;
+  replies: Reply[];
+  inner_replies: Reply[];
 }
 
 export type TweetResponse = {
   ids: [string];
-  entities: Record<string, TweetDisplay>;
+  entities: Record<string, Tweet>;
 };
 
 export type AddNewTweetArg = {
