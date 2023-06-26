@@ -46,6 +46,16 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    getTweetById: builder.query<Tweet, { id: string }>({
+      query: arg => ({
+        url: `/api/tweets/${arg.id}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: (result, error, arg) => [{ type: 'Tweet', id: arg.id }],
+    }),
+
     addNewTweet: builder.mutation<Tweet | any, AddNewTweetArg>({
       query: tweetData => ({
         url: '/api/tweets',
@@ -60,6 +70,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       query: arg => ({
         url: `/api/tweets/${arg.tweetId}`,
         method: 'DELETE',
+        body: { parentTweetId: arg.parentTweetId },
       }),
       // invalidating only the deleted Tweet object in the cache
       invalidatesTags: (result, error, arg) => [
@@ -83,6 +94,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetTweetsQuery,
+  useGetTweetByIdQuery,
   useAddNewTweetMutation,
   useDeleteTweetMutation,
   useLikeTweetMutation,

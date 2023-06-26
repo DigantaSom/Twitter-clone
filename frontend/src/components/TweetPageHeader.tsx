@@ -5,7 +5,7 @@ const TweetPageHeader = () => {
   const navigate = useNavigate();
 
   const handleClickGoBack = () => {
-    navigate('/');
+    navigate(-1);
   };
 
   return (

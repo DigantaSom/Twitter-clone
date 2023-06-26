@@ -6,6 +6,8 @@ import { TweetState, AddNewTweetArg } from './tweet.types';
 
 const initialState: TweetState = {
   newTweetData: {
+    parentTweetId: null,
+    tweetDegree: 0,
     caption: '',
     media: [''],
   },
@@ -19,10 +21,7 @@ const tweetSlice = createSlice({
       state.newTweetData = action.payload;
     },
     clearNewTweetData: state => {
-      state.newTweetData = {
-        caption: '',
-        media: [''],
-      };
+      state.newTweetData = initialState.newTweetData;
     },
   },
 });

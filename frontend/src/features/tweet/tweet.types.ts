@@ -1,5 +1,4 @@
 import { UserID } from '../user/user.types';
-import { Reply } from '../reply/reply.types';
 
 export interface TweetState {
   newTweetData: AddNewTweetArg;
@@ -7,6 +6,8 @@ export interface TweetState {
 
 export interface Tweet {
   _id: string;
+  parentTweetId: string | null;
+  degree: number;
   userId: string;
   fullName: string;
   twitterHandle: string;
@@ -17,8 +18,8 @@ export interface Tweet {
   creationDate: string;
   likes: UserID[];
   retweets: UserID[];
-  replies: Reply[];
-  inner_replies: Reply[];
+  numberOfReplies: number;
+  isDeleted: boolean;
 }
 
 export type TweetResponse = {
@@ -27,12 +28,15 @@ export type TweetResponse = {
 };
 
 export type AddNewTweetArg = {
+  parentTweetId: string | null;
+  tweetDegree: number;
   caption: string;
   media: [string];
 };
 
 export type DeleteTweetArg = {
   tweetId: string;
+  parentTweetId: string | null;
 };
 
 export type LikeTweetArg = {

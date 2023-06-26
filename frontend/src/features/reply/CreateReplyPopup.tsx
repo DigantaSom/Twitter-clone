@@ -5,7 +5,7 @@ import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 import { BsDot } from 'react-icons/bs';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { useAddNewReplyMutation } from './reply.api-slice';
+import { useAddNewTweetMutation } from '../tweet/tweet.api-slice';
 
 import { toggleCreateReplyPopup } from '../ui/ui.slice';
 import {
@@ -24,7 +24,8 @@ const CreateReplyPopup = () => {
   const dispatch = useAppDispatch();
   const {
     currentUser,
-    tweetId,
+    parentTweetId,
+    parentTweetDegree,
     replyingTo,
     caption,
     isMediaPresent,
@@ -38,7 +39,7 @@ const CreateReplyPopup = () => {
   const [imageToPost, setImageToPost] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  const [addNewReply, { isLoading }] = useAddNewReplyMutation();
+  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
   useEffect(() => {
     if (isLoading) {
@@ -93,10 +94,11 @@ const CreateReplyPopup = () => {
     if (isLoading) return;
 
     try {
-      const res = await addNewReply({
-        text,
+      const res = await addNewTweet({
+        parentTweetId,
+        tweetDegree: parentTweetDegree + 1,
+        caption: text,
         media: [imageToPost],
-        tweetId,
       }).unwrap();
 
       if (res?.isError) {

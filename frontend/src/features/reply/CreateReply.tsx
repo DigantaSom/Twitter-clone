@@ -6,7 +6,7 @@ import { GrEmoji } from 'react-icons/gr';
 import { CgPin } from 'react-icons/cg';
 import { IoCloseSharp } from 'react-icons/io5';
 
-import { useAddNewReplyMutation } from './reply.api-slice';
+import { useAddNewTweetMutation } from '../tweet/tweet.api-slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetSubmitButton from '../tweet/TweetSubmitButton';
@@ -15,13 +15,15 @@ import constants from '../../constants';
 import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 
 interface CreateReplyProps {
-  tweetId: string;
+  parentTweetId: string;
+  parentTweetDegree: number;
   profilePicture: string;
   tweetAuthorUsername: string;
 }
 
 const CreateReply: FC<CreateReplyProps> = ({
-  tweetId,
+  parentTweetId,
+  parentTweetDegree,
   profilePicture,
   tweetAuthorUsername,
 }) => {
@@ -33,7 +35,7 @@ const CreateReply: FC<CreateReplyProps> = ({
   const [imageToPost, setImageToPost] = useState('');
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
 
-  const [addNewReply, { isLoading }] = useAddNewReplyMutation();
+  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
   const textAreaAdjust = () => {
     if (textAreaRef.current) {
@@ -105,10 +107,11 @@ const CreateReply: FC<CreateReplyProps> = ({
     if (isLoading) return;
 
     try {
-      const res = await addNewReply({
-        text,
+      const res = await addNewTweet({
+        parentTweetId,
+        tweetDegree: parentTweetDegree + 1,
+        caption: text,
         media: [imageToPost],
-        tweetId,
       }).unwrap();
 
       if (res?.isError) {

@@ -1,5 +1,3 @@
-export type PostType = 'Tweet' | 'Reply' | 'Inner-Reply';
-
 export type MonthType =
   | 'January'
   | 'February'

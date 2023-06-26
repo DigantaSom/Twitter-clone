@@ -23,7 +23,11 @@ const TweetList = () => {
     content = <PulseLoader color='#fff' />;
   } else if (isError) {
     console.log('Error loading tweets', error);
-    content = <p>{(error as any)?.data?.message}</p>;
+    content = (
+      <div className='p-2 ph_sm:p-4'>
+        {(error as any)?.data?.message || 'Error loading tweets.'}
+      </div>
+    );
   } else if (isSuccess && tweets?.ids.length) {
     content = tweets.ids.map(tweetId => (
       <TweetItem key={tweetId} tweetId={tweetId} />

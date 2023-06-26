@@ -1,26 +1,48 @@
-import { apiSlice } from '../../app/api/api.slice';
-import { AddNewReplyArg, Reply } from './reply.types';
+import { createEntityAdapter } from '@reduxjs/toolkit';
 
-const REPLIES_BASE_URL = `/api/replies`;
+import { apiSlice } from '../../app/api/api.slice';
+import { Tweet, TweetResponse } from '../tweet/tweet.types';
+import { GetRepliesArg } from './reply.types';
+
+const tweetsAdapter = createEntityAdapter<Tweet>({
+  // sorting: latest tweet comes first
+  sortComparer: (a, b) => (a.creationDate < b.creationDate ? 1 : -1),
+});
+
+const initialState = tweetsAdapter.getInitialState();
+
+const REPLIES_BASE_URL = `/api/tweets/replies`;
 
 export const replyApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
-    addNewReply: builder.mutation<Reply | any, AddNewReplyArg>({
-      query: replyData => ({
-        url: `${REPLIES_BASE_URL}/${replyData.tweetId}`,
-        method: 'PUT',
-        body: {
-          text: replyData.text,
-          media: replyData.media,
-        },
+    getReplies: builder.query<TweetResponse, GetRepliesArg>({
+      query: arg => ({
+        url: `${REPLIES_BASE_URL}/${arg.parentTweetId}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
       }),
-      // forcing to invalidate the whole Tweet item in the cache
-      invalidatesTags: (result, error, arg) => [
-        { type: 'Tweet', id: arg.tweetId },
-      ],
+      transformResponse: (responseData: Tweet[]): any => {
+        const loadedTweets = responseData.map(tweet => ({
+          ...tweet,
+          id: tweet._id,
+        }));
+        return tweetsAdapter.setAll(initialState, loadedTweets);
+      },
+      providesTags: (result, error, args) => {
+        if (result?.ids) {
+          return [
+            { type: 'Tweet', id: 'LIST' },
+            ...result.ids.map(id => ({ type: 'Tweet' as const, id })),
+          ];
+        } else {
+          // error
+          return [{ type: 'Tweet', id: 'LIST' }];
+        }
+      },
     }),
   }),
   overrideExisting: true,
 });
 
-export const { useAddNewReplyMutation } = replyApiSlice;
+export const { useGetRepliesQuery } = replyApiSlice;

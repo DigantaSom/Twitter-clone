@@ -44,6 +44,8 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
     if (isComposeTweetShown && text) {
       dispatch(
         setNewTweetData({
+          parentTweetId: null,
+          tweetDegree: 0,
           caption: text,
           media: [imageToPost],
         })
@@ -98,6 +100,8 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
     }
     try {
       const res = await addNewTweet({
+        parentTweetId: null,
+        tweetDegree: 0,
         caption: text,
         media: [imageToPost],
       }).unwrap();

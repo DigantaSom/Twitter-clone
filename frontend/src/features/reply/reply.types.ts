@@ -7,7 +7,8 @@ export interface ReplyState {
 
 export interface CreateReplyPopupData {
   currentUser: TokenPayloadUser | null;
-  tweetId: string;
+  parentTweetId: string;
+  parentTweetDegree: number;
   replyingTo: {
     profilePicture: string;
     fullName: string;
@@ -18,14 +19,18 @@ export interface CreateReplyPopupData {
   creationDate: string;
 }
 
-export interface Reply extends Tweet {
-  id: string;
-  text: string;
-  inner_replies: Reply[];
+export interface GetRepliesArg {
+  parentTweetId: string;
 }
 
-export type AddNewReplyArg = {
-  tweetId: string;
-  text: string;
-  media: string[];
-};
+// export interface Reply extends Tweet {
+//   id: string;
+//   text: string;
+//   inner_replies: Reply[];
+// }
+
+// export type AddNewReplyArg = {
+//   tweetId: string;
+//   text: string;
+//   media: string[];
+// };
