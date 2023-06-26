@@ -26,8 +26,6 @@ app.use('/', require('./routes/root.routes'));
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/tweets', require('./routes/tweet.routes'));
-app.use('/api/replies', require('./routes/reply.routes'));
-app.use('/api/inner-replies', require('./routes/inner-reply.routes'));
 
 // Fallback
 app.all('*', (req, res) => {

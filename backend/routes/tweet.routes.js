@@ -18,4 +18,6 @@ router
 router.route('/user/:userId').get(tweetController.getTweetsByUserId);
 router.route('/like/:tweetId').put(verifyJWT, tweetController.likeTweet);
 
+router.route('/replies/:parentTweetId').get(tweetController.getReplies);
+
 module.exports = router;

@@ -2,12 +2,12 @@ const Tweet = require('../models/Tweet.model');
 const User = require('../models/User.model');
 
 // @route GET api/tweets
-// desc Get all tweets (testing only)
+// desc Get all tweets, neither replies nor inner-replies (testing only)
 // @access Public
 const getAllTweets = async (_, res) => {
-  const tweets = await Tweet.find().lean().lean().exec();
+  const tweets = await Tweet.find({ degree: 0 }).lean().exec();
   if (!tweets?.length) {
-    return res.status(404).json({ message: 'No tweet found' });
+    return res.status(404).json({ message: 'No tweet found.' });
   }
   res.status(200).json(tweets);
 };
@@ -48,7 +48,27 @@ const getTweetsByUserId = async (req, res) => {
   }
 };
 
-// @route POST api/tweets
+// @route GET api/tweets/replies/:parentTweetId
+// @desc Get all replies of a tweet
+// @access Public
+const getReplies = async (req, res) => {
+  try {
+    const replies = await Tweet.find({ parent: req.params.parentTweetId })
+      .lean()
+      .exec();
+
+    if (!replies?.length) {
+      return res.status(404).json({ message: 'No replies for this tweet.' });
+    }
+    res.status(200).json(replies);
+  } catch (error) {
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'Tweet not found.' });
+    }
+  }
+};
+
+// @route POST api/tweets (body: parentTweetId?, tweetDegree, caption, media)
 // @desc Post a tweet
 // @access Private
 const createTweet = async (req, res) => {
@@ -56,26 +76,41 @@ const createTweet = async (req, res) => {
     return res.status(400).json({ message: 'Text is required' });
   }
 
-  const user = await User.findById(req.user.id).select('-password');
+  const user = await User.findById(req.user.id)
+    .select('-password')
+    .lean()
+    .exec();
 
   const newTweet = new Tweet({
+    parent: req.body.parentTweetId || null,
+    degree: req.body.tweetDegree || 0,
     userId: req.user.id,
     fullName: user.name,
     twitterHandle: user.handle,
     profilePicture: user.profilePicture || '',
     caption: req.body.caption,
     media: req.body.media || [''],
+    numberOfReplies: 0,
+    isDeleted: false,
   });
+
   const tweet = await newTweet.save();
+
+  // numberOfReplies++ in the parent tweet, if any
+  await Tweet.findOneAndUpdate(
+    { _id: req.body.parentTweetId },
+    { $inc: { numberOfReplies: 1 } }
+  );
+
   res.status(200).json(tweet);
 };
 
-// @route DELETE api/tweets/:id
+// @route DELETE api/tweets/:id (body: parentTweetId?)
 // @desc Delete a tweet
 // @access Private (only the tweet author)
 const deleteTweet = async (req, res) => {
   try {
-    const tweet = await Tweet.findById(req.params.id);
+    const tweet = await Tweet.findById(req.params.id).exec();
 
     if (!tweet) {
       return res.status(404).json({ message: 'Cannot retrieve tweet.' });
@@ -87,7 +122,17 @@ const deleteTweet = async (req, res) => {
         message: 'You are not authorized to perform this action.',
       });
     }
-    await tweet.delete();
+
+    // (virtually) delete the target tweet
+    tweet.isDeleted = true;
+    await tweet.save();
+
+    // numberOfReplies-- in the parent tweet, if any
+    await Tweet.findOneAndUpdate(
+      { _id: req.body.parentTweetId },
+      { $inc: { numberOfReplies: -1 } }
+    );
+
     res.status(200).json({ message: 'Tweet deleted' });
   } catch (error) {
     if (error.kind === 'ObjectId') {
@@ -127,6 +172,7 @@ module.exports = {
   getAllTweets,
   getTweetById,
   getTweetsByUserId,
+  getReplies,
   createTweet,
   deleteTweet,
   likeTweet,
