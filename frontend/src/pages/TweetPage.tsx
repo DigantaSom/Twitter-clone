@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { PulseLoader, ClipLoader } from 'react-spinners';
@@ -8,13 +8,13 @@ import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { MdIosShare } from 'react-icons/md';
 import { TbMessageCircle2 } from 'react-icons/tb';
 
-import useAuth from '../hooks/useAuth';
 import { useAppDispatch } from '../hooks/redux-hooks';
 import {
   useGetTweetByIdQuery,
   useDeleteTweetMutation,
   useLikeTweetMutation,
 } from '../features/tweet/tweet.api-slice';
+import useAuth from '../hooks/useAuth';
 import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
 
 import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
@@ -27,7 +27,12 @@ import CreateReply from '../features/reply/CreateReply';
 import ReplyList from '../features/reply/ReplyList';
 import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
 
-const TweetPage = () => {
+interface TweetPageProps {
+  from: 'App' | 'TweetPhotoPage';
+  isHeaderNeeded: boolean;
+}
+
+const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   const { tweetId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -127,8 +132,12 @@ const TweetPage = () => {
         alert(res?.message);
         return;
       }
+
       setShowOptionsPopup(false);
-      // navigate('/');
+
+      if (from === 'TweetPhotoPage') {
+        navigate(-1);
+      }
     } catch (err: any) {
       console.log(err);
       let errMsg = '';
@@ -192,7 +201,7 @@ const TweetPage = () => {
 
         <div ref={topMostDivRef}></div>
 
-        <TweetPageHeader />
+        {isHeaderNeeded && <TweetPageHeader />}
 
         <main className='px-2 ph_sm:px-4 pt-3'>
           {isDeleted ? (

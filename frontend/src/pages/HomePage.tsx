@@ -12,7 +12,7 @@ const HomePage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   return (
-    <div className='max-w-[664px] md2:max-w-[90vw] xl:max-w-7xl m-auto flex h-screen'>
+    <div className='max-w-[664px] lg2:max-w-[90vw] xl:max-w-7xl m-auto flex h-screen'>
       <div className='hidden ph:block w-16 xl:w-[20%] border-r-[1px] border-gray-200'>
         <Navigation />
       </div>
@@ -22,7 +22,7 @@ const HomePage = () => {
             {isAuthenticated ? <Outlet /> : <Explore />}
           </div>
         </div>
-        <div className='hidden md2:block w-full pl-6 lg:pl-3 pb-14 overflow-y-scroll'>
+        <div className='hidden lg2:block w-full pl-6 lg:pl-3 pb-14 overflow-y-scroll'>
           {isAuthenticated ? <Trending /> : <SignUp />}
         </div>
       </div>

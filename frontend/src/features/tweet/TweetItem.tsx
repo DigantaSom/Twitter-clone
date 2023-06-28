@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';

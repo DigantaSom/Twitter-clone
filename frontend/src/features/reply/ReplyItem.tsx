@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
@@ -88,16 +88,18 @@ const ReplyItem: FC<ReplyItemProps> = ({ parentTweetId, tweetId }) => {
                 onClick={navigateToPost}
               >
                 <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2'>
-                  <h3 className='font-bold'>{fullName}</h3>
+                  <h3 className='font-bold truncate'>{fullName}</h3>
                   <div className='flex items-center space-x-1'>
-                    <span className='text-gray-500'>@{twitterHandle}</span>
+                    <span className='text-gray-500 truncate'>
+                      @{twitterHandle}
+                    </span>
                     <BsDot />
-                    <span className='text-gray-500'>{createdAt}</span>
+                    <span className='text-gray-500 truncate'>{createdAt}</span>
                   </div>
                 </div>
               </div>
               <div
-                className={`w-8 h-8 rounded-full  hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
+                className={`w-8 h-8 rounded-full hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
                 ${
                   showOptionsPopup
                     ? 'text-twitter bg-twitter-light'

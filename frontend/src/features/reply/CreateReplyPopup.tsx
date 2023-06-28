@@ -122,7 +122,7 @@ const CreateReplyPopup = () => {
   };
 
   return (
-    <div className='absolute z-50 top-0 left-0 ph:top-12 ph:left-[50%] ph:-translate-x-[50%]'>
+    <div className='fixed z-50 top-0 left-0 ph:top-12 ph:left-[50%] ph:-translate-x-[50%]'>
       <div className='w-screen ph:w-[90vw] sm:w-[600px] h-screen ph:h-auto bg-white p-2 ph_xs:p-4 ph:rounded-2xl'>
         {/* header */}
         <div className='flex items-center justify-between mb-4'>

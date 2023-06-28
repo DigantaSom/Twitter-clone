@@ -35,7 +35,10 @@ const App = () => {
         <Route element={<PersistLogin />}>
           <Route path='/' element={<HomePage />}>
             <Route index element={<Feed />} />
-            <Route path=':username/status/:tweetId' element={<TweetPage />} />
+            <Route
+              path=':username/status/:tweetId'
+              element={<TweetPage from='App' isHeaderNeeded={true} />}
+            />
           </Route>
           <Route
             path=':username/status/:tweetId/photo/:photoIndex'

@@ -62,8 +62,8 @@ const Navigation = () => {
               !isAuthenticated && 'font-bold'
             }`}
           >
-            <HiOutlineHashtag className='hidden md2:block text-3xl' />
-            <GrSearch className='md2:hidden text-3xl pl-[2px]' />
+            <HiOutlineHashtag className='hidden lg2:block text-3xl' />
+            <GrSearch className='lg2:hidden text-3xl pl-[2px]' />
             <span className='hidden xl:block text-xl'>Explore</span>
           </Link>
           {!isAuthenticated && (
@@ -71,7 +71,7 @@ const Navigation = () => {
               to='/'
               className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
             >
-              <FiSettings className='text-3xl md2:text-2xl' />
+              <FiSettings className='text-3xl lg2:text-2xl' />
               <span className='hidden xl:block text-xl'>Settings</span>
             </Link>
           )}
