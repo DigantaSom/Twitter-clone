@@ -4,9 +4,14 @@ import {
   MdOutlineBookmarkAdd,
   MdOutlineBookmarkRemove,
 } from 'react-icons/md';
+
+import { useAppDispatch } from '../../hooks/redux-hooks';
+import { setToast, removeToast } from '../toast/toast.slice';
+
 import SmallPopup from '../../components/SmallPopup';
 
 import copyTextToClipboard from '../../utils/copyTextToClipboard.util';
+import K from '../../constants';
 
 interface ShareTweetPopupContentsProps {
   tweet: {
@@ -24,9 +29,20 @@ const ShareTweetPopupContents: FC<ShareTweetPopupContentsProps> = ({
   handleBookmarkTweet,
   handleClosePopup,
 }) => {
+  const dispatch = useAppDispatch();
+
   const handleCopyLinkToTweet = () => {
-    copyTextToClipboard(`/${tweet.twitterHandle}/status/${tweet._id}`);
+    copyTextToClipboard(
+      `http://localhost:3000/${tweet.twitterHandle}/status/${tweet._id}`
+    );
     handleClosePopup();
+
+    dispatch(
+      setToast({ type: 'copy-to-clipboard', message: 'Copied to clipboard' })
+    );
+    setTimeout(() => {
+      dispatch(removeToast());
+    }, K.toastDuration);
   };
 
   return (

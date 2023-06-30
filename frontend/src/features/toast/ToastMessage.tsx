@@ -12,7 +12,7 @@ const ToastMessage = () => {
       <div
         className={`fixed z-100 bottom-12 w-full ph:w-fit bg-twitter text-white text-[15px] ph:rounded-lg flex items-center ${
           toastType === 'bookmark-add' ? 'justify-between' : 'justify-center'
-        } px-4 h-11`}
+        } px-4 h-11 shadow-lg`}
       >
         <span>{toastMessage}</span>
 
