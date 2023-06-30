@@ -89,4 +89,12 @@ const createUser = async (req, res) => {
   res.status(200).send({ accessToken });
 };
 
-module.exports = { getAllUsers, createUser };
+// @route GET api/users/bookmarks
+// @desc Get all bookmarks of the logged in user
+// @access Private
+const getBookmarks = async (req, _) => {
+  const user = await User.findById(req.user.id);
+  return user.bookmarks;
+};
+
+module.exports = { getAllUsers, createUser, getBookmarks };

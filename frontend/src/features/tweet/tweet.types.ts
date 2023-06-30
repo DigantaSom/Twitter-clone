@@ -18,6 +18,7 @@ export interface Tweet {
   creationDate: string;
   likes: UserID[];
   retweets: UserID[];
+  bookmarks: UserID[];
   numberOfReplies: number;
   isDeleted: boolean;
 }
@@ -44,3 +45,7 @@ export type LikeTweetArg = {
 };
 
 export type LikeResponse = { userId: UserID }[];
+
+export type BookmarkTweetArg = LikeTweetArg;
+
+export type BookmarkResponse = { message: string };

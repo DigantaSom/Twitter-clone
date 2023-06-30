@@ -6,6 +6,7 @@ import uiReducer from '../features/ui/ui.slice';
 import authReducer from '../features/auth/auth.slice';
 import tweetReducer from '../features/tweet/tweet.slice';
 import replyReducer from '../features/reply/reply.slice';
+import toastReducer from '../features/toast/toast.slice';
 import trendingReducer from '../features/trending/trending.slice';
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
     auth: authReducer,
     tweet: tweetReducer,
     reply: replyReducer,
+    toast: toastReducer,
     trending: trendingReducer,
   },
   middleware: getDefaultMiddleware =>

@@ -4,10 +4,12 @@ import { apiSlice } from '../../app/api/api.slice';
 import {
   Tweet,
   TweetResponse,
-  LikeResponse,
   AddNewTweetArg,
   DeleteTweetArg,
   LikeTweetArg,
+  LikeResponse,
+  BookmarkTweetArg,
+  BookmarkResponse,
 } from './tweet.types';
 
 const tweetsAdapter = createEntityAdapter<Tweet>({
@@ -88,6 +90,17 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
         { type: 'Tweet', id: arg.tweetId },
       ],
     }),
+
+    bookmarkTweet: builder.mutation<BookmarkResponse, BookmarkTweetArg>({
+      query: arg => ({
+        url: `api/tweets/bookmark/${arg.tweetId}`,
+        method: 'PUT',
+      }),
+      // invalidating only the updated Tweet object in the cache
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Tweet', id: arg.tweetId },
+      ],
+    }),
   }),
   overrideExisting: true,
 });
@@ -98,4 +111,5 @@ export const {
   useAddNewTweetMutation,
   useDeleteTweetMutation,
   useLikeTweetMutation,
+  useBookmarkTweetMutation,
 } = tweetApiSlice;

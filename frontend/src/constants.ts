@@ -9,6 +9,8 @@ const constants = {
     maxWidthOrHeight: 1920,
     useWebWorker: true,
   },
+
+  toastDuration: 5000, // ms
 };
 
 export default constants;

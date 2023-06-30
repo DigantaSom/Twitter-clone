@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema(
     handle_lowercase: { type: String, required: true, unique: true },
     profilePicture: { type: String },
     birthday: { type: Date },
+
+    bookmarks: [
+      {
+        tweetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tweet' },
+      },
+    ],
   },
   { timestamps: true }
 );

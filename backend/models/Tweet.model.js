@@ -23,6 +23,12 @@ const tweetSchema = new mongoose.Schema({
       userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     },
   ],
+  bookmarks: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    },
+  ],
+
   numberOfReplies: { type: Number, default: 0 },
   isDeleted: { type: Boolean, default: false },
 });

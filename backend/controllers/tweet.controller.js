@@ -168,6 +168,49 @@ const likeTweet = async (req, res) => {
   }
 };
 
+// @route PUT api/tweets/bookmark/:tweetId
+// @desc Add or remove Bookmark of a tweet
+// @access Private
+const bookmarkTweet = async (req, res) => {
+  const tweetId = req.params.tweetId;
+  const userId = req.user.id;
+
+  let successMessage = '';
+
+  try {
+    const user = await User.findById(userId).select('-password').exec();
+    const tweet = await Tweet.findById(tweetId).exec();
+
+    // if the tweet has already been bookmarked by the same user, then remove the bookmark
+    if (
+      user.bookmarks.some(bookmark => bookmark.tweetId.toString() === tweetId)
+    ) {
+      tweet.bookmarks = tweet.bookmarks.filter(
+        bookmark => bookmark.userId.toString() !== userId
+      );
+      user.bookmarks = user.bookmarks.filter(
+        bookmark => bookmark.tweetId.toString() !== tweetId
+      );
+      successMessage = 'Tweet removed from your Bookmarks';
+    } else {
+      // else, bookmark the tweet
+      tweet.bookmarks.unshift({ userId });
+      user.bookmarks.unshift({ tweetId });
+      successMessage = 'Tweet added to your Bookmarks';
+    }
+
+    await user.save();
+    await tweet.save();
+
+    return res.status(200).json({ message: successMessage });
+  } catch (error) {
+    console.log(error.message);
+    if (error.kind === 'ObjectId') {
+      res.status(404).json({ message: 'Tweet not found.' });
+    }
+  }
+};
+
 module.exports = {
   getAllTweets,
   getTweetById,
@@ -176,4 +219,5 @@ module.exports = {
   createTweet,
   deleteTweet,
   likeTweet,
+  bookmarkTweet,
 };

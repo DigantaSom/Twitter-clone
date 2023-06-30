@@ -7,6 +7,7 @@ import {
   selectIsCreateReplyPopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
+import { selectToastMessage } from './features/toast/toast.slice';
 
 import PersistLogin from './features/auth/PersistLogin';
 
@@ -22,12 +23,14 @@ import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
+import ToastMessage from './features/toast/ToastMessage';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
   const authModal = useAppSelector(selectAuthModal);
   const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
+  const toastMessage = useAppSelector(selectToastMessage);
 
   return (
     <div className='relative'>
@@ -64,7 +67,11 @@ const App = () => {
       )}
 
       {isAuthenticated && (
-        <div className='ph:hidden absolute bottom-20 right-2 ph_sm:right-4 z-30'>
+        <div
+          className={`ph:hidden absolute ${
+            toastMessage ? 'bottom-24' : 'bottom-20'
+          } right-2 ph_sm:right-4 z-30`}
+        >
           <TweetComposeButton from='App' />
         </div>
       )}
@@ -80,6 +87,8 @@ const App = () => {
       {isAuthenticated && <BottomNavigation />}
 
       {!isAuthenticated && <BottomAuth />}
+
+      {toastMessage && <ToastMessage />}
     </div>
   );
 };
