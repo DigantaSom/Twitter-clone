@@ -12,8 +12,10 @@ import { selectToastMessage } from './features/toast/toast.slice';
 import PersistLogin from './features/auth/PersistLogin';
 
 import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
 import TweetPage from './pages/TweetPage';
 import TweetPhotoPage from './pages/TweetPhotoPage';
+import BookmarksPage from './pages/BookmarksPage';
 
 import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
@@ -38,11 +40,15 @@ const App = () => {
         <Route element={<PersistLogin />}>
           <Route path='/' element={<HomePage />}>
             <Route index element={<Feed />} />
+
             <Route
               path=':username/status/:tweetId'
               element={<TweetPage from='App' isHeaderNeeded={true} />}
             />
+
+            <Route path='bookmarks' element={<BookmarksPage />} />
           </Route>
+
           <Route
             path=':username/status/:tweetId/photo/:photoIndex'
             element={<TweetPhotoPage />}

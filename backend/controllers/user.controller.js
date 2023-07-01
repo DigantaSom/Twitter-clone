@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/User.model');
+const Tweet = require('../models/Tweet.model');
 
 // @route GET api/users
 // @desc Fetch all users
@@ -92,9 +93,32 @@ const createUser = async (req, res) => {
 // @route GET api/users/bookmarks
 // @desc Get all bookmarks of the logged in user
 // @access Private
-const getBookmarks = async (req, _) => {
-  const user = await User.findById(req.user.id);
-  return user.bookmarks;
+const getBookmarks = async (req, res) => {
+  const user = await User.findById(req.user.id)
+    .select('-password')
+    .lean()
+    .exec();
+
+  const bookmarkedTweetsIncludingNull = await getAsyncBookmarkResults(
+    user.bookmarks.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1))
+  );
+
+  const bookmarkedTweets = bookmarkedTweetsIncludingNull.filter(t => t != null);
+
+  res.status(200).json(bookmarkedTweets);
+};
+
+// this is a helper function for 'getBookmarks'
+const getAsyncBookmarkResults = async array => {
+  // includes null elements
+  const promises = array.map(
+    async bookmark =>
+      await Tweet.findOne({
+        $and: [{ _id: bookmark.tweetId }, { isDeleted: false }],
+      })
+  );
+
+  return Promise.all(promises);
 };
 
 module.exports = { getAllUsers, createUser, getBookmarks };

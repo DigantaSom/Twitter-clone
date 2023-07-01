@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     bookmarks: [
       {
         tweetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tweet' },
+        addedDate: { type: Date, default: Date.now() },
       },
     ],
   },

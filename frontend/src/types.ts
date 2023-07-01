@@ -22,3 +22,14 @@ export interface TokenPayloadUser {
 export interface TokenPayload {
   user: TokenPayloadUser | null;
 }
+
+export type NavigationOption =
+  | 'home'
+  | 'explore'
+  | 'settings'
+  | 'notifications'
+  | 'messages'
+  | 'bookmarks'
+  | 'lists'
+  | 'profile'
+  | 'more';

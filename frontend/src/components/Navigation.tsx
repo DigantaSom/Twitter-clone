@@ -1,32 +1,79 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PulseLoader from 'react-spinners/PulseLoader';
 
 import { BsTwitter } from 'react-icons/bs';
-import { BiHomeCircle, BiBookmark } from 'react-icons/bi';
-import { HiOutlineHashtag, HiOutlineBell } from 'react-icons/hi';
+import {
+  AiOutlineHome,
+  AiFillHome,
+  AiOutlineBell,
+  AiFillBell,
+} from 'react-icons/ai';
 import { GrSearch } from 'react-icons/gr';
-import { TbMessages } from 'react-icons/tb';
-import { RiFileListLine } from 'react-icons/ri';
-import { FaRegUser } from 'react-icons/fa';
+import { ImSearch } from 'react-icons/im';
+import {
+  RiSettings2Line,
+  RiSettings2Fill,
+  RiMessageLine,
+  RiMessageFill,
+  RiFileListLine,
+  RiFileListFill,
+} from 'react-icons/ri';
+import { FaRegBookmark, FaBookmark, FaRegUser, FaUser } from 'react-icons/fa';
 import { CgMoreO } from 'react-icons/cg';
-import { FiMoreHorizontal, FiSettings } from 'react-icons/fi';
+import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { useAppSelector } from '../hooks/redux-hooks';
 import useAuth from '../hooks/useAuth';
+import { useAppSelector } from '../hooks/redux-hooks';
 import { useSendLogoutMutation } from '../features/auth/auth.api-slice';
 import { selectIsAuthenticated } from '../features/auth/auth.slice';
+
+import { NavigationOption } from '../types';
 
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
 
 const Navigation = () => {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const auth = useAuth();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  const [selectedOption, setSelectedOption] =
+    useState<NavigationOption>('home');
+
   const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setSelectedOption('home');
+    } else {
+      setSelectedOption(location.pathname.substring(1) as NavigationOption);
+    }
+  }, [location.pathname]);
+
+  const handleSelectOption = (option: NavigationOption) => {
+    setSelectedOption(option);
+
+    if (option === 'home') {
+      navigate('/');
+    } else if (option === 'more') {
+      // TODO: toggle this popup
+    } else {
+      navigate(option);
+    }
+  };
+
+  const handleSetOptionTextStyle = (option: NavigationOption) =>
+    `hidden xl:block text-xl ${selectedOption === option && 'font-bold'}`;
 
   const handleLogout = async () => {
     if (window.confirm('Are you sure that you want to logout?')) {
       await sendLogout(undefined);
+
+      navigate('/', { replace: true });
+      setSelectedOption('explore');
 
       if (isError) {
         console.log('Error logging out:', error);
@@ -48,77 +95,125 @@ const Navigation = () => {
 
         <div className='flex flex-col items-center xl:items-start'>
           {isAuthenticated && (
-            <Link
-              to='/'
-              className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+            <div
+              onClick={() => handleSelectOption('home')}
+              className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
             >
-              <BiHomeCircle className='text-3xl' />
-              <span className='hidden xl:block text-xl font-bold'>Home</span>
-            </Link>
+              {selectedOption === 'home' ? (
+                <AiFillHome className='text-3xl' />
+              ) : (
+                <AiOutlineHome className='text-3xl' />
+              )}
+              <span className={handleSetOptionTextStyle('home')}>Home</span>
+            </div>
           )}
-          <Link
-            to='/'
-            className={`flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 ${
-              !isAuthenticated && 'font-bold'
-            }`}
+
+          <div
+            onClick={() => handleSelectOption('explore')}
+            className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
           >
-            <HiOutlineHashtag className='hidden lg2:block text-3xl' />
-            <GrSearch className='lg2:hidden text-3xl pl-[2px]' />
-            <span className='hidden xl:block text-xl'>Explore</span>
-          </Link>
+            {selectedOption === 'explore' ? (
+              <ImSearch className='text-3xl pl-[2px]' />
+            ) : (
+              <GrSearch className='text-3xl pl-[2px]' />
+            )}
+            <span className={handleSetOptionTextStyle('explore')}>Explore</span>
+          </div>
+
           {!isAuthenticated && (
-            <Link
-              to='/'
-              className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+            <div
+              onClick={() => handleSelectOption('settings')}
+              className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
             >
-              <FiSettings className='text-3xl lg2:text-2xl' />
-              <span className='hidden xl:block text-xl'>Settings</span>
-            </Link>
+              {selectedOption === 'settings' ? (
+                <RiSettings2Fill className='text-3xl' />
+              ) : (
+                <RiSettings2Line className='text-3xl' />
+              )}
+              <span className={handleSetOptionTextStyle('settings')}>
+                Settings
+              </span>
+            </div>
           )}
+
           {isAuthenticated && (
             <>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+              <div
+                onClick={() => handleSelectOption('notifications')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
-                <HiOutlineBell className='text-3xl' />
-                <span className='hidden xl:block text-xl'>Notifications</span>
-              </Link>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+                {selectedOption === 'notifications' ? (
+                  <AiFillBell className='text-3xl' />
+                ) : (
+                  <AiOutlineBell className='text-3xl' />
+                )}
+                <span className={handleSetOptionTextStyle('notifications')}>
+                  Notifications
+                </span>
+              </div>
+
+              <div
+                onClick={() => handleSelectOption('messages')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
-                <TbMessages className='text-3xl' />
-                <span className='hidden xl:block text-xl'>Messages</span>
-              </Link>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+                {selectedOption === 'messages' ? (
+                  <RiMessageFill className='text-3xl' />
+                ) : (
+                  <RiMessageLine className='text-3xl' />
+                )}
+                <span className={handleSetOptionTextStyle('messages')}>
+                  Messages
+                </span>
+              </div>
+
+              <div
+                onClick={() => handleSelectOption('bookmarks')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
-                <BiBookmark className='text-3xl' />
-                <span className='hidden xl:block text-xl'>Bookmarks</span>
-              </Link>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+                {selectedOption === 'bookmarks' ? (
+                  <FaBookmark className='text-2xl' />
+                ) : (
+                  <FaRegBookmark className='text-2xl' />
+                )}
+                <span className={handleSetOptionTextStyle('bookmarks')}>
+                  Bookmarks
+                </span>
+              </div>
+
+              <div
+                onClick={() => handleSelectOption('lists')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
-                <RiFileListLine className='text-3xl' />
-                <span className='hidden xl:block text-xl'>Lists</span>
-              </Link>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+                {selectedOption === 'lists' ? (
+                  <RiFileListFill className='text-3xl' />
+                ) : (
+                  <RiFileListLine className='text-3xl' />
+                )}
+                <span className={handleSetOptionTextStyle('lists')}>Lists</span>
+              </div>
+
+              <div
+                onClick={() => handleSelectOption('profile')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
-                <FaRegUser className='text-2xl' />
-                <span className='hidden xl:block text-xl'>Profile</span>
-              </Link>
-              <Link
-                to='/'
-                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200'
+                {selectedOption === 'profile' ? (
+                  <FaUser className='text-2xl' />
+                ) : (
+                  <FaRegUser className='text-2xl' />
+                )}
+                <span className={handleSetOptionTextStyle('profile')}>
+                  Profile
+                </span>
+              </div>
+
+              <div
+                onClick={() => handleSelectOption('more')}
+                className='flex items-center xl:space-x-3 p-2 xl:pl-3 xl:pr-8 mb-3 rounded-full hover:bg-gray-200 hover:cursor-pointer'
               >
                 <CgMoreO className='text-2xl' />
-                <span className='hidden xl:block text-xl'>More</span>
-              </Link>
+                <span className={handleSetOptionTextStyle('more')}>More</span>
+              </div>
+
               <TweetComposeButton from='Navigation' />
             </>
           )}
@@ -127,7 +222,7 @@ const Navigation = () => {
         {isAuthenticated && auth.user && (
           <div
             onClick={handleLogout}
-            className='absolute bottom-0 w-full hover:xl:bg-gray-200 hover:cursor-pointer rounded-full  flex items-center xl:px-2 xl:py-3 ml-1 mb-6'
+            className='absolute bottom-0 w-full hover:xl:bg-gray-200 hover:cursor-pointer rounded-full flex items-center xl:px-2 xl:py-3 ml-1 mb-6'
           >
             {isLoading ? (
               <PulseLoader color='#111' />

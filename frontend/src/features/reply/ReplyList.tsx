@@ -27,7 +27,7 @@ const ReplyList: FC<ReplyListProps> = ({ parentTweetId }) => {
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#fff' />;
+    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
   } else if (isError) {
     console.log('Error loading replies', error);
     content = (

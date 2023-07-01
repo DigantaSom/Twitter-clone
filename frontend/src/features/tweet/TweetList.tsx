@@ -1,26 +1,32 @@
+import { FC } from 'react';
+import { SerializedError } from '@reduxjs/toolkit';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
+
 import PulseLoader from 'react-spinners/PulseLoader';
 
-import { useGetTweetsQuery } from './tweet.api-slice';
+import { TweetResponse } from './tweet.types';
 
 import TweetItem from './TweetItem';
 
-const TweetList = () => {
-  const {
-    data: tweets,
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useGetTweetsQuery(undefined, {
-    pollingInterval: 15000, // every 15s on this page, it will requery the data
-    refetchOnFocus: true, // refetch on putting focus back to browser window
-    refetchOnMountOrArgChange: true, // refetch on component mount
-  });
+interface TweetListProps {
+  tweets: TweetResponse | undefined;
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  error: FetchBaseQueryError | SerializedError | undefined;
+}
 
+const TweetList: FC<TweetListProps> = ({
+  tweets,
+  isLoading,
+  isSuccess,
+  isError,
+  error,
+}) => {
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#fff' />;
+    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
   } else if (isError) {
     console.log('Error loading tweets', error);
     content = (
