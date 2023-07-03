@@ -1,12 +1,9 @@
 import { useRef, useState, useEffect, FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { PulseLoader, ClipLoader } from 'react-spinners';
+import { PulseLoader } from 'react-spinners';
 
-import { BsDot, BsBookmark, BsBookmarkFill } from 'react-icons/bs';
-import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
-import { MdIosShare } from 'react-icons/md';
-import { TbMessageCircle2 } from 'react-icons/tb';
+import { BsDot } from 'react-icons/bs';
 
 import { useAppDispatch } from '../hooks/redux-hooks';
 import {
@@ -28,11 +25,12 @@ import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
 import TweetPageHeader from '../components/TweetPageHeader';
 import PostOptions from '../features/tweet/PostOptions';
+import TweetPageStats from '../features/tweet/TweetPageStats';
+import TweetPageActions from '../features/tweet/TweetPageActions';
 import PostInfo from '../components/PostInfo';
 import CreateReply from '../features/reply/CreateReply';
 import ReplyList from '../features/reply/ReplyList';
 import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
-import ShareTweetPopupContents from '../features/tweet/ShareTweetPopupContents';
 
 import K from '../constants';
 
@@ -45,15 +43,14 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   const { tweetId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  const auth = useAuth();
   const topMostDivRef = useRef<HTMLDivElement>(null);
+
   const [isLiked_displayOnUI, setIsLiked_displayOnUI] = useState(false);
   const [isBookmarked_displayOnUI, setIsBookmarked_displayOnUI] =
     useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
-
-  const auth = useAuth();
 
   const {
     data: tweet,
@@ -106,8 +103,6 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     twitterHandle,
     caption,
     media,
-    retweets,
-    likes,
     isDeleted,
   } = tweet;
 
@@ -233,6 +228,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     }
   };
 
+  const handleOpenLikedByPopup = () => {
+    dispatch(openLikedByPopup({ tweetId: _id }));
+  };
+
   const handleClickShareButton = () => {
     setShowSharePopup(prevState => !prevState);
   };
@@ -319,127 +318,29 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
           <hr />
 
-          {/* Tweet 'numbers' */}
-          <div className='py-3 flex items-center justify-between ph_sm:justify-start space-x-5 text-gray-600 text-[13px] ph_xs:text-[15px]'>
-            <div className='flex items-center hover:border-b-[1px] hover:border-gray-600 hover:-mt-1 hover:cursor-pointer'>
-              <span className='font-bold'>{retweets.length}</span>
-              <span className='pl-1'>
-                {retweets.length === 1 ? 'Retweet' : 'Retweets'}
-              </span>
-            </div>
-            <div className='flex items-center hover:border-b-[1px] hover:border-gray-600 hover:-mt-1 hover:cursor-pointer'>
-              {/* TODO: dynamic when we implement this feature */}
-              <span className='font-bold'>0</span>
-              <span className='pl-1'>Quote Tweets</span>
-            </div>
-            <div
-              onClick={() => dispatch(openLikedByPopup({ tweetId: _id }))}
-              className='flex items-center hover:border-b-[1px] hover:border-gray-600 hover:-mt-1 hover:cursor-pointer'
-            >
-              <span className='font-bold'>{likes.length}</span>
-              <span className='pl-1'>
-                {likes.length === 1 ? 'Like' : 'Likes'}
-              </span>
-            </div>
-          </div>
+          <TweetPageStats
+            retweets={tweet.retweets}
+            likes={tweet.likes}
+            bookmarks={tweet.bookmarks}
+            handleOpenLikedByPopup={handleOpenLikedByPopup}
+          />
 
-          <hr />
-
-          {/* Tweet Actions */}
-          <div className='relative'>
-            {!isDeleted && (
-              <div className='py-1 flex items-center justify-around'>
-                {/* Reply */}
-                <div
-                  title='Reply'
-                  onClick={handleClickReplyButton}
-                  className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:text-twitter hover:bg-twitter-light ph_sm:mr-2'
-                >
-                  <TbMessageCircle2 className='ph_sm:text-xl' />
-                </div>
-
-                {/* Retweet */}
-                <div
-                  title='Retweet'
-                  className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:text-twitter hover:bg-twitter-light ph_sm:mr-2'
-                >
-                  <AiOutlineRetweet className='ph_sm:text-xl' />
-                </div>
-
-                {/* Like */}
-                {isLikeTweetLoading ? (
-                  <ClipLoader
-                    color='#F91880' // same as 'like' color
-                    size={25}
-                  />
-                ) : (
-                  <div
-                    title={isLiked_displayOnUI ? 'Unlike' : 'Like'}
-                    onClick={handleLikeTweet}
-                    className='flex items-center hover:text-like'
-                  >
-                    <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:bg-like-light ph_sm:mr-2'>
-                      <span className='ph_sm:text-xl'>
-                        {isLiked_displayOnUI ? (
-                          <AiFillHeart className='text-like' />
-                        ) : (
-                          <AiOutlineHeart />
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Bookmark */}
-                {isBookmarkTweetLoading ? (
-                  <ClipLoader
-                    color='#1D9BF0' // same as twitter-default color
-                    size={25}
-                  />
-                ) : (
-                  <div
-                    title={
-                      isBookmarked_displayOnUI
-                        ? 'Remove Tweet from Bookmarks'
-                        : 'Bookmark'
-                    }
-                    onClick={handleBookmarkTweet}
-                    className='flex items-center hover:text-twitter'
-                  >
-                    <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:bg-twitter-light ph_sm:mr-2'>
-                      <span className='ph_sm:text-xl'>
-                        {isBookmarked_displayOnUI ? (
-                          <BsBookmarkFill className='text-twitter text-lg' />
-                        ) : (
-                          <BsBookmark className='text-lg' />
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Share */}
-                <div
-                  title='Share'
-                  onClick={handleClickShareButton}
-                  className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center hover:cursor-pointer hover:text-twitter hover:bg-twitter-light ph_sm:mr-2'
-                >
-                  <MdIosShare className='ph_sm:text-xl' />
-                </div>
-              </div>
-            )}
-
-            {showSharePopup && (
-              <div className='absolute z-20 bottom-14 right-0 text-black'>
-                <ShareTweetPopupContents
-                  tweet={{ _id, twitterHandle }}
-                  isBookmarked_displayOnUI={isBookmarked_displayOnUI}
-                  handleBookmarkTweet={handleClickBookmarkFromSharePopup}
-                  handleClosePopup={handleCloseSharePopup}
-                />
-              </div>
-            )}
-          </div>
+          <TweetPageActions
+            tweet={{ _id, username: twitterHandle, isDeleted }}
+            isLikeTweetLoading={isLikeTweetLoading}
+            isLiked_displayOnUI={isLiked_displayOnUI}
+            isBookmarkTweetLoading={isBookmarkTweetLoading}
+            isBookmarked_displayOnUI={isBookmarked_displayOnUI}
+            showSharePopup={showSharePopup}
+            handleClickReplyButton={handleClickReplyButton}
+            handleLikeTweet={handleLikeTweet}
+            handleBookmarkTweet={handleBookmarkTweet}
+            handleClickShareButton={handleClickShareButton}
+            handleClickBookmarkFromSharePopup={
+              handleClickBookmarkFromSharePopup
+            }
+            handleCloseSharePopup={handleCloseSharePopup}
+          />
 
           <hr />
 

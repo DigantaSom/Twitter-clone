@@ -11,12 +11,7 @@ const LikedByPopup = () => {
   const dispatch = useAppDispatch();
   const likedByPopupTweetId = useAppSelector(selectLikedByPopupTweetId);
 
-  const {
-    data: tweet,
-    isLoading,
-    isError,
-    error,
-  } = useGetTweetByIdQuery({ id: likedByPopupTweetId! });
+  const { data: tweet } = useGetTweetByIdQuery({ id: likedByPopupTweetId! });
 
   console.log(tweet);
 
