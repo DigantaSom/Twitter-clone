@@ -2,6 +2,7 @@ import { createEntityAdapter } from '@reduxjs/toolkit';
 
 import { apiSlice } from '../../app/api/api.slice';
 import { Tweet, TweetResponse } from '../tweet/tweet.types';
+import { UserBasicInfo } from './user.types';
 
 const USER_URL = '/api/users';
 
@@ -18,6 +19,16 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       // forcing to invalidate the User list in the cache
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
+    }),
+
+    getUserBasicInfo: builder.query<UserBasicInfo, { userId: string }>({
+      query: ({ userId }) => ({
+        url: `${USER_URL}/${userId}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: (result, error, arg) => [{ type: 'User', id: arg.userId }],
     }),
 
     getBookmarks: builder.query<TweetResponse, void>({
@@ -39,4 +50,8 @@ export const userApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useSignUpMutation, useGetBookmarksQuery } = userApiSlice;
+export const {
+  useSignUpMutation,
+  useGetUserBasicInfoQuery,
+  useGetBookmarksQuery,
+} = userApiSlice;

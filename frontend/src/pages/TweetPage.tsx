@@ -20,7 +20,10 @@ import { removeToast, setToast } from '../features/toast/toast.slice';
 import useAuth from '../hooks/useAuth';
 import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
 
-import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
+import {
+  toggleCreateReplyPopup,
+  openLikedByPopup,
+} from '../features/ui/ui.slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
 import TweetPageHeader from '../components/TweetPageHeader';
@@ -278,6 +281,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             <>
               {/* Tweet Info */}
               <PostInfo
+                username={auth.user?.twitterHandle}
                 profilePicture={profilePicture}
                 fullName={fullName}
                 twitterHandle={twitterHandle}
@@ -328,7 +332,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
               <span className='font-bold'>0</span>
               <span className='pl-1'>Quote Tweets</span>
             </div>
-            <div className='flex items-center hover:border-b-[1px] hover:border-gray-600 hover:-mt-1 hover:cursor-pointer'>
+            <div
+              onClick={() => dispatch(openLikedByPopup({ tweetId: _id }))}
+              className='flex items-center hover:border-b-[1px] hover:border-gray-600 hover:-mt-1 hover:cursor-pointer'
+            >
               <span className='font-bold'>{likes.length}</span>
               <span className='pl-1'>
                 {likes.length === 1 ? 'Like' : 'Likes'}

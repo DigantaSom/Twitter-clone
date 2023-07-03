@@ -11,6 +11,7 @@ import imageCompression from 'browser-image-compression';
 
 import { IoCloseSharp } from 'react-icons/io5';
 
+import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useAddNewTweetMutation } from './tweet.api-slice';
 
@@ -33,6 +34,7 @@ interface CreateTweetProps {
 }
 
 const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
+  const auth = useAuth();
   const dispatch = useAppDispatch();
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
@@ -148,7 +150,10 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
       className={`${container_dynamicStyles} items-start justify-between h-full`}
     >
       {/* left */}
-      <ProfilePicture uri={constants.placeholder_profilePicture} />
+      <ProfilePicture
+        uri={constants.placeholder_profilePicture}
+        username={auth.user?.twitterHandle}
+      />
 
       {/* right */}
       <div className='flex flex-col w-full h-full ml-3'>

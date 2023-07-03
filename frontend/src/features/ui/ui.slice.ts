@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { UiState, AuthModalType } from './ui.types';
+import { UiState, AuthModalType, LikedByPopup_Payload } from './ui.types';
 import { RootState } from '../../app/store';
 
 const initialState: UiState = {
@@ -12,6 +12,10 @@ const initialState: UiState = {
   },
   isSubmitDisabled: true,
   isCreateReplyPopupShown: false,
+  likedByPopup: {
+    isShown: false,
+    tweetId: null,
+  },
 };
 
 const uiSlice = createSlice({
@@ -31,6 +35,14 @@ const uiSlice = createSlice({
     toggleCreateReplyPopup: (state, action: PayloadAction<boolean>) => {
       state.isCreateReplyPopupShown = action.payload;
     },
+    openLikedByPopup: (state, action: PayloadAction<LikedByPopup_Payload>) => {
+      state.likedByPopup.isShown = true;
+      state.likedByPopup.tweetId = action.payload.tweetId;
+    },
+    closeLikedByPopup: state => {
+      state.likedByPopup.isShown = false;
+      state.likedByPopup.tweetId = null;
+    },
   },
 });
 
@@ -45,11 +57,18 @@ export const selectIsSubmitDisabled = (state: RootState) =>
 export const selectIsCreateReplyPopupShown = (state: RootState) =>
   state.ui.isCreateReplyPopupShown;
 
+export const selectIsLikedByPopupShown = (state: RootState) =>
+  state.ui.likedByPopup.isShown;
+export const selectLikedByPopupTweetId = (state: RootState) =>
+  state.ui.likedByPopup.tweetId;
+
 export const {
   toggleComposeTweet,
   toggleAuthModal,
   handleSubmitDisabled,
   toggleCreateReplyPopup,
+  openLikedByPopup,
+  closeLikedByPopup,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

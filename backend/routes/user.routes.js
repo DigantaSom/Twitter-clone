@@ -10,6 +10,8 @@ router
   .get(userController.getAllUsers)
   .post(userController.createUser);
 
+router.route('/:userId').get(userController.getUserBasicInfo);
+
 router.route('/bookmarks').get(verifyJWT, userController.getBookmarks);
 
 module.exports = router;

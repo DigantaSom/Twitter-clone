@@ -5,6 +5,7 @@ import {
   selectAuthModal,
   selectIsComposeTweetShown,
   selectIsCreateReplyPopupShown,
+  selectIsLikedByPopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 import { selectToastMessage } from './features/toast/toast.slice';
@@ -12,7 +13,6 @@ import { selectToastMessage } from './features/toast/toast.slice';
 import PersistLogin from './features/auth/PersistLogin';
 
 import HomePage from './pages/HomePage';
-import ProfilePage from './pages/ProfilePage';
 import TweetPage from './pages/TweetPage';
 import TweetPhotoPage from './pages/TweetPhotoPage';
 import BookmarksPage from './pages/BookmarksPage';
@@ -25,6 +25,7 @@ import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
+import LikedByPopup from './features/tweet/LikedByPopup';
 import ToastMessage from './features/toast/ToastMessage';
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
   const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
   const authModal = useAppSelector(selectAuthModal);
   const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
+  const isLikedByPopupShown = useAppSelector(selectIsLikedByPopupShown);
   const toastMessage = useAppSelector(selectToastMessage);
 
   return (
@@ -64,11 +66,13 @@ const App = () => {
 
       {(isComposeTweetShown ||
         authModal.isShown ||
-        isCreateReplyPopupShown) && (
+        isCreateReplyPopupShown ||
+        isLikedByPopupShown) && (
         <DarkOverlay
           isComposeTweetShown={isComposeTweetShown}
           isAuthModalShown={authModal.isShown}
           isCreateReplyPopupShown={isCreateReplyPopupShown}
+          isLikedByPopupShown={isLikedByPopupShown}
         />
       )}
 
@@ -89,6 +93,8 @@ const App = () => {
       )}
 
       {isCreateReplyPopupShown && <CreateReplyPopup />}
+
+      {isLikedByPopupShown && <LikedByPopup />}
 
       {isAuthenticated && <BottomNavigation />}
 

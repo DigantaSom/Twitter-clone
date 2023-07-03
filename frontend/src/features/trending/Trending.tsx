@@ -7,9 +7,7 @@ import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { BsFillArrowUpRightSquareFill } from 'react-icons/bs';
 
-import ProfilePicture from '../../components/ProfilePicture';
-import TrendMorePopup from './TrendMorePopup';
-
+import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import {
   selectWhatsHappening,
@@ -18,9 +16,15 @@ import {
   showWhoToFollow,
 } from './trending.slice';
 
+import ProfilePicture from '../../components/ProfilePicture';
+import TrendMorePopup from './TrendMorePopup';
+
 import constants from '../../constants';
 
 const Trending = () => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const dispatch = useAppDispatch();
   const whatsHappening = useAppSelector(selectWhatsHappening);
   const whoToFollow = useAppSelector(selectWhoToFollow);
@@ -28,8 +32,6 @@ const Trending = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [selectedTrendId, setSelectedTrendId] = useState<string | undefined>();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(showWhatsHappening());
@@ -148,7 +150,10 @@ const Trending = () => {
                 onClick={() => handleGoToProfile(item.handle)}
                 className='flex items-start'
               >
-                <ProfilePicture uri={constants.placeholder_profilePicture} />
+                <ProfilePicture
+                  uri={constants.placeholder_profilePicture}
+                  username={auth.user?.twitterHandle}
+                />
                 <div className='ml-4 flex flex-col'>
                   <span className='font-bold text-[15px] text-gray-700 hover:underline'>
                     {item.fullName}

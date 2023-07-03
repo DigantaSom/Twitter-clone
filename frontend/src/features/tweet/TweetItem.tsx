@@ -77,7 +77,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
       border-b-[1px] border-gray-200'
       >
         <div className='flex items-start'>
-          <ProfilePicture uri={profilePicture} />
+          <ProfilePicture uri={profilePicture} username={twitterHandle} />
 
           <div className='ml-2 ph_sm:ml-3 flex-1'>
             <div className='flex items-start ph_sm:items-center justify-between'>

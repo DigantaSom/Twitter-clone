@@ -6,6 +6,9 @@ export interface UiState {
   };
   isSubmitDisabled: boolean;
   isCreateReplyPopupShown: boolean;
+  likedByPopup: LikedByPopup_Payload & {
+    isShown: boolean;
+  };
 }
 
 export type AuthModalType =
@@ -14,3 +17,7 @@ export type AuthModalType =
   | 'signup-form'
   | 'login-form'
   | '';
+
+export type LikedByPopup_Payload = {
+  tweetId: string | null;
+};

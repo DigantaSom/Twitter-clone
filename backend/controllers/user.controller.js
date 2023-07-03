@@ -90,6 +90,31 @@ const createUser = async (req, res) => {
   res.status(200).send({ accessToken });
 };
 
+// @route GET api/users/:userId
+// @desc Get the basic information of a user by userId
+// @access Public
+const getUserBasicInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .select('-password')
+      .lean()
+      .exec();
+    const userToReturn = {
+      _id: user._id,
+      profilePicture: user.profilePicture,
+      name: user.name,
+      username: user.handle,
+      bio: user.bio || '',
+    };
+    return res.status(200).json(userToReturn);
+  } catch (error) {
+    console.log(error.message);
+    if (error.kind === 'ObjectId') {
+      res.status(404).json({ message: 'User not found.' });
+    }
+  }
+};
+
 // @route GET api/users/bookmarks
 // @desc Get all bookmarks of the logged in user
 // @access Private
@@ -121,4 +146,4 @@ const getAsyncBookmarkResults = async array => {
   return Promise.all(promises);
 };
 
-module.exports = { getAllUsers, createUser, getBookmarks };
+module.exports = { getAllUsers, createUser, getUserBasicInfo, getBookmarks };

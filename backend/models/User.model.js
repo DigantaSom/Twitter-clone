@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     handle: { type: String, required: true, unique: true },
     handle_lowercase: { type: String, required: true, unique: true },
     profilePicture: { type: String },
+    bio: { type: String, default: '' },
     birthday: { type: Date },
 
     bookmarks: [

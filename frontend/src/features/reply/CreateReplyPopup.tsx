@@ -13,6 +13,7 @@ import {
   clearCreateReplyPopupData,
 } from '../reply/reply.slice';
 
+import AppPopup from '../../components/AppPopup';
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetSubmitButton from '../tweet/TweetSubmitButton';
 import CreateTweetAdOns from '../../components/CreateTweetAdOns';
@@ -122,35 +123,36 @@ const CreateReplyPopup = () => {
   };
 
   return (
-    <div className='fixed z-50 top-0 left-0 ph:top-12 ph:left-[50%] ph:-translate-x-[50%]'>
-      <div className='w-screen ph:w-[90vw] sm:w-[600px] h-screen ph:h-auto bg-white p-2 ph_xs:p-4 ph:rounded-2xl'>
-        {/* header */}
-        <div className='flex items-center justify-between mb-4'>
-          <div
-            onClick={() => dispatch(toggleCreateReplyPopup(false))}
-            className='w-8 h-8 p-1 -ml-1 flex items-center justify-center rounded-full hover:bg-gray-200 hover:cursor-pointer'
-          >
-            <IoCloseSharp className='hidden ph:block text-2xl text-gray-700' />
-            <IoArrowBack className='ph:hidden text-2xl text-gray-700' />
-          </div>
-          <div className='ph:hidden'>
-            <TweetSubmitButton
-              type='Reply'
-              isDisabled={isSubmitDisabled}
-              isLoading={isLoading}
-              handleSubmit={handleSubmitReply}
-            />
-          </div>
+    <AppPopup>
+      <header className='px-2 ph_xs:px-4 flex items-center justify-between absolute top-0 w-full h-10'>
+        <div
+          onClick={() => dispatch(toggleCreateReplyPopup(false))}
+          className='w-8 h-8 p-1 -ml-1 flex items-center justify-center rounded-full hover:bg-gray-200 hover:cursor-pointer'
+        >
+          <IoCloseSharp className='hidden ph:block text-2xl text-gray-700' />
+          <IoArrowBack className='ph:hidden text-2xl text-gray-700' />
         </div>
+        <div className='ph:hidden'>
+          <TweetSubmitButton
+            type='Reply'
+            isDisabled={isSubmitDisabled}
+            isLoading={isLoading}
+            handleSubmit={handleSubmitReply}
+          />
+        </div>
+      </header>
 
-        {/* Body */}
+      <main className='flex-1 mt-12 h-full overflow-y-scroll px-2 ph_xs:px-4'>
         <div className='flex flex-col'>
           {/* Post info */}
           <div
             className={`w-full flex items-start ${constants.profilePicture_info_gap_style}`}
           >
             <div className='w-[12%] dp-custom-styles-with-thread-line'>
-              <ProfilePicture uri={replyingTo.profilePicture} />
+              <ProfilePicture
+                uri={replyingTo.profilePicture}
+                username={currentUser?.twitterHandle}
+              />
             </div>
             <div className='w-[88%] flex flex-col'>
               <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2 pb-1'>
@@ -194,7 +196,10 @@ const CreateReplyPopup = () => {
             className={`w-full flex items-start ${constants.profilePicture_info_gap_style}`}
           >
             <div className='w-[12%]'>
-              <ProfilePicture uri={currentUser?.profilePicture} />
+              <ProfilePicture
+                uri={currentUser?.profilePicture}
+                username={currentUser?.twitterHandle}
+              />
             </div>
             <div className='w-[88%]'>
               <div className='flex flex-col'>
@@ -250,8 +255,8 @@ const CreateReplyPopup = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </AppPopup>
   );
 };
 

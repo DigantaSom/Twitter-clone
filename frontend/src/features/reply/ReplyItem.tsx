@@ -79,7 +79,7 @@ const ReplyItem: FC<ReplyItemProps> = ({ parentTweetId, tweetId }) => {
     content = (
       <div className='relative p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer border-b-[1px] border-gray-200'>
         <div className='flex items-start'>
-          <ProfilePicture uri={profilePicture} />
+          <ProfilePicture uri={profilePicture} username={twitterHandle} />
 
           <div className='ml-2 ph_sm:ml-3 flex-1'>
             <div className='flex items-start ph_sm:items-center justify-between'>

@@ -230,6 +230,7 @@ const Navigation = () => {
               <>
                 <ProfilePicture
                   uri={auth.user.profilePicture}
+                  username={auth.user.twitterHandle}
                   disableGoToProfile={true}
                 />
                 <div className='hidden xl:flex xl:flex-col xl:flex-1 xl:ml-3'>

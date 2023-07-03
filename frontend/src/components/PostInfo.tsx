@@ -6,6 +6,7 @@ import ProfilePicture from './ProfilePicture';
 import constants from '../constants';
 
 interface PostInfoProps {
+  username: string | undefined;
   profilePicture: string;
   fullName: string;
   twitterHandle: string;
@@ -14,6 +15,7 @@ interface PostInfoProps {
 }
 
 const PostInfo: FC<PostInfoProps> = ({
+  username,
   profilePicture,
   fullName,
   twitterHandle,
@@ -25,7 +27,7 @@ const PostInfo: FC<PostInfoProps> = ({
       <div
         className={`flex items-center ${constants.profilePicture_info_gap_style}`}
       >
-        <ProfilePicture uri={profilePicture} />
+        <ProfilePicture uri={profilePicture} username={username} />
 
         <div className='text-[15px]'>
           <h3 className='font-bold hover:underline hover:cursor-pointer'>

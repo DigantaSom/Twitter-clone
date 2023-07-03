@@ -6,6 +6,7 @@ import { GrEmoji } from 'react-icons/gr';
 import { CgPin } from 'react-icons/cg';
 import { IoCloseSharp } from 'react-icons/io5';
 
+import useAuth from '../../hooks/useAuth';
 import { useAddNewTweetMutation } from '../tweet/tweet.api-slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
@@ -27,6 +28,8 @@ const CreateReply: FC<CreateReplyProps> = ({
   profilePicture,
   tweetAuthorUsername,
 }) => {
+  const auth = useAuth();
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
 
@@ -136,7 +139,10 @@ const CreateReply: FC<CreateReplyProps> = ({
       <div
         className={`flex items-start ${constants.profilePicture_info_gap_style}`}
       >
-        <ProfilePicture uri={profilePicture} />
+        <ProfilePicture
+          uri={profilePicture}
+          username={auth.user?.twitterHandle}
+        />
 
         <div className='flex flex-col space-y-2 w-full'>
           {showHelperOptions && (

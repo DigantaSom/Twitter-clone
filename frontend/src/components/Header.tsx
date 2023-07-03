@@ -27,7 +27,10 @@ const Header: FC<HeaderProps> = ({ parentComponent }) => {
       <>
         <Link to='/' className='flex items-center'>
           <div className='block ph:hidden mr-3'>
-            <ProfilePicture uri={constants.placeholder_profilePicture} />
+            <ProfilePicture
+              uri={constants.placeholder_profilePicture}
+              username={auth.user?.twitterHandle}
+            />
           </div>
           <span className='font-bold text-lg ph:text-xl -mt-1'>Home</span>
         </Link>
