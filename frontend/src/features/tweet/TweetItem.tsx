@@ -1,14 +1,16 @@
 import { FC, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 import useAuth from '../../hooks/useAuth';
 import { useGetTweetsQuery, useDeleteTweetMutation } from './tweet.api-slice';
+import { useGetUserBasicInfoQuery } from '../user/user.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
 import PostOptions from './PostOptions';
+import ProfilePopup from '../user/ProfilePopup';
 import ProfilePicture from '../../components/ProfilePicture';
 import TweetActions from './TweetActions';
 import TweetItemMedia from '../../components/TweetItemMedia';
@@ -21,6 +23,14 @@ interface TweetItemProps {
 const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   const navigate = useNavigate();
 
+  const [
+    showProfilePopup_from_profilePic,
+    setShowProfilePopup_from_profilePic,
+  ] = useState(false);
+  const [showProfilePopup_from_fullName, setShowProfilePopup_from_fullName] =
+    useState(false);
+  const [showProfilePopup_from_username, setShowProfilePopup_from_username] =
+    useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
   const auth = useAuth();
@@ -29,6 +39,10 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
     selectFromResult: ({ data }) => ({
       tweet: data?.entities[tweetId],
     }),
+  });
+
+  const { data: userBasicData } = useGetUserBasicInfoQuery({
+    userId: tweet?.userId || '',
   });
 
   const [
@@ -66,36 +80,142 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
     setShowOptionsPopup(false);
   };
 
+  const handleMouseOverProfilePic = () => {
+    setShowProfilePopup_from_profilePic(true);
+    setShowProfilePopup_from_fullName(false);
+    setShowProfilePopup_from_username(false);
+  };
+  const handleMouseLeaveProfilePic = () => {
+    setShowProfilePopup_from_profilePic(false);
+  };
+
+  const handleMouseOverFullname = () => {
+    setShowProfilePopup_from_fullName(true);
+    setShowProfilePopup_from_profilePic(false);
+    setShowProfilePopup_from_username(false);
+  };
+  const handleMouseLeaveFullname = () => {
+    setShowProfilePopup_from_fullName(false);
+  };
+
+  const handleMouseOverUsername = () => {
+    setShowProfilePopup_from_username(true);
+    setShowProfilePopup_from_fullName(false);
+    setShowProfilePopup_from_profilePic(false);
+  };
+  const handleMouseLeaveUsername = () => {
+    setShowProfilePopup_from_username(false);
+  };
+
   let content;
 
   if (isDeleted) {
     content = <DeletedTweetPlaceholder />;
   } else {
     content = (
-      <div
-        className='relative p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer
-      border-b-[1px] border-gray-200'
-      >
+      <div className='relative p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer border-b-[1px] border-gray-200'>
         <div className='flex items-start'>
-          <ProfilePicture uri={profilePicture} username={twitterHandle} />
+          {/* Profile Pic */}
+          <div className='relative'>
+            <div
+              onMouseOver={handleMouseOverProfilePic}
+              onMouseLeave={handleMouseLeaveProfilePic}
+            >
+              <ProfilePicture uri={profilePicture} username={twitterHandle} />
+            </div>
+            {showProfilePopup_from_profilePic && (
+              <div
+                onMouseOver={handleMouseOverProfilePic}
+                onMouseLeave={handleMouseLeaveProfilePic}
+                className='absolute z-30 top-10 hover:cursor-default'
+              >
+                <ProfilePopup
+                  profilePicture={profilePicture}
+                  fullName={fullName}
+                  username={twitterHandle}
+                  bio={userBasicData?.bio}
+                  numberOfFollowers={userBasicData?.numberOfFollowers}
+                  numberOfFollowing={userBasicData?.numberOfFollowing}
+                />
+              </div>
+            )}
+          </div>
 
           <div className='ml-2 ph_sm:ml-3 flex-1'>
             <div className='flex items-start ph_sm:items-center justify-between'>
-              <div
-                className='flex items-center space-x-2'
-                onClick={navigateToPost}
-              >
+              <div className='flex items-center space-x-2'>
                 <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2'>
-                  <h3 className='font-bold'>{fullName}</h3>
+                  {/* Full Name */}
+                  <div className='relative'>
+                    <Link
+                      to={'/' + auth.user?.twitterHandle}
+                      onMouseOver={handleMouseOverFullname}
+                      onMouseLeave={handleMouseLeaveFullname}
+                      className='font-bold truncate hover:underline'
+                    >
+                      {fullName}
+                    </Link>
+                    {showProfilePopup_from_fullName && (
+                      <div
+                        onMouseOver={handleMouseOverFullname}
+                        onMouseLeave={handleMouseLeaveFullname}
+                        className='absolute z-30 top-5 hover:cursor-default'
+                      >
+                        <ProfilePopup
+                          profilePicture={profilePicture}
+                          fullName={fullName}
+                          username={twitterHandle}
+                          bio={userBasicData?.bio}
+                          numberOfFollowers={userBasicData?.numberOfFollowers}
+                          numberOfFollowing={userBasicData?.numberOfFollowing}
+                        />
+                      </div>
+                    )}
+                  </div>
                   <div className='flex items-center space-x-1'>
-                    <span className='text-gray-500'>@{twitterHandle}</span>
+                    {/* Username */}
+                    <div className='relative'>
+                      <Link
+                        to={'/' + auth.user?.twitterHandle}
+                        onMouseOver={handleMouseOverUsername}
+                        onMouseLeave={() =>
+                          setShowProfilePopup_from_username(false)
+                        }
+                        className='text-gray-500 truncate'
+                      >
+                        @{twitterHandle}
+                      </Link>
+                      {showProfilePopup_from_username && (
+                        <div
+                          onMouseOver={handleMouseOverUsername}
+                          onMouseLeave={handleMouseLeaveUsername}
+                          className='absolute z-30 top-5 hover:cursor-default'
+                        >
+                          <ProfilePopup
+                            profilePicture={profilePicture}
+                            fullName={fullName}
+                            username={twitterHandle}
+                            bio={userBasicData?.bio}
+                            numberOfFollowers={userBasicData?.numberOfFollowers}
+                            numberOfFollowing={userBasicData?.numberOfFollowing}
+                          />
+                        </div>
+                      )}
+                    </div>
                     <BsDot />
-                    <span className='text-gray-500'>{createdAt}</span>
+                    {/* Created At */}
+                    <Link
+                      to={`/${twitterHandle}/status/${tweetId}`}
+                      className='text-gray-500 truncate hover:underline'
+                    >
+                      {createdAt}
+                    </Link>
                   </div>
                 </div>
               </div>
+              <div onClick={navigateToPost} className='flex-1'></div>
               <div
-                className={`w-8 h-8 rounded-full  hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
+                className={`w-8 h-8 rounded-full hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
                 ${
                   showOptionsPopup
                     ? 'text-twitter bg-twitter-light'
@@ -108,7 +228,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
               </div>
             </div>
 
-            <p className='mt-1 ph_sm:mt-[2px]' onClick={navigateToPost}>
+            <p onClick={navigateToPost} className='mt-1 ph_sm:mt-[2px]'>
               {caption}
             </p>
 

@@ -23,7 +23,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
     getUserBasicInfo: builder.query<UserBasicInfo, { userId: string }>({
       query: ({ userId }) => ({
-        url: `${USER_URL}/${userId}`,
+        url: `${USER_URL}/basic/${userId}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,

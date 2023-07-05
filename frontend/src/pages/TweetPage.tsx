@@ -27,7 +27,7 @@ import TweetPageHeader from '../components/TweetPageHeader';
 import PostOptions from '../features/tweet/PostOptions';
 import TweetPageStats from '../features/tweet/TweetPageStats';
 import TweetPageActions from '../features/tweet/TweetPageActions';
-import PostInfo from '../components/PostInfo';
+import TweetAuthorInfo from '../components/TweetAuthorInfo';
 import CreateReply from '../features/reply/CreateReply';
 import ReplyList from '../features/reply/ReplyList';
 import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
@@ -278,8 +278,9 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             <DeletedTweetPlaceholder />
           ) : (
             <>
-              {/* Tweet Info */}
-              <PostInfo
+              {/* Tweet Author Info */}
+              <TweetAuthorInfo
+                userId={auth.user?.id}
                 username={auth.user?.twitterHandle}
                 profilePicture={profilePicture}
                 fullName={fullName}

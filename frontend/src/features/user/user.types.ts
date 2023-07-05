@@ -8,4 +8,6 @@ export interface UserBasicInfo {
   name: string;
   username: string;
   bio: string;
+  numberOfFollowers: number;
+  numberOfFollowing: number;
 }

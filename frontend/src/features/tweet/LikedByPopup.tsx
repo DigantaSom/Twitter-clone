@@ -13,8 +13,6 @@ const LikedByPopup = () => {
 
   const { data: tweet } = useGetTweetByIdQuery({ id: likedByPopupTweetId! });
 
-  console.log(tweet);
-
   return (
     <AppPopup>
       <header className='px-2 ph_xs:px-4 flex items-center space-x-3 absolute top-0 w-full h-10'>

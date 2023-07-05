@@ -49,6 +49,9 @@ const createUser = async (req, res) => {
     handle_lowercase: handle.toLowerCase(),
     password,
     profilePicture: profilePicture || '',
+    bio: '',
+    followers: [],
+    following: [],
   });
   user.password = await bcrypt.hash(password, 12);
 
@@ -105,6 +108,8 @@ const getUserBasicInfo = async (req, res) => {
       name: user.name,
       username: user.handle,
       bio: user.bio || '',
+      numberOfFollowers: user.followers.length,
+      numberOfFollowing: user.following.length,
     };
     return res.status(200).json(userToReturn);
   } catch (error) {

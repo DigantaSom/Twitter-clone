@@ -13,10 +13,13 @@ const userSchema = new mongoose.Schema(
 
     bookmarks: [
       {
-        tweetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tweet' },
+        tweetId: { type: mongoose.Schema.Types.ObjectId, ref: 'tweet' },
         addedDate: { type: Date, default: Date.now() },
       },
     ],
+
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   },
   { timestamps: true }
 );
