@@ -16,5 +16,9 @@ router.route('/basic/:userId').get(userController.getUserBasicInfo);
 router.route('/profile/:username').get(userController.getProfile);
 
 router.route('/tweets/:username').get(userController.getTweetsByUsername);
+router.route('/replies/:username').get(userController.getRepliesByUsername);
+router
+  .route('/media-tweets/:username')
+  .get(userController.getMediaTweetsByUsername);
 
 module.exports = router;

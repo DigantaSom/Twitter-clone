@@ -200,8 +200,77 @@ const getTweetsByUsername = async (req, res) => {
   if (!user) return res.status(400).json({ message: 'User not found.' });
 
   const tweetsByUser = await Tweet.find({
-    $and: [{ twitterHandle_lowercase: username }, { degree: 0 }],
+    $and: [
+      { twitterHandle_lowercase: username },
+      { degree: 0 },
+      { isDeleted: false },
+    ],
   })
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
+  if (!tweetsByUser?.length) {
+    return res.status(404).json({ message: 'Tweet not found.' });
+  }
+  res.status(200).json(tweetsByUser);
+};
+
+// @route GET api/users/replies/:username
+// @desc Fetch all replies of a user by their username
+// @access Public
+const getRepliesByUsername = async (req, res) => {
+  const username = req.params.username?.toLowerCase();
+
+  const user = await User.findOne({
+    handle_lowercase: username,
+  })
+    .select('-password')
+    .lean()
+    .exec();
+
+  if (!user) return res.status(400).json({ message: 'User not found.' });
+
+  const tweetsByUser = await Tweet.find({
+    $and: [
+      { twitterHandle_lowercase: username },
+      { degree: { $gt: 0 } },
+      { isDeleted: false },
+    ],
+  })
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
+  if (!tweetsByUser?.length) {
+    return res.status(404).json({ message: 'Tweet not found.' });
+  }
+  res.status(200).json(tweetsByUser);
+};
+
+// @route GET api/users/media-tweets/:username
+// @desc Fetch all media tweets of a user by their username
+// @access Public
+const getMediaTweetsByUsername = async (req, res) => {
+  const username = req.params.username?.toLowerCase();
+
+  const user = await User.findOne({
+    handle_lowercase: username,
+  })
+    .select('-password')
+    .lean()
+    .exec();
+
+  if (!user) return res.status(400).json({ message: 'User not found.' });
+
+  const tweetsByUser = await Tweet.find({
+    $and: [
+      { twitterHandle_lowercase: username },
+      { media: { $ne: [''] } },
+      { isDeleted: false },
+    ],
+  })
+    .sort({ creationDate: -1 })
     .lean()
     .exec();
 
@@ -218,4 +287,6 @@ module.exports = {
   getUserBasicInfo,
   getProfile,
   getTweetsByUsername,
+  getRepliesByUsername,
+  getMediaTweetsByUsername,
 };

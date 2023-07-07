@@ -73,6 +73,44 @@ export const userApiSlice = apiSlice.injectEndpoints({
             ]
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
+
+    getRepliesByUsername: builder.query<
+      Tweet[],
+      { username: string | undefined }
+    >({
+      query: ({ username }) => ({
+        url: `${USER_URL}/replies/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
+
+    getMediaTweetsByUsername: builder.query<
+      Tweet[],
+      { username: string | undefined }
+    >({
+      query: ({ username }) => ({
+        url: `${USER_URL}/media-tweets/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
   }),
   overrideExisting: true,
 });
@@ -83,4 +121,6 @@ export const {
   useGetUserBasicInfoQuery,
   useGetProfileQuery,
   useGetTweetsByUsernameQuery,
+  useGetRepliesByUsernameQuery,
+  useGetMediaTweetsByUsernameQuery,
 } = userApiSlice;

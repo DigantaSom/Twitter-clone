@@ -149,7 +149,8 @@ const ProfilePage = () => {
           </Link>
         </div>
 
-        {/* TODO: Tweet, Replies, Media and Likes lists */}
+        {/* Tweet, Replies, Media and Likes lists */}
+        <Outlet />
       </div>
     );
   }

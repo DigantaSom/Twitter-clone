@@ -15,23 +15,17 @@ const ProfileTweetsContainer = () => {
     error,
   } = useGetTweetsByUsernameQuery(
     { username },
-    {
-      refetchOnFocus: true,
-      refetchOnMountOrArgChange: true,
-      refetchOnReconnect: true,
-    }
+    { pollingInterval: 30000, refetchOnReconnect: true }
   );
 
   return (
-    <div>
-      <TweetList
-        tweets={tweets}
-        isLoading={isLoading}
-        isSuccess={isSuccess}
-        isError={isError}
-        error={error}
-      />
-    </div>
+    <TweetList
+      tweets={tweets}
+      isLoading={isLoading}
+      isSuccess={isSuccess}
+      isError={isError}
+      error={error}
+    />
   );
 };
 

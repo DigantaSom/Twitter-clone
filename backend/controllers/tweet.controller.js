@@ -5,7 +5,11 @@ const User = require('../models/User.model');
 // desc Get all tweets, neither replies nor inner-replies (testing only)
 // @access Public
 const getAllTweets = async (_, res) => {
-  const tweets = await Tweet.find({ degree: 0 }).lean().exec();
+  const tweets = await Tweet.find({ degree: 0 })
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
   if (!tweets?.length) {
     return res.status(404).json({ message: 'No tweet found.' });
   }
@@ -35,6 +39,7 @@ const getTweetById = async (req, res) => {
 const getReplies = async (req, res) => {
   try {
     const replies = await Tweet.find({ parent: req.params.parentTweetId })
+      .sort({ creationDate: -1 })
       .lean()
       .exec();
 
