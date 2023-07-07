@@ -11,10 +11,9 @@ import constants from '../constants';
 
 interface TweetAuthorInfoProps {
   userId: string | undefined;
-  username: string | undefined;
+  username: string;
   profilePicture: string;
   fullName: string;
-  twitterHandle: string;
   showOptionsPopup: boolean;
   handleToggleOptions: () => void;
 }
@@ -24,7 +23,6 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
   username,
   profilePicture,
   fullName,
-  twitterHandle,
   showOptionsPopup,
   handleToggleOptions,
 }) => {
@@ -79,7 +77,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
             onMouseOver={handleMouseOverProfilePic}
             onMouseLeave={handleMouseLeaveProfilePic}
           >
-            <ProfilePicture uri={profilePicture} username={twitterHandle} />
+            <ProfilePicture uri={profilePicture} username={username} />
           </div>
           {showProfilePopup_from_profilePic && (
             <div
@@ -90,7 +88,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
               <ProfilePopup
                 profilePicture={profilePicture}
                 fullName={fullName}
-                username={twitterHandle}
+                username={username}
                 bio={userBasicData?.bio}
                 numberOfFollowers={userBasicData?.numberOfFollowers}
                 numberOfFollowing={userBasicData?.numberOfFollowing}
@@ -119,7 +117,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
                 <ProfilePopup
                   profilePicture={profilePicture}
                   fullName={fullName}
-                  username={twitterHandle}
+                  username={username}
                   bio={userBasicData?.bio}
                   numberOfFollowers={userBasicData?.numberOfFollowers}
                   numberOfFollowing={userBasicData?.numberOfFollowing}
@@ -136,7 +134,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
               onMouseLeave={() => setShowProfilePopup_from_username(false)}
               className='text-gray-500 truncate'
             >
-              @{twitterHandle}
+              @{username}
             </Link>
             {showProfilePopup_from_username && (
               <div
@@ -147,7 +145,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
                 <ProfilePopup
                   profilePicture={profilePicture}
                   fullName={fullName}
-                  username={twitterHandle}
+                  username={username}
                   bio={userBasicData?.bio}
                   numberOfFollowers={userBasicData?.numberOfFollowers}
                   numberOfFollowing={userBasicData?.numberOfFollowing}

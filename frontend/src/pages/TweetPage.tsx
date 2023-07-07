@@ -23,7 +23,7 @@ import {
 } from '../features/ui/ui.slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
-import TweetPageHeader from '../components/TweetPageHeader';
+import Header from '../components/Header';
 import PostOptions from '../features/tweet/PostOptions';
 import TweetPageStats from '../features/tweet/TweetPageStats';
 import TweetPageActions from '../features/tweet/TweetPageActions';
@@ -98,6 +98,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   const {
     _id,
     degree,
+    userId,
     profilePicture,
     fullName,
     twitterHandle,
@@ -271,7 +272,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
         <div ref={topMostDivRef}></div>
 
-        {isHeaderNeeded && <TweetPageHeader />}
+        {isHeaderNeeded && <Header parentComponent='TweetPage' />}
 
         <main className='px-2 ph_sm:px-4 pt-3'>
           {isDeleted ? (
@@ -280,11 +281,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             <>
               {/* Tweet Author Info */}
               <TweetAuthorInfo
-                userId={auth.user?.id}
-                username={auth.user?.twitterHandle}
+                userId={userId}
+                username={twitterHandle}
                 profilePicture={profilePicture}
                 fullName={fullName}
-                twitterHandle={twitterHandle}
                 showOptionsPopup={showOptionsPopup}
                 handleToggleOptions={handleToggleOptions}
               />

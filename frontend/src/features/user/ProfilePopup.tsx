@@ -43,10 +43,8 @@ const ProfilePopup: FC<ProfilePopupProps> = ({
         </Link>
       </div>
 
-      {/* TODO: dynamic bio */}
       <div className='text-[15px]'>{bio ?? ''}</div>
 
-      {/* TODO: dynamic number of Following and Followers */}
       <div className='flex items-center space-x-3 text-sm'>
         <Link
           to={'/' + username + '/following'}

@@ -48,16 +48,20 @@ const Navigation = () => {
   useEffect(() => {
     if (location.pathname === '/') {
       setSelectedOption('home');
+    } else if (location.pathname.substring(1) === auth.user?.twitterHandle) {
+      setSelectedOption('profile');
     } else {
       setSelectedOption(location.pathname.substring(1) as NavigationOption);
     }
-  }, [location.pathname]);
+  }, [location.pathname, auth.user?.twitterHandle]);
 
   const handleSelectOption = (option: NavigationOption) => {
     setSelectedOption(option);
 
     if (option === 'home') {
       navigate('/');
+    } else if (option === 'profile' && auth.user) {
+      navigate('/' + auth.user.twitterHandle);
     } else if (option === 'more') {
       // TODO: toggle this popup
     } else {

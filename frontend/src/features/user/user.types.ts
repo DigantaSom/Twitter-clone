@@ -4,10 +4,17 @@ export interface UserID {
 
 export interface UserBasicInfo {
   _id: string;
-  profilePicture: string;
   name: string;
   username: string;
+  profilePicture: string;
   bio: string;
   numberOfFollowers: number;
   numberOfFollowing: number;
+}
+
+export interface UserProfile extends UserBasicInfo {
+  headerPhoto: string;
+  birthday: string | null; // TODO: remove nullable functionality
+  joiningDate: string;
+  numberOfTweets: number;
 }

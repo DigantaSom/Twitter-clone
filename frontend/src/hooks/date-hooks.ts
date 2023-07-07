@@ -77,3 +77,32 @@ export const useGetPostTime = (date: string | undefined) => {
 
   return time;
 };
+
+export const useGetBirthday = (date: string | null) => {
+  if (!date) return '';
+
+  const day = new Date(date).toLocaleString('en-IN', {
+    day: 'numeric',
+  });
+  const month = new Date(date).toLocaleString('en-IN', {
+    month: 'long',
+  });
+  const year = new Date(date).toLocaleString('en-IN', {
+    year: 'numeric',
+  });
+
+  return `${month} ${day}, ${year}`;
+};
+
+export const useGetJoiningDate = (date: string | null) => {
+  if (!date) return '';
+
+  const month = new Date(date).toLocaleString('en-IN', {
+    month: 'long',
+  });
+  const year = new Date(date).toLocaleString('en-IN', {
+    year: 'numeric',
+  });
+
+  return `${month} ${year}`;
+};

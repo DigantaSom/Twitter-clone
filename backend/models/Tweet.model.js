@@ -7,6 +7,7 @@ const tweetSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
   fullName: { type: String, required: true },
   twitterHandle: { type: String, required: true },
+  twitterHandle_lowercase: { type: String, required: true },
   profilePicture: { type: String },
 
   caption: { type: String, required: true },

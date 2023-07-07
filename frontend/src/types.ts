@@ -33,3 +33,5 @@ export type NavigationOption =
   | 'lists'
   | 'profile'
   | 'more';
+
+export type ProfileTab = 'Tweets' | 'Replies' | 'Media' | 'Likes';

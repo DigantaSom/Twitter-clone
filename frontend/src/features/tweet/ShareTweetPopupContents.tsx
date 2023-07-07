@@ -1,9 +1,7 @@
 import { FC } from 'react';
-import {
-  MdOutlineContentCopy,
-  MdOutlineBookmarkAdd,
-  MdOutlineBookmarkRemove,
-} from 'react-icons/md';
+
+import { AiOutlineLink } from 'react-icons/ai';
+import { MdOutlineBookmarkAdd, MdOutlineBookmarkRemove } from 'react-icons/md';
 
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { setToast, removeToast } from '../toast/toast.slice';
@@ -47,31 +45,29 @@ const ShareTweetPopupContents: FC<ShareTweetPopupContentsProps> = ({
 
   return (
     <SmallPopup>
-      <>
-        <div
-          className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
-          onClick={handleCopyLinkToTweet}
-        >
-          <MdOutlineContentCopy className='text-lg' />
-          <span className='ml-2 text-sm'>Copy link to Tweet</span>
-        </div>
-        <div
-          className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
-          onClick={handleBookmarkTweet}
-        >
-          {isBookmarked_displayOnUI ? (
-            <>
-              <MdOutlineBookmarkRemove className='text-lg' />
-              <span className='ml-2 text-sm'>Remove Tweet from Bookmarks</span>
-            </>
-          ) : (
-            <>
-              <MdOutlineBookmarkAdd className='text-lg' />
-              <span className='ml-2 text-sm'>Bookmark</span>
-            </>
-          )}
-        </div>
-      </>
+      <div
+        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+        onClick={handleCopyLinkToTweet}
+      >
+        <AiOutlineLink className='text-xl' />
+        <span className='ml-2 text-sm'>Copy link to Tweet</span>
+      </div>
+      <div
+        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+        onClick={handleBookmarkTweet}
+      >
+        {isBookmarked_displayOnUI ? (
+          <>
+            <MdOutlineBookmarkRemove className='text-lg' />
+            <span className='ml-2 text-sm'>Remove Tweet from Bookmarks</span>
+          </>
+        ) : (
+          <>
+            <MdOutlineBookmarkAdd className='text-lg' />
+            <span className='ml-2 text-sm'>Bookmark</span>
+          </>
+        )}
+      </div>
     </SmallPopup>
   );
 };

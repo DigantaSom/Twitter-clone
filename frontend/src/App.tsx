@@ -13,8 +13,11 @@ import { selectToastMessage } from './features/toast/toast.slice';
 import PersistLogin from './features/auth/PersistLogin';
 
 import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
 import TweetPage from './pages/TweetPage';
 import TweetPhotoPage from './pages/TweetPhotoPage';
+import ProfilePhotoPage from './pages/ProfilePhotoPage';
+import HeaderPhotoPage from './pages/HeaderPhotoPage';
 import BookmarksPage from './pages/BookmarksPage';
 
 import Feed from './components/Feed';
@@ -27,6 +30,11 @@ import BottomAuth from './components/BottomAuth';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
 import LikedByPopup from './features/tweet/LikedByPopup';
 import ToastMessage from './features/toast/ToastMessage';
+import Explore from './components/Explore';
+import ProfileTweetsContainer from './features/user/ProfileTweetsContainer';
+import ProfileRepliesContainer from './features/user/ProfileRepliesContainer';
+import ProfileMediaContainer from './features/user/ProfileMediaContainer';
+import ProfileLikesContainer from './features/user/ProfileLikesContainer';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -43,10 +51,24 @@ const App = () => {
           <Route path='/' element={<HomePage />}>
             <Route index element={<Feed />} />
 
-            <Route
-              path=':username/status/:tweetId'
-              element={<TweetPage from='App' isHeaderNeeded={true} />}
-            />
+            <Route path=':username'>
+              <Route element={<ProfilePage />}>
+                <Route index element={<ProfileTweetsContainer />} />
+                <Route
+                  path='with_replies'
+                  element={<ProfileRepliesContainer />}
+                />
+                <Route path='media' element={<ProfileMediaContainer />} />
+                <Route path='likes' element={<ProfileLikesContainer />} />
+              </Route>
+
+              <Route
+                path='status/:tweetId'
+                element={<TweetPage from='App' isHeaderNeeded={true} />}
+              />
+            </Route>
+
+            <Route path='explore' element={<Explore />} />
 
             <Route path='bookmarks' element={<BookmarksPage />} />
           </Route>
@@ -55,6 +77,9 @@ const App = () => {
             path=':username/status/:tweetId/photo/:photoIndex'
             element={<TweetPhotoPage />}
           />
+
+          <Route path=':username/photo' element={<ProfilePhotoPage />} />
+          <Route path=':username/header_photo' element={<HeaderPhotoPage />} />
         </Route>
       </Routes>
 

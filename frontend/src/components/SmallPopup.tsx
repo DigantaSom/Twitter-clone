@@ -3,7 +3,7 @@
 import { FC } from 'react';
 
 interface SmallPopupProps {
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
 }
 
 const SmallPopup: FC<SmallPopupProps> = ({ children }) => {

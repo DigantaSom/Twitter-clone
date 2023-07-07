@@ -1,8 +1,46 @@
-const FollowButton = () => {
+import { FC, useState } from 'react';
+
+import CustomButton from '../../components/CustomButton';
+
+interface FollowButtonProps {}
+
+const FollowButton: FC<FollowButtonProps> = ({}) => {
+  const isFollowing = true; // TODO: dynamic
+
+  const [showUnfollowButton, setShowUnfollowButton] = useState(false);
+
+  const onMouseOver = () => {
+    if (isFollowing) {
+      setShowUnfollowButton(true);
+    }
+  };
+
+  const onMouseLeave = () => {
+    if (isFollowing) {
+      setShowUnfollowButton(false);
+    }
+  };
+
   return (
-    <button className='bg-black text-white text-xs ph:text-sm font-semibold rounded-full px-[10px] ph:px-4 py-[6px] ph:py-2 hover:cursor-pointer hover:opacity-80'>
-      Follow
-    </button>
+    <div onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
+      {showUnfollowButton ? (
+        <CustomButton
+          title='Unfollow'
+          onClick={() => {}}
+          bgColorClass='bg-white'
+          textColorClass='text-red-500'
+          textSizeClass='text-xs ph:text-sm'
+        />
+      ) : (
+        <CustomButton
+          title={isFollowing ? 'Following' : 'Follow'}
+          onClick={() => {}}
+          bgColorClass={isFollowing ? 'bg-white' : 'bg-black'}
+          textColorClass={isFollowing ? 'text-gray-700' : 'text-white'}
+          textSizeClass='text-xs ph:text-sm'
+        />
+      )}
+    </div>
   );
 };
 

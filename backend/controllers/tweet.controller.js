@@ -29,25 +29,6 @@ const getTweetById = async (req, res) => {
   }
 };
 
-// @route GET api/tweets/user/:userId
-// @desc Fetch all tweets of a user by their userId
-// @access Public
-const getTweetsByUserId = async (req, res) => {
-  try {
-    const tweetsByUser = await Tweet.find({ userId: req.params.userId })
-      .lean()
-      .exec();
-    if (!tweetsByUser?.length) {
-      return res.status(404).json({ message: 'Tweet not found.' });
-    }
-    res.status(200).json(tweetsByUser);
-  } catch (error) {
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Tweet not found.' });
-    }
-  }
-};
-
 // @route GET api/tweets/replies/:parentTweetId
 // @desc Get all replies of a tweet
 // @access Public
@@ -76,10 +57,7 @@ const createTweet = async (req, res) => {
     return res.status(400).json({ message: 'Text is required' });
   }
 
-  const user = await User.findById(req.user.id)
-    .select('-password')
-    .lean()
-    .exec();
+  const user = await User.findById(req.user.id).select('-password').exec();
 
   const newTweet = new Tweet({
     parent: req.body.parentTweetId || null,
@@ -87,6 +65,7 @@ const createTweet = async (req, res) => {
     userId: req.user.id,
     fullName: user.name,
     twitterHandle: user.handle,
+    twitterHandle_lowercase: user.handle.toLowerCase(),
     profilePicture: user.profilePicture || '',
     caption: req.body.caption,
     media: req.body.media || [''],
@@ -95,6 +74,8 @@ const createTweet = async (req, res) => {
   });
 
   const tweet = await newTweet.save();
+  user.numberOfTweets++;
+  await user.save();
 
   // numberOfReplies++ in the parent tweet, if any
   await Tweet.findOneAndUpdate(
@@ -214,7 +195,6 @@ const bookmarkTweet = async (req, res) => {
 module.exports = {
   getAllTweets,
   getTweetById,
-  getTweetsByUserId,
   getReplies,
   createTweet,
   deleteTweet,

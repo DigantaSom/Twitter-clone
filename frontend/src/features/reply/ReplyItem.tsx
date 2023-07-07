@@ -153,7 +153,7 @@ const ReplyItem: FC<ReplyItemProps> = ({ parentTweetId, tweetId }) => {
                   {/* Full Name */}
                   <div className='relative'>
                     <Link
-                      to={'/' + auth.user?.twitterHandle}
+                      to={'/' + twitterHandle}
                       onMouseOver={handleMouseOverFullname}
                       onMouseLeave={handleMouseLeaveFullname}
                       className='font-bold truncate hover:underline'
@@ -181,7 +181,7 @@ const ReplyItem: FC<ReplyItemProps> = ({ parentTweetId, tweetId }) => {
                     {/* Username */}
                     <div className='relative'>
                       <Link
-                        to={'/' + auth.user?.twitterHandle}
+                        to={'/' + twitterHandle}
                         onMouseOver={handleMouseOverUsername}
                         onMouseLeave={() =>
                           setShowProfilePopup_from_username(false)
