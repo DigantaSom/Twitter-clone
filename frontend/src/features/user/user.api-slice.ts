@@ -1,16 +1,9 @@
-import { createEntityAdapter } from '@reduxjs/toolkit';
-
 import { apiSlice } from '../../app/api/api.slice';
-import { Tweet, TweetResponse } from '../tweet/tweet.types';
+
+import { Tweet } from '../tweet/tweet.types';
 import { UserBasicInfo, UserProfile } from './user.types';
 
 const USER_URL = '/api/users';
-
-const tweetsAdapter = createEntityAdapter<Tweet>({
-  // sorting: latest tweet comes first
-  sortComparer: (a, b) => (a.creationDate < b.creationDate ? 1 : -1),
-});
-const initialState = tweetsAdapter.getInitialState();
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -24,31 +17,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
 
-    getBookmarks: builder.query<TweetResponse, void>({
+    getBookmarks: builder.query<Tweet[], void>({
       query: () => ({
         url: `${USER_URL}/bookmarks`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      transformResponse: (responseData: Tweet[]): any => {
-        const loadedTweets = responseData.map(tweet => ({
-          ...tweet,
-          id: tweet?._id,
-        }));
-        return tweetsAdapter.setAll(initialState, loadedTweets);
-      },
-      providesTags: (result, error, args) => {
-        if (result?.ids) {
-          return [
-            { type: 'Tweet', id: 'LIST' },
-            ...result.ids.map(id => ({ type: 'Tweet' as const, id })),
-          ];
-        } else {
-          // error
-          return [{ type: 'Tweet', id: 'LIST' }];
-        }
-      },
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
     getUserBasicInfo: builder.query<UserBasicInfo, { userId: string }>({
@@ -74,7 +56,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
 
     getTweetsByUsername: builder.query<
-      TweetResponse,
+      Tweet[],
       { username: string | undefined }
     >({
       query: ({ username }) => ({
@@ -83,24 +65,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      transformResponse: (responseData: Tweet[]): any => {
-        const loadedTweets = responseData.map(tweet => ({
-          ...tweet,
-          id: tweet?._id,
-        }));
-        return tweetsAdapter.setAll(initialState, loadedTweets);
-      },
-      providesTags: (result, error, args) => {
-        if (result?.ids) {
-          return [
-            { type: 'Tweet', id: 'LIST' },
-            ...result.ids.map(id => ({ type: 'Tweet' as const, id })),
-          ];
-        } else {
-          // error
-          return [{ type: 'Tweet', id: 'LIST' }];
-        }
-      },
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
     }),
   }),
   overrideExisting: true,

@@ -23,11 +23,6 @@ export interface Tweet {
   isDeleted: boolean;
 }
 
-export type TweetResponse = {
-  ids: [string];
-  entities: Record<string, Tweet>;
-};
-
 export type AddNewTweetArg = {
   parentTweetId: string | null;
   tweetDegree: number;
@@ -49,3 +44,7 @@ export type LikeResponse = { userId: UserID }[];
 export type BookmarkTweetArg = LikeTweetArg;
 
 export type BookmarkResponse = { message: string };
+
+export interface GetRepliesArg {
+  parentTweetId: string | undefined;
+}

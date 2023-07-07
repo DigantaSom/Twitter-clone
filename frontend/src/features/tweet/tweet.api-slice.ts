@@ -1,51 +1,32 @@
-import { createEntityAdapter } from '@reduxjs/toolkit';
-
 import { apiSlice } from '../../app/api/api.slice';
+
 import {
   Tweet,
-  TweetResponse,
   AddNewTweetArg,
   DeleteTweetArg,
   LikeTweetArg,
   LikeResponse,
   BookmarkTweetArg,
   BookmarkResponse,
+  GetRepliesArg,
 } from './tweet.types';
-
-const tweetsAdapter = createEntityAdapter<Tweet>({
-  // sorting: latest tweet comes first
-  sortComparer: (a, b) => (a.creationDate < b.creationDate ? 1 : -1),
-});
-
-const initialState = tweetsAdapter.getInitialState();
 
 export const tweetApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
-    getTweets: builder.query<TweetResponse, void>({
+    getTweets: builder.query<Tweet[], void>({
       query: () => ({
         url: '/api/tweets',
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      transformResponse: (responseData: Tweet[]): any => {
-        const loadedTweets = responseData.map(tweet => ({
-          ...tweet,
-          id: tweet._id,
-        }));
-        return tweetsAdapter.setAll(initialState, loadedTweets);
-      },
-      providesTags: (result, error, args) => {
-        if (result?.ids) {
-          return [
-            { type: 'Tweet', id: 'LIST' },
-            ...result.ids.map(id => ({ type: 'Tweet' as const, id })),
-          ];
-        } else {
-          // error
-          return [{ type: 'Tweet', id: 'LIST' }];
-        }
-      },
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
     getTweetById: builder.query<Tweet, { id: string }>({
@@ -101,6 +82,22 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
         { type: 'Tweet', id: arg.tweetId },
       ],
     }),
+
+    getReplies: builder.query<Tweet[], GetRepliesArg>({
+      query: ({ parentTweetId }) => ({
+        url: `api/tweets/replies/${parentTweetId}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
   }),
   overrideExisting: true,
 });
@@ -112,4 +109,5 @@ export const {
   useDeleteTweetMutation,
   useLikeTweetMutation,
   useBookmarkTweetMutation,
+  useGetRepliesQuery,
 } = tweetApiSlice;

@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
+import { Tweet } from './tweet.types';
+
 import useAuth from '../../hooks/useAuth';
-import { useGetTweetsQuery, useDeleteTweetMutation } from './tweet.api-slice';
+import { useDeleteTweetMutation } from './tweet.api-slice';
 import { useGetUserBasicInfoQuery } from '../user/user.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
@@ -17,10 +19,10 @@ import TweetItemMedia from '../../components/TweetItemMedia';
 import DeletedTweetPlaceholder from '../../components/DeletedTweetPlaceholder';
 
 interface TweetItemProps {
-  tweetId: string;
+  tweet: Tweet;
 }
 
-const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
+const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
   const navigate = useNavigate();
 
   const [
@@ -34,12 +36,6 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
   const auth = useAuth();
-
-  const { tweet } = useGetTweetsQuery(undefined, {
-    selectFromResult: ({ data }) => ({
-      tweet: data?.entities[tweetId],
-    }),
-  });
 
   const { data: userBasicData } = useGetUserBasicInfoQuery({
     userId: tweet?.userId || '',
@@ -62,8 +58,16 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
 
   if (!tweet) return null;
 
-  const { twitterHandle, profilePicture, fullName, caption, media, isDeleted } =
-    tweet;
+  const {
+    _id: tweetId,
+    twitterHandle,
+    profilePicture,
+    fullName,
+    caption,
+    media,
+    isDeleted,
+    parentTweetId,
+  } = tweet;
 
   const isMediaPresent = media.length > 0 && media[0] !== '';
 
@@ -76,7 +80,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
   };
 
   const handleDeleteTweet = async () => {
-    await deleteTweet({ tweetId, parentTweetId: null });
+    await deleteTweet({ tweetId, parentTweetId });
     setShowOptionsPopup(false);
   };
 
@@ -148,7 +152,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
                   {/* Full Name */}
                   <div className='relative'>
                     <Link
-                      to={'/' + auth.user?.twitterHandle}
+                      to={'/' + twitterHandle}
                       onMouseOver={handleMouseOverFullname}
                       onMouseLeave={handleMouseLeaveFullname}
                       className='font-bold truncate hover:underline'
@@ -176,7 +180,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
                     {/* Username */}
                     <div className='relative'>
                       <Link
-                        to={'/' + auth.user?.twitterHandle}
+                        to={'/' + twitterHandle}
                         onMouseOver={handleMouseOverUsername}
                         onMouseLeave={() =>
                           setShowProfilePopup_from_username(false)
@@ -189,7 +193,9 @@ const TweetItem: FC<TweetItemProps> = ({ tweetId }) => {
                         <div
                           onMouseOver={handleMouseOverUsername}
                           onMouseLeave={handleMouseLeaveUsername}
-                          className='absolute z-30 top-5 hover:cursor-default'
+                          className={`absolute z-30 top-5 ${
+                            !parentTweetId && '-left-[200%]'
+                          } hover:cursor-default`}
                         >
                           <ProfilePopup
                             profilePicture={profilePicture}

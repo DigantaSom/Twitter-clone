@@ -11,6 +11,7 @@ import {
   useDeleteTweetMutation,
   useLikeTweetMutation,
   useBookmarkTweetMutation,
+  useGetRepliesQuery,
 } from '../features/tweet/tweet.api-slice';
 import { removeToast, setToast } from '../features/toast/toast.slice';
 
@@ -29,8 +30,8 @@ import TweetPageStats from '../features/tweet/TweetPageStats';
 import TweetPageActions from '../features/tweet/TweetPageActions';
 import TweetAuthorInfo from '../components/TweetAuthorInfo';
 import CreateReply from '../features/reply/CreateReply';
-import ReplyList from '../features/reply/ReplyList';
 import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
+import TweetList from '../features/tweet/TweetList';
 
 import K from '../constants';
 
@@ -66,6 +67,17 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
   const [bookmarkTweet, { isLoading: isBookmarkTweetLoading }] =
     useBookmarkTweetMutation();
+
+  const {
+    data: replies,
+    isLoading: isRepliesLoading,
+    isSuccess: isRepliesSuccess,
+    isError: isRepliesError,
+    error: repliesError,
+  } = useGetRepliesQuery(
+    { parentTweetId: tweet?._id },
+    { pollingInterval: 15000 }
+  );
 
   const createdAt_time = useGetPostTime(tweet?.creationDate).toUpperCase();
   const createdAt_date = useGetPostDate(tweet?.creationDate);
@@ -355,7 +367,14 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
         <hr />
 
-        <ReplyList parentTweetId={_id} />
+        {/* Reply list of this particular tweet */}
+        <TweetList
+          tweets={replies}
+          isLoading={isRepliesLoading}
+          isSuccess={isRepliesSuccess}
+          isError={isRepliesError}
+          error={repliesError}
+        />
       </div>
     );
   }

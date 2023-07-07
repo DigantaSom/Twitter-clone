@@ -4,12 +4,12 @@ import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 
 import PulseLoader from 'react-spinners/PulseLoader';
 
-import { TweetResponse } from './tweet.types';
+import { Tweet } from './tweet.types';
 
 import TweetItem from './TweetItem';
 
 interface TweetListProps {
-  tweets: TweetResponse | undefined;
+  tweets: Tweet[] | undefined;
   isLoading: boolean;
   isSuccess: boolean;
   isError: boolean;
@@ -34,10 +34,8 @@ const TweetList: FC<TweetListProps> = ({
         {(error as any)?.data?.message || 'Error loading tweets.'}
       </div>
     );
-  } else if (isSuccess && tweets?.ids.length) {
-    content = tweets.ids.map(tweetId => (
-      <TweetItem key={tweetId} tweetId={tweetId} />
-    ));
+  } else if (isSuccess && tweets?.length) {
+    content = tweets.map(tweet => <TweetItem key={tweet._id} tweet={tweet} />);
   }
 
   return <>{content}</>;
