@@ -22,7 +22,7 @@ const ProfilePage = () => {
     error,
   } = useGetProfileQuery(
     { username, loggedInUserId: auth.user?.id },
-    { refetchOnMountOrArgChange: true }
+    { pollingInterval: 25000, refetchOnMountOrArgChange: true }
   );
 
   const [selectedTab, setSelectedTab] = useState<ProfileTab>('Tweets');

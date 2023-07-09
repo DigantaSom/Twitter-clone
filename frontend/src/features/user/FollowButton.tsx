@@ -15,6 +15,7 @@ const FollowButton: FC<FollowButtonProps> = ({
   targetUserId,
 }) => {
   const auth = useAuth();
+  const loggedInUserId = auth.user?.id;
 
   const [followUser, { isLoading: isFollowLoading }] = useFollowUserMutation();
 
@@ -41,13 +42,13 @@ const FollowButton: FC<FollowButtonProps> = ({
   };
 
   const handleFollowOrUnfollow = async () => {
-    if (auth.user?.id === targetUserId || isFollowLoading) return;
-    await followUser({ targetUserId });
+    if (loggedInUserId === targetUserId || isFollowLoading) return;
+    await followUser({ targetUserId, loggedInUserId });
     setIsFollowedByLoggedInUser_toDisplay(prev => !prev);
     setShowUnfollowButton(false);
   };
 
-  if (auth.user?.id === targetUserId) return null;
+  if (loggedInUserId === targetUserId) return null;
 
   return (
     <div onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>

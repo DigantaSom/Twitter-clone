@@ -7,6 +7,7 @@ import {
   UsernameArg,
   FollowUserResponse,
   GetProfileArgs,
+  FollowUserArgs,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -128,16 +129,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    followUser: builder.mutation<
-      FollowUserResponse,
-      { targetUserId: string | undefined }
-    >({
+    followUser: builder.mutation<FollowUserResponse, FollowUserArgs>({
       query: ({ targetUserId }) => ({
         url: `${USER_URL}/follow/${targetUserId}`,
         method: 'PUT',
       }),
       invalidatesTags: (result, error, args) => [
         { type: 'User', id: args.targetUserId },
+        { type: 'User', id: args.loggedInUserId },
       ],
     }),
   }),

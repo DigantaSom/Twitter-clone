@@ -28,6 +28,11 @@ export interface GetProfileArgs extends UsernameArg {
   loggedInUserId: string | undefined;
 }
 
+export interface FollowUserArgs {
+  targetUserId: string | undefined;
+  loggedInUserId: string | undefined;
+}
+
 export interface FollowUserResponse {
   message: string;
 }
