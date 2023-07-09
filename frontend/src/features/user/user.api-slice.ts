@@ -1,7 +1,13 @@
 import { apiSlice } from '../../app/api/api.slice';
 
 import { Tweet } from '../tweet/tweet.types';
-import { UserBasicInfo, UserProfile, UsernameArg } from './user.types';
+import {
+  UserBasicInfo,
+  UserProfile,
+  UsernameArg,
+  FollowUserResponse,
+  GetProfileArgs,
+} from './user.types';
 
 const USER_URL = '/api/users';
 
@@ -33,9 +39,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getUserBasicInfo: builder.query<UserBasicInfo, { userId: string }>({
-      query: ({ userId }) => ({
-        url: `${USER_URL}/basic/${userId}`,
+    getUserBasicInfo: builder.query<
+      UserBasicInfo,
+      { userId: string; loggedInUserId: string | undefined }
+    >({
+      query: ({ userId, loggedInUserId }) => ({
+        url: `${USER_URL}/basic?userId=${userId}&loggedInUserId=${loggedInUserId}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
@@ -43,9 +52,9 @@ export const userApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, arg) => [{ type: 'User', id: arg.userId }],
     }),
 
-    getProfile: builder.query<UserProfile, UsernameArg>({
-      query: ({ username }) => ({
-        url: `${USER_URL}/profile/${username}`,
+    getProfile: builder.query<UserProfile, GetProfileArgs>({
+      query: ({ username, loggedInUserId }) => ({
+        url: `${USER_URL}/profile?username=${username}&loggedInUserId=${loggedInUserId}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
@@ -118,6 +127,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
             ]
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
+
+    followUser: builder.mutation<
+      FollowUserResponse,
+      { targetUserId: string | undefined }
+    >({
+      query: ({ targetUserId }) => ({
+        url: `${USER_URL}/follow/${targetUserId}`,
+        method: 'PUT',
+      }),
+      invalidatesTags: (result, error, args) => [
+        { type: 'User', id: args.targetUserId },
+      ],
+    }),
   }),
   overrideExisting: true,
 });
@@ -131,4 +153,5 @@ export const {
   useGetRepliesByUsernameQuery,
   useGetMediaTweetsByUsernameQuery,
   useGetLikedTweetsByUsernameQuery,
+  useFollowUserMutation,
 } = userApiSlice;

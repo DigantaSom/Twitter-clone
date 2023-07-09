@@ -1,5 +1,6 @@
 import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 
+import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useGetTweetByIdQuery } from './tweet.api-slice';
 import { selectLikedByPopupTweetId, closeLikedByPopup } from '../ui/ui.slice';
@@ -8,6 +9,8 @@ import AppPopup from '../../components/AppPopup';
 import LikedByListItem from './LikedByListItem';
 
 const LikedByPopup = () => {
+  const auth = useAuth();
+
   const dispatch = useAppDispatch();
   const likedByPopupTweetId = useAppSelector(selectLikedByPopupTweetId);
 
@@ -28,7 +31,11 @@ const LikedByPopup = () => {
 
       <main className='flex-1 mt-12 h-full overflow-y-scroll'>
         {tweet?.likes.map(like => (
-          <LikedByListItem key={like.userId} like={like} />
+          <LikedByListItem
+            key={like.userId}
+            like={like}
+            loggedInUserId={auth.user?.id}
+          />
         ))}
       </main>
     </AppPopup>

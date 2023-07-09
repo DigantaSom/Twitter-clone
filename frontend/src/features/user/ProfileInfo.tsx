@@ -5,7 +5,6 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 import { IoBalloonOutline, IoCalendarOutline } from 'react-icons/io5';
 import { AiOutlineLink } from 'react-icons/ai';
 
-import useAuth from '../../hooks/useAuth';
 import { useGetBirthday, useGetJoiningDate } from '../../hooks/date-hooks';
 
 import CustomButton from '../../components/CustomButton';
@@ -15,6 +14,7 @@ import ProfileMorePopupContents from './ProfileMorePopupContents';
 import constants from '../../constants';
 
 interface ProfileInfoProps {
+  loggedInUserId: string | undefined;
   profileUserId: string;
   headerPhoto: string;
   profilePicture: string;
@@ -23,11 +23,13 @@ interface ProfileInfoProps {
   bio: string;
   birthday: string | null;
   joiningDate: string;
+  isFollowedByLoggedInUser: boolean;
   numberOfFollowing: number;
   numberOfFollowers: number;
 }
 
 const ProfileInfo: FC<ProfileInfoProps> = ({
+  loggedInUserId,
   profileUserId,
   headerPhoto,
   profilePicture,
@@ -36,10 +38,10 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
   bio,
   birthday,
   joiningDate,
+  isFollowedByLoggedInUser,
   numberOfFollowing,
   numberOfFollowers,
 }) => {
-  const auth = useAuth();
   const birthday_toDisplay = useGetBirthday(birthday);
   const joiningDate_toDisplay = useGetJoiningDate(joiningDate);
 
@@ -47,12 +49,12 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
   const [showMorePopup, setShowMorePopup] = useState(false);
 
   useEffect(() => {
-    if (auth.user?.id === profileUserId) {
+    if (profileUserId === loggedInUserId) {
       setIsMyProfile(true);
     } else {
       setIsMyProfile(false);
     }
-  }, [auth.user?.id, profileUserId]);
+  }, [profileUserId, loggedInUserId]);
 
   const handleClickEditProfile = () => {
     // TODO: open edit profile popup from the App.tsx component through RTK
@@ -100,7 +102,10 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
                 >
                   <FiMoreHorizontal className='text-lg' />
                 </div>
-                <FollowButton />
+                <FollowButton
+                  isFollowedByLoggedInUser={isFollowedByLoggedInUser}
+                  targetUserId={profileUserId}
+                />
               </div>
               {showMorePopup && (
                 <div className='absolute z-20 top-10 right-full text-black min-w-[200px]'>
@@ -124,12 +129,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
           </h3>
         </div>
 
-        <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aperiam
-          animi ab vel culpa ex repellendus nobis fugit soluta consectetur
-          voluptas blanditiis consequatur earum explicabo omnis dicta at eaque,
-          sapiente cupiditate.
-        </p>
+        <p>{bio}</p>
 
         <div className='flex items-center justify-start space-x-5 text-gray-500'>
           {/* TODO: Backend - add birthday to profile after a user signs up */}

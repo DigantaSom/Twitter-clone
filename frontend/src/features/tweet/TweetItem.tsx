@@ -39,6 +39,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
 
   const { data: userBasicData } = useGetUserBasicInfoQuery({
     userId: tweet?.userId || '',
+    loggedInUserId: auth.user?.id,
   });
 
   const [
@@ -60,13 +61,14 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
 
   const {
     _id: tweetId,
+    userId,
     twitterHandle,
     profilePicture,
     fullName,
     caption,
     media,
     isDeleted,
-    parentTweetId,
+    parent: parentTweetId,
   } = tweet;
 
   const isMediaPresent = media.length > 0 && media[0] !== '';
@@ -134,10 +136,14 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
                 className='absolute z-30 top-10 hover:cursor-default'
               >
                 <ProfilePopup
+                  userId={userId}
                   profilePicture={profilePicture}
                   fullName={fullName}
                   username={twitterHandle}
                   bio={userBasicData?.bio}
+                  isFollowedByLoggedInUser={
+                    userBasicData?.isFollowedByLoggedInUser
+                  }
                   numberOfFollowers={userBasicData?.numberOfFollowers}
                   numberOfFollowing={userBasicData?.numberOfFollowing}
                 />
@@ -166,10 +172,14 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
                         className='absolute z-30 top-5 hover:cursor-default'
                       >
                         <ProfilePopup
+                          userId={userId}
                           profilePicture={profilePicture}
                           fullName={fullName}
                           username={twitterHandle}
                           bio={userBasicData?.bio}
+                          isFollowedByLoggedInUser={
+                            userBasicData?.isFollowedByLoggedInUser
+                          }
                           numberOfFollowers={userBasicData?.numberOfFollowers}
                           numberOfFollowing={userBasicData?.numberOfFollowing}
                         />
@@ -194,14 +204,18 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
                           onMouseOver={handleMouseOverUsername}
                           onMouseLeave={handleMouseLeaveUsername}
                           className={`absolute z-30 top-5 ${
-                            !parentTweetId && '-left-[200%]'
+                            parentTweetId && '-left-[200%]'
                           } hover:cursor-default`}
                         >
                           <ProfilePopup
+                            userId={userId}
                             profilePicture={profilePicture}
                             fullName={fullName}
                             username={twitterHandle}
                             bio={userBasicData?.bio}
+                            isFollowedByLoggedInUser={
+                              userBasicData?.isFollowedByLoggedInUser
+                            }
                             numberOfFollowers={userBasicData?.numberOfFollowers}
                             numberOfFollowing={userBasicData?.numberOfFollowing}
                           />

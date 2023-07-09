@@ -6,7 +6,7 @@ export interface TweetState {
 
 export interface Tweet {
   _id: string;
-  parentTweetId: string | null;
+  parent: string | null;
   degree: number;
   userId: string;
   fullName: string;

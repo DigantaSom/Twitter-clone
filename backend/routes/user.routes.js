@@ -12,8 +12,8 @@ router
 
 router.route('/bookmarks').get(verifyJWT, userController.getBookmarks);
 
-router.route('/basic/:userId').get(userController.getUserBasicInfo);
-router.route('/profile/:username').get(userController.getProfile);
+router.route('/basic').get(userController.getUserBasicInfo); // contains query variables
+router.route('/profile').get(userController.getProfile); // contains query variables
 
 router.route('/tweets/:username').get(userController.getTweetsByUsername);
 router.route('/replies/:username').get(userController.getRepliesByUsername);
@@ -23,5 +23,7 @@ router
 router
   .route('/liked-tweets/:username')
   .get(userController.getLikedTweetsByUsername);
+
+router.route('/follow/:targetUserId').put(verifyJWT, userController.followUser);
 
 module.exports = router;

@@ -10,6 +10,7 @@ import ProfilePopup from '../features/user/ProfilePopup';
 import constants from '../constants';
 
 interface TweetAuthorInfoProps {
+  loggedInUserId: string | undefined;
   userId: string | undefined;
   username: string;
   profilePicture: string;
@@ -19,6 +20,7 @@ interface TweetAuthorInfoProps {
 }
 
 const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
+  loggedInUserId,
   userId,
   username,
   profilePicture,
@@ -28,6 +30,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
 }) => {
   const { data: userBasicData } = useGetUserBasicInfoQuery({
     userId: userId ?? '',
+    loggedInUserId,
   });
 
   const [
@@ -86,10 +89,14 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
               className='absolute z-30 top-10 hover:cursor-default'
             >
               <ProfilePopup
+                userId={userId}
                 profilePicture={profilePicture}
                 fullName={fullName}
                 username={username}
                 bio={userBasicData?.bio}
+                isFollowedByLoggedInUser={
+                  userBasicData?.isFollowedByLoggedInUser
+                }
                 numberOfFollowers={userBasicData?.numberOfFollowers}
                 numberOfFollowing={userBasicData?.numberOfFollowing}
               />
@@ -115,10 +122,14 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
                 className='absolute z-30 top-5 hover:cursor-default'
               >
                 <ProfilePopup
+                  userId={userId}
                   profilePicture={profilePicture}
                   fullName={fullName}
                   username={username}
                   bio={userBasicData?.bio}
+                  isFollowedByLoggedInUser={
+                    userBasicData?.isFollowedByLoggedInUser
+                  }
                   numberOfFollowers={userBasicData?.numberOfFollowers}
                   numberOfFollowing={userBasicData?.numberOfFollowing}
                 />
@@ -143,10 +154,14 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
                 className='absolute z-30 top-5 hover:cursor-default'
               >
                 <ProfilePopup
+                  userId={userId}
                   profilePicture={profilePicture}
                   fullName={fullName}
                   username={username}
                   bio={userBasicData?.bio}
+                  isFollowedByLoggedInUser={
+                    userBasicData?.isFollowedByLoggedInUser
+                  }
                   numberOfFollowers={userBasicData?.numberOfFollowers}
                   numberOfFollowing={userBasicData?.numberOfFollowing}
                 />

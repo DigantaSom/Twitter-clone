@@ -3,6 +3,8 @@ import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
 
 import { ProfileTab } from '../types';
+
+import useAuth from '../hooks/useAuth';
 import { useGetProfileQuery } from '../features/user/user.api-slice';
 
 import Header from '../components/Header';
@@ -11,13 +13,17 @@ import ProfileInfo from '../features/user/ProfileInfo';
 const ProfilePage = () => {
   const { username } = useParams();
   const { pathname } = useLocation();
+  const auth = useAuth();
 
   const {
     data: profile,
     isLoading,
     isError,
     error,
-  } = useGetProfileQuery({ username }, { refetchOnMountOrArgChange: true });
+  } = useGetProfileQuery(
+    { username, loggedInUserId: auth.user?.id },
+    { refetchOnMountOrArgChange: true }
+  );
 
   const [selectedTab, setSelectedTab] = useState<ProfileTab>('Tweets');
 
@@ -69,12 +75,13 @@ const ProfilePage = () => {
       birthday,
       joiningDate,
       numberOfTweets,
+      isFollowedByLoggedInUser,
       numberOfFollowing,
       numberOfFollowers,
     } = profile;
 
     content = (
-      <div className='mb-60'>
+      <div className='pb-60'>
         <Header
           parentComponent='ProfilePage'
           name={name}
@@ -82,6 +89,7 @@ const ProfilePage = () => {
         />
 
         <ProfileInfo
+          loggedInUserId={auth.user?.id}
           profileUserId={_id}
           headerPhoto={headerPhoto}
           profilePicture={
@@ -93,6 +101,7 @@ const ProfilePage = () => {
           bio={bio}
           birthday={birthday}
           joiningDate={joiningDate}
+          isFollowedByLoggedInUser={isFollowedByLoggedInUser}
           numberOfFollowing={numberOfFollowing}
           numberOfFollowers={numberOfFollowers}
         />

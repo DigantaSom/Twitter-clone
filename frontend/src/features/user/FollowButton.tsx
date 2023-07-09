@@ -1,42 +1,74 @@
-import { FC, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
+
+import useAuth from '../../hooks/useAuth';
+import { useFollowUserMutation } from './user.api-slice';
 
 import CustomButton from '../../components/CustomButton';
 
-interface FollowButtonProps {}
+interface FollowButtonProps {
+  isFollowedByLoggedInUser: boolean;
+  targetUserId: string | undefined;
+}
 
-const FollowButton: FC<FollowButtonProps> = ({}) => {
-  const isFollowing = true; // TODO: dynamic
+const FollowButton: FC<FollowButtonProps> = ({
+  isFollowedByLoggedInUser,
+  targetUserId,
+}) => {
+  const auth = useAuth();
 
+  const [followUser, { isLoading: isFollowLoading }] = useFollowUserMutation();
+
+  const [
+    isFollowedByLoggedInUser_toDisplay,
+    setIsFollowedByLoggedInUser_toDisplay,
+  ] = useState(isFollowedByLoggedInUser);
   const [showUnfollowButton, setShowUnfollowButton] = useState(false);
 
+  useEffect(() => {
+    setIsFollowedByLoggedInUser_toDisplay(isFollowedByLoggedInUser);
+  }, [isFollowedByLoggedInUser]);
+
   const onMouseOver = () => {
-    if (isFollowing) {
+    if (isFollowedByLoggedInUser_toDisplay) {
       setShowUnfollowButton(true);
     }
   };
 
   const onMouseLeave = () => {
-    if (isFollowing) {
+    if (isFollowedByLoggedInUser_toDisplay) {
       setShowUnfollowButton(false);
     }
   };
+
+  const handleFollowOrUnfollow = async () => {
+    if (auth.user?.id === targetUserId || isFollowLoading) return;
+    await followUser({ targetUserId });
+    setIsFollowedByLoggedInUser_toDisplay(prev => !prev);
+    setShowUnfollowButton(false);
+  };
+
+  if (auth.user?.id === targetUserId) return null;
 
   return (
     <div onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
       {showUnfollowButton ? (
         <CustomButton
           title='Unfollow'
-          onClick={() => {}}
+          onClick={handleFollowOrUnfollow}
           bgColorClass='bg-white'
           textColorClass='text-red-500'
           textSizeClass='text-xs ph:text-sm'
         />
       ) : (
         <CustomButton
-          title={isFollowing ? 'Following' : 'Follow'}
-          onClick={() => {}}
-          bgColorClass={isFollowing ? 'bg-white' : 'bg-black'}
-          textColorClass={isFollowing ? 'text-gray-700' : 'text-white'}
+          title={isFollowedByLoggedInUser_toDisplay ? 'Following' : 'Follow'}
+          onClick={handleFollowOrUnfollow}
+          bgColorClass={
+            isFollowedByLoggedInUser_toDisplay ? 'bg-white' : 'bg-black'
+          }
+          textColorClass={
+            isFollowedByLoggedInUser_toDisplay ? 'text-gray-700' : 'text-white'
+          }
           textSizeClass='text-xs ph:text-sm'
         />
       )}
@@ -44,4 +76,4 @@ const FollowButton: FC<FollowButtonProps> = ({}) => {
   );
 };
 
-export default FollowButton;
+export default memo(FollowButton);

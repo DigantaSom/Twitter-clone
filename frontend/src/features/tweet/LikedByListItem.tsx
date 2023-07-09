@@ -14,14 +14,18 @@ import constants from '../../constants';
 
 interface LikedByListItemProps {
   like: UserID;
+  loggedInUserId: string | undefined;
 }
 
-const LikedByListItem: FC<LikedByListItemProps> = ({ like }) => {
+const LikedByListItem: FC<LikedByListItemProps> = ({
+  like,
+  loggedInUserId,
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { data, isSuccess } = useGetUserBasicInfoQuery(
-    { userId: like.userId },
+    { userId: like.userId, loggedInUserId },
     {
       pollingInterval: 20000,
       refetchOnMountOrArgChange: true,
@@ -54,7 +58,10 @@ const LikedByListItem: FC<LikedByListItemProps> = ({ like }) => {
                 </h3>
                 <span className='text-gray-500'>@{data.username}</span>
               </div>
-              <FollowButton />
+              <FollowButton
+                isFollowedByLoggedInUser={data.isFollowedByLoggedInUser}
+                targetUserId={like.userId}
+              />
             </div>
 
             <div onClick={goToProfile}>{data.bio || ''}</div>

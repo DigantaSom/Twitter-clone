@@ -26,8 +26,18 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+    followers: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+        addedDate: { type: Date, default: Date.now() },
+      },
+    ],
+    following: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+        addedDate: { type: Date, default: Date.now() },
+      },
+    ],
   },
   { timestamps: true }
 );

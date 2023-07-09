@@ -5,6 +5,7 @@ const User = require('../models/User.model');
 const Tweet = require('../models/Tweet.model');
 
 const getAsyncResultsWithForLoop = require('../utils/getAsyncResultsWithForLoop.util');
+const checkIfFollowedByLoggedInUser = require('../utils/checkIfFollowedByLoggedInUser.util');
 
 // @route GET api/users
 // @desc Fetch all users
@@ -114,17 +115,22 @@ const getBookmarks = async (req, res) => {
   res.status(200).json(bookmarkedTweets);
 };
 
-// @route GET api/users/basic/:userId
+// @route GET api/users/basic
+// Query Variables: { userId: string, loggedInUserId: string }
 // @desc Get the basic information of a user by userId
 // @access Public
 const getUserBasicInfo = async (req, res) => {
+  const { userId, loggedInUserId } = req.query;
+
   try {
-    const user = await User.findById(req.params.userId)
-      .select('-password')
-      .lean()
-      .exec();
+    const user = await User.findById(userId).select('-password').lean().exec();
 
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isFollowedByLoggedInUser = checkIfFollowedByLoggedInUser(
+      loggedInUserId,
+      user.followers
+    );
 
     const userToReturn = {
       _id: user._id,
@@ -132,6 +138,7 @@ const getUserBasicInfo = async (req, res) => {
       name: user.name,
       username: user.handle,
       bio: user.bio || '',
+      isFollowedByLoggedInUser,
       numberOfFollowers: user.followers.length,
       numberOfFollowing: user.following.length,
     };
@@ -144,18 +151,26 @@ const getUserBasicInfo = async (req, res) => {
   }
 };
 
-// @route GET api/users/profile/:username
+// @route GET api/users/profile
+// @Query Variables: { username: string, loggedInUserId: string }
 // @desc Get the entire profile information of a user by their username
 // @access Public
 const getProfile = async (req, res) => {
+  const { username, loggedInUserId } = req.query;
+
   const user = await User.findOne({
-    handle_lowercase: req.params.username?.toLowerCase(),
+    handle_lowercase: username?.toLowerCase(),
   })
     .select('-password')
     .lean()
     .exec();
 
   if (!user) return res.status(404).json({ message: 'User not found' });
+
+  const isFollowedByLoggedInUser = checkIfFollowedByLoggedInUser(
+    loggedInUserId,
+    user.followers
+  );
 
   const profile = {
     _id: user._id,
@@ -167,6 +182,7 @@ const getProfile = async (req, res) => {
     birthday: user?.birthday || null, // TODO: remove nullable functionality
     joiningDate: user.createdAt,
     numberOfTweets: user.numberOfTweets,
+    isFollowedByLoggedInUser,
     numberOfFollowing: user.following.length,
     numberOfFollowers: user.followers.length,
   };
@@ -290,6 +306,53 @@ const getLikedTweetsByUsername = async (req, res) => {
   res.status(200).json(likedTweets);
 };
 
+// @route GET api/users/follow/:targetUserId
+// @desc Follow or Unfollow a user
+// @access Private
+const followUser = async (req, res) => {
+  const myId = req.user.id;
+  const targetUserId = req.params.targetUserId;
+
+  // cannot follow myself
+  if (myId === targetUserId) {
+    return res.status(400).json({ message: 'You cannot follow yourself' });
+  }
+
+  let successMessage = '';
+
+  try {
+    const myself = await User.findById(myId).select('-password').exec();
+    const targetUser = await User.findById(targetUserId)
+      .select('-password')
+      .exec();
+
+    // if I am already following the targetUser, then unfollow that targetUser
+    if (myself.following.some(f => f.userId.toString() === targetUserId)) {
+      myself.following = myself.following.filter(
+        f => f.userId.toString() !== targetUserId
+      );
+      successMessage = `You have unfollowed @${targetUser.handle}`;
+      targetUser.followers = targetUser.followers.filter(
+        f => f.userId.toString() !== myId
+      );
+    } else {
+      // else, follow the targetUser
+      myself.following.unshift({ userId: targetUserId });
+      successMessage = `You are now following @${targetUser.handle}`;
+      targetUser.followers.unshift({ userId: myId });
+    }
+
+    await myself.save();
+    await targetUser.save();
+
+    res.status(200).json({ message: successMessage });
+  } catch (error) {
+    if (error.kind === 'ObjectId') {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -301,4 +364,5 @@ module.exports = {
   getMediaTweetsByUsername,
   getLikedTweetsByUsername,
   getLikedTweetsByUsername,
+  followUser,
 };

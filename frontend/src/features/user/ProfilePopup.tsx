@@ -7,19 +7,23 @@ import ProfilePicture from '../../components/ProfilePicture';
 import FollowButton from './FollowButton';
 
 interface ProfilePopupProps {
+  userId: string | undefined;
   profilePicture: string | undefined;
   fullName: string;
   username: string;
   bio: string | undefined;
+  isFollowedByLoggedInUser: boolean | undefined;
   numberOfFollowers: number | undefined;
   numberOfFollowing: number | undefined;
 }
 
 const ProfilePopup: FC<ProfilePopupProps> = ({
+  userId,
   profilePicture,
   fullName,
   username,
   bio,
+  isFollowedByLoggedInUser,
   numberOfFollowers,
   numberOfFollowing,
 }) => {
@@ -31,7 +35,10 @@ const ProfilePopup: FC<ProfilePopupProps> = ({
           username={username}
           desktopSize={18}
         />
-        <FollowButton />
+        <FollowButton
+          isFollowedByLoggedInUser={isFollowedByLoggedInUser || false}
+          targetUserId={userId}
+        />
       </div>
 
       <div className='flex flex-col'>

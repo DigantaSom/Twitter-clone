@@ -8,6 +8,7 @@ export interface UserBasicInfo {
   username: string;
   profilePicture: string;
   bio: string;
+  isFollowedByLoggedInUser: boolean;
   numberOfFollowers: number;
   numberOfFollowing: number;
 }
@@ -21,4 +22,12 @@ export interface UserProfile extends UserBasicInfo {
 
 export interface UsernameArg {
   username: string | undefined;
+}
+
+export interface GetProfileArgs extends UsernameArg {
+  loggedInUserId: string | undefined;
+}
+
+export interface FollowUserResponse {
+  message: string;
 }
