@@ -48,7 +48,11 @@ const Navigation = () => {
   useEffect(() => {
     if (location.pathname === '/') {
       setSelectedOption('home');
-    } else if (location.pathname.substring(1) === auth.user?.twitterHandle) {
+    } else if (
+      location.pathname
+        .substring(1)
+        .startsWith(auth.user?.twitterHandle as string)
+    ) {
       setSelectedOption('profile');
     } else {
       setSelectedOption(location.pathname.substring(1) as NavigationOption);
