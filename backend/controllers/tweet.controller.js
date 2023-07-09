@@ -131,19 +131,29 @@ const deleteTweet = async (req, res) => {
 // @desc Like or unlike a tweet
 // @access Private
 const likeTweet = async (req, res) => {
+  const tweetId = req.params.tweetId;
+  const userId = req.user.id;
+
   try {
-    const tweet = await Tweet.findById(req.params.tweetId);
+    const user = await User.findById(userId).select('-password').exec();
+    const tweet = await Tweet.findById(tweetId);
 
     // if the tweet has already been liked by the same user, then unlike the tweet
     if (tweet.likes.some(like => like.userId.toString() === req.user.id)) {
       tweet.likes = tweet.likes.filter(
         like => like.userId.toString() !== req.user.id
       );
+      user.likes = user.likes.filter(
+        like => like.tweetId.toString() !== tweetId
+      );
     } else {
       // else, like the tweet
       tweet.likes.unshift({ userId: req.user.id });
+      user.likes.unshift({ tweetId });
     }
+
     await tweet.save();
+    await user.save();
 
     res.status(200).json(tweet.likes);
   } catch (error) {

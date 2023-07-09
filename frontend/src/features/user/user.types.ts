@@ -18,3 +18,7 @@ export interface UserProfile extends UserBasicInfo {
   joiningDate: string;
   numberOfTweets: number;
 }
+
+export interface UsernameArg {
+  username: string | undefined;
+}

@@ -1,7 +1,7 @@
 import { apiSlice } from '../../app/api/api.slice';
 
 import { Tweet } from '../tweet/tweet.types';
-import { UserBasicInfo, UserProfile } from './user.types';
+import { UserBasicInfo, UserProfile, UsernameArg } from './user.types';
 
 const USER_URL = '/api/users';
 
@@ -43,7 +43,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, arg) => [{ type: 'User', id: arg.userId }],
     }),
 
-    getProfile: builder.query<UserProfile, { username: string | undefined }>({
+    getProfile: builder.query<UserProfile, UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/profile/${username}`,
         method: 'GET',
@@ -55,10 +55,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    getTweetsByUsername: builder.query<
-      Tweet[],
-      { username: string | undefined }
-    >({
+    getTweetsByUsername: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/tweets/${username}`,
         method: 'GET',
@@ -74,10 +71,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getRepliesByUsername: builder.query<
-      Tweet[],
-      { username: string | undefined }
-    >({
+    getRepliesByUsername: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/replies/${username}`,
         method: 'GET',
@@ -93,12 +87,25 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getMediaTweetsByUsername: builder.query<
-      Tweet[],
-      { username: string | undefined }
-    >({
+    getMediaTweetsByUsername: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/media-tweets/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
+
+    getLikedTweetsByUsername: builder.query<Tweet[], UsernameArg>({
+      query: ({ username }) => ({
+        url: `${USER_URL}/liked-tweets/${username}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
@@ -123,4 +130,5 @@ export const {
   useGetTweetsByUsernameQuery,
   useGetRepliesByUsernameQuery,
   useGetMediaTweetsByUsernameQuery,
+  useGetLikedTweetsByUsernameQuery,
 } = userApiSlice;

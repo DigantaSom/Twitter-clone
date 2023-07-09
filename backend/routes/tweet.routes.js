@@ -17,10 +17,10 @@ router
 
 router.route('/like/:tweetId').put(verifyJWT, tweetController.likeTweet);
 
-router.route('/replies/:parentTweetId').get(tweetController.getReplies);
-
 router
   .route('/bookmark/:tweetId')
   .put(verifyJWT, tweetController.bookmarkTweet);
+
+router.route('/replies/:parentTweetId').get(tweetController.getReplies);
 
 module.exports = router;

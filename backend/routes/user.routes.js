@@ -20,5 +20,8 @@ router.route('/replies/:username').get(userController.getRepliesByUsername);
 router
   .route('/media-tweets/:username')
   .get(userController.getMediaTweetsByUsername);
+router
+  .route('/liked-tweets/:username')
+  .get(userController.getLikedTweetsByUsername);
 
 module.exports = router;

@@ -43,7 +43,7 @@ const ProfilePage = () => {
     ) {
       setSelectedTab('Likes');
     }
-  }, [pathname]);
+  }, [pathname, profile?.username]);
 
   const selectedTabExtraStyles = 'pb-3 border-b-4 border-b-twitter';
 

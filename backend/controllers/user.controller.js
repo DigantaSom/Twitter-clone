@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User.model');
 const Tweet = require('../models/Tweet.model');
 
+const getAsyncResultsWithForLoop = require('../utils/getAsyncResultsWithForLoop.util');
+
 // @route GET api/users
 // @desc Fetch all users
 // @access Testing only
@@ -102,26 +104,14 @@ const getBookmarks = async (req, res) => {
     .lean()
     .exec();
 
-  const bookmarkedTweetsIncludingNull = await getAsyncBookmarkResults(
+  const bookmarkedTweets = await getAsyncResultsWithForLoop(
     user.bookmarks.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1))
   );
 
-  const bookmarkedTweets = bookmarkedTweetsIncludingNull.filter(t => t != null);
-
+  if (!bookmarkedTweets.length) {
+    return res.status(404).json({ message: 'No bookmarked tweets yet!' });
+  }
   res.status(200).json(bookmarkedTweets);
-};
-
-// this is a helper function for 'getBookmarks'
-const getAsyncBookmarkResults = async array => {
-  // includes null elements
-  const promises = array.map(
-    async bookmark =>
-      await Tweet.findOne({
-        $and: [{ _id: bookmark.tweetId }, { isDeleted: false }],
-      })
-  );
-
-  return Promise.all(promises);
 };
 
 // @route GET api/users/basic/:userId
@@ -211,7 +201,7 @@ const getTweetsByUsername = async (req, res) => {
     .exec();
 
   if (!tweetsByUser?.length) {
-    return res.status(404).json({ message: 'Tweet not found.' });
+    return res.status(404).json({ message: 'No Tweets found.' });
   }
   res.status(200).json(tweetsByUser);
 };
@@ -243,7 +233,7 @@ const getRepliesByUsername = async (req, res) => {
     .exec();
 
   if (!tweetsByUser?.length) {
-    return res.status(404).json({ message: 'Tweet not found.' });
+    return res.status(404).json({ message: 'No Tweet found.' });
   }
   res.status(200).json(tweetsByUser);
 };
@@ -275,9 +265,29 @@ const getMediaTweetsByUsername = async (req, res) => {
     .exec();
 
   if (!tweetsByUser?.length) {
-    return res.status(404).json({ message: 'Tweet not found.' });
+    return res.status(404).json({ message: 'No Tweet found.' });
   }
   res.status(200).json(tweetsByUser);
+};
+
+// @route GET api/users/liked-tweets/:username
+// @desc Fetch all liked tweets of a user by their username
+// @access Public
+const getLikedTweetsByUsername = async (req, res) => {
+  const username = req.params.username?.toLowerCase();
+  const user = await User.findOne({ handle_lowercase: username })
+    .select('-password')
+    .lean()
+    .exec();
+
+  const likedTweets = await getAsyncResultsWithForLoop(
+    user.likes.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1))
+  );
+
+  if (!likedTweets.length) {
+    return res.status(404).json({ message: 'No liked tweets yet!' });
+  }
+  res.status(200).json(likedTweets);
 };
 
 module.exports = {
@@ -289,4 +299,6 @@ module.exports = {
   getTweetsByUsername,
   getRepliesByUsername,
   getMediaTweetsByUsername,
+  getLikedTweetsByUsername,
+  getLikedTweetsByUsername,
 };
