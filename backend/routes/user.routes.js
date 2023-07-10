@@ -25,5 +25,10 @@ router
   .get(userController.getLikedTweetsByUsername);
 
 router.route('/follow/:targetUserId').put(verifyJWT, userController.followUser);
+router.route('/followers/:username').get(userController.getFollowers);
+router.route('/following/:username').get(userController.getFollowing);
+router
+  .route('/mutual-followers/:username')
+  .get(verifyJWT, userController.getMutualFollowers);
 
 module.exports = router;

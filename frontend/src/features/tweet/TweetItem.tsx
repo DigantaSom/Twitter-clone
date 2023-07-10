@@ -8,7 +8,7 @@ import { Tweet } from './tweet.types';
 
 import useAuth from '../../hooks/useAuth';
 import { useDeleteTweetMutation } from './tweet.api-slice';
-import { useGetUserBasicInfoQuery } from '../user/user.api-slice';
+import { useGetUserBasicInfoByIdQuery } from '../user/user.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
 import PostOptions from './PostOptions';
@@ -37,7 +37,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
 
   const auth = useAuth();
 
-  const { data: userBasicData } = useGetUserBasicInfoQuery({
+  const { data: userBasicData } = useGetUserBasicInfoByIdQuery({
     userId: tweet?.userId || '',
     loggedInUserId: auth.user?.id,
   });

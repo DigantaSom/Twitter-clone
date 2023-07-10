@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { PulseLoader } from 'react-spinners';
 
-import { ProfileTab } from '../types';
+import { ProfilePageTab } from '../types';
 
 import useAuth from '../hooks/useAuth';
+import { useAppDispatch } from '../hooks/redux-hooks';
 import { useGetProfileQuery } from '../features/user/user.api-slice';
+import { closeLikedByPopup } from '../features/ui/ui.slice';
 
 import Header from '../components/Header';
 import ProfileInfo from '../features/user/ProfileInfo';
@@ -14,6 +16,7 @@ const ProfilePage = () => {
   const { username } = useParams();
   const { pathname } = useLocation();
   const auth = useAuth();
+  const dispatch = useAppDispatch();
 
   const {
     data: profile,
@@ -25,7 +28,8 @@ const ProfilePage = () => {
     { pollingInterval: 25000, refetchOnMountOrArgChange: true }
   );
 
-  const [selectedTab, setSelectedTab] = useState<ProfileTab>('Tweets');
+  const topMostDivRef = useRef<HTMLDivElement>(null);
+  const [selectedTab, setSelectedTab] = useState<ProfilePageTab>('Tweets');
 
   useEffect(() => {
     if (
@@ -50,6 +54,11 @@ const ProfilePage = () => {
       setSelectedTab('Likes');
     }
   }, [pathname, profile?.username]);
+
+  useEffect(() => {
+    dispatch(closeLikedByPopup());
+    topMostDivRef.current?.scrollIntoView({ behavior: 'smooth' }); // scroll to top
+  }, [dispatch]);
 
   const selectedTabExtraStyles = 'pb-3 border-b-4 border-b-twitter';
 
@@ -81,7 +90,7 @@ const ProfilePage = () => {
     } = profile;
 
     content = (
-      <div className='pb-60'>
+      <div ref={topMostDivRef} className='pb-60'>
         <Header
           parentComponent='ProfilePage'
           name={name}

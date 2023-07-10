@@ -353,6 +353,81 @@ const followUser = async (req, res) => {
   }
 };
 
+// @route GET api/users/followers/:username
+// @desc Get the follower list of a user by their username
+// @access Public
+const getFollowers = async (req, res) => {
+  const username = req.params.username?.toLowerCase();
+  const user = await User.findOne({ handle_lowercase: username })
+    .select('-password')
+    .lean()
+    .exec();
+
+  if (!user.followers.length) {
+    return res.status(400).json({ message: 'No followers yet.' });
+  }
+  res
+    .status(200)
+    .json(user.followers.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1)));
+};
+
+// @route GET api/users/following/:username
+// @desc Get the following list of a user by their username
+// @access Public
+const getFollowing = async (req, res) => {
+  const username = req.params.username?.toLowerCase();
+  const user = await User.findOne({ handle_lowercase: username })
+    .select('-password')
+    .lean()
+    .exec();
+
+  if (!user.following.length) {
+    return res.status(400).json({ message: 'Not following anyone yet.' });
+  }
+  res
+    .status(200)
+    .json(user.following.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1)));
+};
+
+// @route GET api/users/mutual-followers/:username
+// @desc Get the mutual follower list of a user by their username
+// @access Private
+const getMutualFollowers = async (req, res) => {
+  const targetUsername = req.params.username?.toLowerCase();
+  const loggedInUserId = req.user.id;
+
+  const targetUser = await User.findOne({ handle_lowercase: targetUsername })
+    .select('-password')
+    .lean()
+    .exec();
+  const loggedInUser = await User.findById(loggedInUserId)
+    .select('-password')
+    .lean()
+    .exec();
+
+  const result = [];
+
+  targetUser.followers.forEach(targetUserFollower => {
+    loggedInUser.following.forEach(loggedInUserFollowing => {
+      if (
+        targetUserFollower.userId.toString() ===
+        loggedInUserFollowing.userId.toString()
+      ) {
+        result.push(targetUserFollower);
+      }
+    });
+  });
+
+  if (!result.length) {
+    return res
+      .status(400)
+      .json({ message: 'Not followed by anyone you are following.' });
+  }
+  res
+    .status(200)
+    .json(result.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1)));
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -365,4 +440,7 @@ module.exports = {
   getLikedTweetsByUsername,
   getLikedTweetsByUsername,
   followUser,
+  getFollowers,
+  getFollowing,
+  getMutualFollowers,
 };

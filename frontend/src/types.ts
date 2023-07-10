@@ -34,4 +34,6 @@ export type NavigationOption =
   | 'profile'
   | 'more';
 
-export type ProfileTab = 'Tweets' | 'Replies' | 'Media' | 'Likes';
+export type ProfilePageTab = 'Tweets' | 'Replies' | 'Media' | 'Likes';
+
+export type FollowPageTab = 'Followers you know' | 'Followers' | 'Following';

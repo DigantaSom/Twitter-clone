@@ -2,7 +2,7 @@ import { FC, memo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { useGetUserBasicInfoQuery } from '../features/user/user.api-slice';
+import { useGetUserBasicInfoByIdQuery } from '../features/user/user.api-slice';
 
 import ProfilePicture from './ProfilePicture';
 import ProfilePopup from '../features/user/ProfilePopup';
@@ -28,7 +28,7 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
   showOptionsPopup,
   handleToggleOptions,
 }) => {
-  const { data: userBasicData } = useGetUserBasicInfoQuery({
+  const { data: userBasicData } = useGetUserBasicInfoByIdQuery({
     userId: userId ?? '',
     loggedInUserId,
   });

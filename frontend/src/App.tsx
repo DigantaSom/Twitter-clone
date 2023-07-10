@@ -19,6 +19,7 @@ import TweetPhotoPage from './pages/TweetPhotoPage';
 import ProfilePhotoPage from './pages/ProfilePhotoPage';
 import HeaderPhotoPage from './pages/HeaderPhotoPage';
 import BookmarksPage from './pages/BookmarksPage';
+import FollowPage from './pages/FollowPage';
 
 import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
@@ -35,6 +36,9 @@ import ProfileTweetsContainer from './features/user/ProfileTweetsContainer';
 import ProfileRepliesContainer from './features/user/ProfileRepliesContainer';
 import ProfileMediaContainer from './features/user/ProfileMediaContainer';
 import ProfileLikesContainer from './features/user/ProfileLikesContainer';
+import MutualFollowerList from './features/user/MutualFollowerList';
+import FollowerList from './features/user/FollowerList';
+import FollowingList from './features/user/FollowingList';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -60,6 +64,15 @@ const App = () => {
                 />
                 <Route path='media' element={<ProfileMediaContainer />} />
                 <Route path='likes' element={<ProfileLikesContainer />} />
+              </Route>
+
+              <Route element={<FollowPage />}>
+                <Route
+                  path='followers_you_follow'
+                  element={<MutualFollowerList />}
+                />
+                <Route path='followers' element={<FollowerList />} />
+                <Route path='following' element={<FollowingList />} />
               </Route>
 
               <Route

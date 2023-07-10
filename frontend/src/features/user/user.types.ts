@@ -36,3 +36,9 @@ export interface FollowUserArgs {
 export interface FollowUserResponse {
   message: string;
 }
+
+export type FollowObjectArray = {
+  _id: string;
+  userId: string;
+  addedDate: string;
+}[];

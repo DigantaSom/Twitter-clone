@@ -84,7 +84,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
   // scroll to top on component mount
   useEffect(() => {
-    topMostDivRef.current?.scrollIntoView();
+    topMostDivRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   useEffect(() => {

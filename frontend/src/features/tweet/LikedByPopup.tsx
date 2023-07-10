@@ -6,7 +6,7 @@ import { useGetTweetByIdQuery } from './tweet.api-slice';
 import { selectLikedByPopupTweetId, closeLikedByPopup } from '../ui/ui.slice';
 
 import AppPopup from '../../components/AppPopup';
-import LikedByListItem from './LikedByListItem';
+import UserListItem from '../user/UserListItem';
 
 const LikedByPopup = () => {
   const auth = useAuth();
@@ -31,9 +31,9 @@ const LikedByPopup = () => {
 
       <main className='flex-1 mt-12 h-full overflow-y-scroll'>
         {tweet?.likes.map(like => (
-          <LikedByListItem
+          <UserListItem
             key={like.userId}
-            like={like}
+            userId={like.userId}
             loggedInUserId={auth.user?.id}
           />
         ))}

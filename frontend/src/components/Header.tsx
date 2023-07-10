@@ -75,19 +75,20 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
         >
           <IoArrowBack className='text-2xl text-gray-700' />
         </div>
-        {parentComponent === 'TweetPage' && (
+        {parentComponent === 'TweetPage' ? (
           <h2 className='font-bold text-lg ph:text-xl -mt-[2px]'>Tweet</h2>
-        )}
-        {parentComponent === 'ProfilePage' && (
+        ) : (
           <div className='flex flex-col'>
             <span className='font-bold text-base ph:text-lg -mt-[2px]'>
               {name || 'Profile'}
             </span>
-            {!!numberOfTweets && (
-              <span className='text-sm ph:text-[15px] text-gray-500'>
-                {numberOfTweets} {numberOfTweets > 1 ? 'Tweets' : 'Tweet'}
-              </span>
-            )}
+            <div className='text-sm ph:text-[15px] text-gray-500'>
+              {!!numberOfTweets && (
+                <span>
+                  {numberOfTweets} {numberOfTweets > 1 ? 'Tweets' : 'Tweet'}
+                </span>
+              )}
+            </div>
           </div>
         )}
       </div>

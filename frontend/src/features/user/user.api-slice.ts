@@ -8,6 +8,7 @@ import {
   FollowUserResponse,
   GetProfileArgs,
   FollowUserArgs,
+  FollowObjectArray,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -40,7 +41,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getUserBasicInfo: builder.query<
+    getUserBasicInfoById: builder.query<
       UserBasicInfo,
       { userId: string; loggedInUserId: string | undefined }
     >({
@@ -139,6 +140,40 @@ export const userApiSlice = apiSlice.injectEndpoints({
         { type: 'User', id: args.loggedInUserId },
       ],
     }),
+
+    getFollowers: builder.query<FollowObjectArray, UsernameArg>({
+      query: ({ username }) => ({
+        url: `${USER_URL}/followers/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+    }),
+
+    getFollowing: builder.query<FollowObjectArray, UsernameArg>({
+      query: ({ username }) => ({
+        url: `${USER_URL}/following/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+    }),
+
+    getMututalFollowers: builder.query<FollowObjectArray, UsernameArg>({
+      query: ({ username }) => ({
+        url: `${USER_URL}/mutual-followers/${username}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'User', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'User' as const, _id })),
+            ]
+          : [{ type: 'User', id: 'LIST' }],
+    }),
   }),
   overrideExisting: true,
 });
@@ -146,11 +181,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
 export const {
   useSignUpMutation,
   useGetBookmarksQuery,
-  useGetUserBasicInfoQuery,
+  useGetUserBasicInfoByIdQuery,
   useGetProfileQuery,
   useGetTweetsByUsernameQuery,
   useGetRepliesByUsernameQuery,
   useGetMediaTweetsByUsernameQuery,
   useGetLikedTweetsByUsernameQuery,
   useFollowUserMutation,
+  useGetFollowersQuery,
+  useGetFollowingQuery,
+  useGetMututalFollowersQuery,
 } = userApiSlice;
