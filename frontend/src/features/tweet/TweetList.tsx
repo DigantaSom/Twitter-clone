@@ -6,9 +6,10 @@ import PulseLoader from 'react-spinners/PulseLoader';
 
 import { Tweet } from './tweet.types';
 
-import TweetItem from './TweetItem';
+import TweetItemContainer from './TweetItemContainer';
 
 interface TweetListProps {
+  showParentTweet: boolean;
   tweets: Tweet[] | undefined;
   isLoading: boolean;
   isSuccess: boolean;
@@ -17,6 +18,7 @@ interface TweetListProps {
 }
 
 const TweetList: FC<TweetListProps> = ({
+  showParentTweet,
   tweets,
   isLoading,
   isSuccess,
@@ -35,7 +37,13 @@ const TweetList: FC<TweetListProps> = ({
       </div>
     );
   } else if (isSuccess && tweets?.length) {
-    content = tweets.map(tweet => <TweetItem key={tweet._id} tweet={tweet} />);
+    content = tweets.map(tweet => (
+      <TweetItemContainer
+        key={tweet._id}
+        tweet={tweet}
+        showParentTweet={showParentTweet}
+      />
+    ));
   }
 
   return <>{content}</>;

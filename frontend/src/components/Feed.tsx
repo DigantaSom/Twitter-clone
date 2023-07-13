@@ -23,6 +23,7 @@ const Feed = () => {
       <Header parentComponent='Feed' />
       <CreateTweet from='Feed' />
       <TweetList
+        showParentTweet={false}
         tweets={tweets}
         isLoading={isLoading}
         isSuccess={isSuccess}

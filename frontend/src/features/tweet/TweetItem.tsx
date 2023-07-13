@@ -20,9 +20,15 @@ import DeletedTweetPlaceholder from '../../components/DeletedTweetPlaceholder';
 
 interface TweetItemProps {
   tweet: Tweet;
+  isParentTweetItem: boolean;
+  showParentTweet: boolean;
 }
 
-const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
+const TweetItem: FC<TweetItemProps> = ({
+  tweet,
+  isParentTweetItem,
+  showParentTweet,
+}) => {
   const navigate = useNavigate();
 
   const [
@@ -50,7 +56,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
   useEffect(() => {
     if (isDeleteTweetError && deleteTweetError) {
       if ('data' in deleteTweetError) {
-        alert((deleteTweetError.data as any).message);
+        alert((deleteTweetError.data as any).message || 'Error deleting tweet');
       }
     }
   }, [isDeleteTweetError, deleteTweetError]);
@@ -119,39 +125,62 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
     content = <DeletedTweetPlaceholder />;
   } else {
     content = (
-      <div className='relative p-2 ph_sm:p-4 pb-3 hover:bg-gray-100 hover:cursor-pointer border-b-[1px] border-gray-200'>
-        <div className='flex items-start'>
-          {/* Profile Pic */}
-          <div className='relative'>
-            <div
-              onMouseOver={handleMouseOverProfilePic}
-              onMouseLeave={handleMouseLeaveProfilePic}
-            >
-              <ProfilePicture uri={profilePicture} username={twitterHandle} />
+      <div
+        className={`relative px-2 ph_sm:px-4 
+        ${
+          isParentTweetItem
+            ? 'pb-0 ph_sm:pb-0'
+            : 'pb-2 ph_sm:pb-3 border-b-[1px] border-gray-200'
+        } 
+        hover:bg-gray-100 hover:cursor-pointer `}
+      >
+        <div className='flex'>
+          <div className='flex flex-col'>
+            {/* Upper Thread line */}
+            <div className='h-2 ph_sm:h-4 flex justify-center'>
+              {showParentTweet && (
+                <div className='border-[1px] border-gray-300'></div>
+              )}
             </div>
-            {showProfilePopup_from_profilePic && (
+            {/* Profile Pic */}
+            <div className='relative'>
               <div
                 onMouseOver={handleMouseOverProfilePic}
                 onMouseLeave={handleMouseLeaveProfilePic}
-                className='absolute z-30 top-10 hover:cursor-default'
               >
-                <ProfilePopup
-                  userId={userId}
-                  profilePicture={profilePicture}
-                  fullName={fullName}
-                  username={twitterHandle}
-                  bio={userBasicData?.bio}
-                  isFollowedByLoggedInUser={
-                    userBasicData?.isFollowedByLoggedInUser
-                  }
-                  numberOfFollowers={userBasicData?.numberOfFollowers}
-                  numberOfFollowing={userBasicData?.numberOfFollowing}
-                />
+                <ProfilePicture uri={profilePicture} username={twitterHandle} />
               </div>
-            )}
+              {showProfilePopup_from_profilePic && (
+                <div
+                  onMouseOver={handleMouseOverProfilePic}
+                  onMouseLeave={handleMouseLeaveProfilePic}
+                  className='absolute z-30 top-10 hover:cursor-default'
+                >
+                  <ProfilePopup
+                    userId={userId}
+                    profilePicture={profilePicture}
+                    fullName={fullName}
+                    username={twitterHandle}
+                    bio={userBasicData?.bio}
+                    isFollowedByLoggedInUser={
+                      userBasicData?.isFollowedByLoggedInUser
+                    }
+                    numberOfFollowers={userBasicData?.numberOfFollowers}
+                    numberOfFollowing={userBasicData?.numberOfFollowing}
+                  />
+                </div>
+              )}
+            </div>
+            {/* Lower Thread line */}
+            <div className='flex-1 flex justify-center'>
+              {isParentTweetItem && (
+                <div className='border-[1px] border-gray-300'></div>
+              )}
+            </div>
           </div>
 
-          <div className='ml-2 ph_sm:ml-3 flex-1'>
+          {/* Main content */}
+          <main className='ml-2 ph_sm:ml-3 pt-2 ph_sm:pt-4 flex-1'>
             <div className='flex items-start ph_sm:items-center justify-between'>
               <div className='flex items-center space-x-2'>
                 <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2'>
@@ -268,7 +297,7 @@ const TweetItem: FC<TweetItemProps> = ({ tweet }) => {
                 tweetCreationDate={createdAt}
               />
             )}
-          </div>
+          </main>
         </div>
 
         {showOptionsPopup && auth.user && (

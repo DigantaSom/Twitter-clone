@@ -35,7 +35,7 @@ import ProfilePicture from './ProfilePicture';
 
 const Navigation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
 
   const auth = useAuth();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -46,18 +46,19 @@ const Navigation = () => {
   const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
 
   useEffect(() => {
-    if (location.pathname === '/') {
+    if (pathname === '/') {
       setSelectedOption('home');
     } else if (
-      location.pathname
+      pathname.substring(1).startsWith(auth.user?.twitterHandle as string) &&
+      !pathname
         .substring(1)
-        .startsWith(auth.user?.twitterHandle as string)
+        .startsWith(`${auth.user?.twitterHandle}/status` as string)
     ) {
       setSelectedOption('profile');
     } else {
-      setSelectedOption(location.pathname.substring(1) as NavigationOption);
+      setSelectedOption(pathname.substring(1) as NavigationOption);
     }
-  }, [location.pathname, auth.user?.twitterHandle]);
+  }, [pathname, auth.user?.twitterHandle]);
 
   const handleSelectOption = (option: NavigationOption) => {
     setSelectedOption(option);

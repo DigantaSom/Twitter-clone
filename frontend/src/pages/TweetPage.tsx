@@ -370,6 +370,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
         {/* Reply list of this particular tweet */}
         <TweetList
+          showParentTweet={false}
           tweets={replies}
           isLoading={isRepliesLoading}
           isSuccess={isRepliesSuccess}

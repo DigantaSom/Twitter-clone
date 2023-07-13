@@ -18,6 +18,7 @@ const BookmarksPage = () => {
     <div>
       <Header parentComponent='BookmarksPage' />
       <TweetList
+        showParentTweet={false}
         tweets={bookmarkedTweets}
         isLoading={isLoading}
         isSuccess={isSuccess}

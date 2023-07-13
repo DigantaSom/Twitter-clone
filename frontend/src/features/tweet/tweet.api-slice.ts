@@ -4,18 +4,19 @@ import {
   Tweet,
   AddNewTweetArg,
   DeleteTweetArg,
-  LikeTweetArg,
+  TweetIdArg,
   LikeResponse,
-  BookmarkTweetArg,
   BookmarkResponse,
   GetRepliesArg,
 } from './tweet.types';
+
+const TWEET_URL = '/api/tweets';
 
 export const tweetApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     getTweets: builder.query<Tweet[], void>({
       query: () => ({
-        url: '/api/tweets',
+        url: TWEET_URL,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
@@ -31,7 +32,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 
     getTweetById: builder.query<Tweet, { id: string }>({
       query: arg => ({
-        url: `/api/tweets/${arg.id}`,
+        url: `${TWEET_URL}/${arg.id}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
@@ -41,7 +42,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 
     addNewTweet: builder.mutation<Tweet | any, AddNewTweetArg>({
       query: tweetData => ({
-        url: '/api/tweets',
+        url: TWEET_URL,
         method: 'POST',
         body: { ...tweetData },
       }),
@@ -51,7 +52,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 
     deleteTweet: builder.mutation<any, DeleteTweetArg>({
       query: arg => ({
-        url: `/api/tweets/${arg.tweetId}`,
+        url: `${TWEET_URL}/${arg.tweetId}`,
         method: 'DELETE',
         body: { parentTweetId: arg.parentTweetId },
       }),
@@ -61,9 +62,9 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    likeTweet: builder.mutation<LikeResponse, LikeTweetArg>({
+    likeTweet: builder.mutation<LikeResponse, TweetIdArg>({
       query: arg => ({
-        url: `api/tweets/like/${arg.tweetId}`,
+        url: `${TWEET_URL}/like/${arg.tweetId}`,
         method: 'PUT',
       }),
       // invalidating only the updated Tweet object in the cache
@@ -72,9 +73,9 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    bookmarkTweet: builder.mutation<BookmarkResponse, BookmarkTweetArg>({
+    bookmarkTweet: builder.mutation<BookmarkResponse, TweetIdArg>({
       query: arg => ({
-        url: `api/tweets/bookmark/${arg.tweetId}`,
+        url: `${TWEET_URL}/bookmark/${arg.tweetId}`,
         method: 'PUT',
       }),
       // invalidating only the updated Tweet object in the cache
@@ -85,7 +86,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
 
     getReplies: builder.query<Tweet[], GetRepliesArg>({
       query: ({ parentTweetId }) => ({
-        url: `api/tweets/replies/${parentTweetId}`,
+        url: `${TWEET_URL}/replies/${parentTweetId}`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,

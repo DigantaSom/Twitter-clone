@@ -20,6 +20,7 @@ const ProfileLikesContainer = () => {
 
   return (
     <TweetList
+      showParentTweet={false}
       tweets={tweets}
       isLoading={isLoading}
       isSuccess={isSuccess}

@@ -306,7 +306,7 @@ const getLikedTweetsByUsername = async (req, res) => {
   res.status(200).json(likedTweets);
 };
 
-// @route GET api/users/follow/:targetUserId
+// @route PUT api/users/follow/:targetUserId
 // @desc Follow or Unfollow a user
 // @access Private
 const followUser = async (req, res) => {

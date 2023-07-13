@@ -20,6 +20,7 @@ const ProfileRepliesContainer = () => {
 
   return (
     <TweetList
+      showParentTweet={true}
       tweets={replies}
       isLoading={isLoading}
       isSuccess={isSuccess}

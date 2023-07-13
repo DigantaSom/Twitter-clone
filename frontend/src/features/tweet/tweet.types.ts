@@ -35,13 +35,9 @@ export type DeleteTweetArg = {
   parentTweetId: string | null;
 };
 
-export type LikeTweetArg = {
-  tweetId: string;
-};
+export type TweetIdArg = { tweetId: string };
 
 export type LikeResponse = { userId: UserID }[];
-
-export type BookmarkTweetArg = LikeTweetArg;
 
 export type BookmarkResponse = { message: string };
 
