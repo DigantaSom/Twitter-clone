@@ -1,10 +1,17 @@
+import { useAppSelector } from '../hooks/redux-hooks';
 import { useGetTweetsQuery } from '../features/tweet/tweet.api-slice';
+import { selectIsAuthenticated } from '../features/auth/auth.slice';
+import { selectToastMessage } from '../features/toast/toast.slice';
 
 import Header from './Header';
 import CreateTweet from '../features/tweet/CreateTweet';
 import TweetList from '../features/tweet/TweetList';
+import TweetComposeButton from './TweetComposeButton';
 
 const Feed = () => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const toastMessage = useAppSelector(selectToastMessage);
+
   const {
     data: tweets,
     isLoading,
@@ -30,6 +37,16 @@ const Feed = () => {
         isError={isError}
         error={error}
       />
+
+      {isAuthenticated && (
+        <div
+          className={`ph:hidden absolute ${
+            toastMessage ? 'bottom-24' : 'bottom-20'
+          } right-2 ph_sm:right-4 z-30`}
+        >
+          <TweetComposeButton from='App' />
+        </div>
+      )}
     </div>
   );
 };

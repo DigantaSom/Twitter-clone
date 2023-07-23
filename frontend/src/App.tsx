@@ -6,6 +6,7 @@ import {
   selectIsComposeTweetShown,
   selectIsCreateReplyPopupShown,
   selectIsLikedByPopupShown,
+  selectIsEditProfilePopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 import { selectToastMessage } from './features/toast/toast.slice';
@@ -16,15 +17,13 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import TweetPage from './pages/TweetPage';
 import TweetPhotoPage from './pages/TweetPhotoPage';
-import ProfilePhotoPage from './pages/ProfilePhotoPage';
-import HeaderPhotoPage from './pages/HeaderPhotoPage';
+import ProfilePhotosPage from './pages/ProfilePhotosPage';
 import BookmarksPage from './pages/BookmarksPage';
 import FollowPage from './pages/FollowPage';
 
 import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
 import DarkOverlay from './components/DarkOverlay';
-import TweetComposeButton from './components/TweetComposeButton';
 import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
@@ -39,6 +38,7 @@ import ProfileLikesContainer from './features/user/ProfileLikesContainer';
 import MutualFollowerList from './features/user/MutualFollowerList';
 import FollowerList from './features/user/FollowerList';
 import FollowingList from './features/user/FollowingList';
+import EditProfilePopup from './features/user/EditProfilePopup';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -46,6 +46,7 @@ const App = () => {
   const authModal = useAppSelector(selectAuthModal);
   const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
   const isLikedByPopupShown = useAppSelector(selectIsLikedByPopupShown);
+  const isEditProfileShown = useAppSelector(selectIsEditProfilePopupShown);
   const toastMessage = useAppSelector(selectToastMessage);
 
   return (
@@ -87,12 +88,15 @@ const App = () => {
           </Route>
 
           <Route
-            path=':username/status/:tweetId/photo/:photoIndex'
+            path='/:username/status/:tweetId/photo/:photoIndex'
             element={<TweetPhotoPage />}
           />
 
-          <Route path=':username/photo' element={<ProfilePhotoPage />} />
-          <Route path=':username/header_photo' element={<HeaderPhotoPage />} />
+          <Route path='/:username/photo' element={<ProfilePhotosPage />} />
+          <Route
+            path='/:username/header_photo'
+            element={<ProfilePhotosPage />}
+          />
         </Route>
       </Routes>
 
@@ -105,23 +109,15 @@ const App = () => {
       {(isComposeTweetShown ||
         authModal.isShown ||
         isCreateReplyPopupShown ||
-        isLikedByPopupShown) && (
+        isLikedByPopupShown ||
+        isEditProfileShown) && (
         <DarkOverlay
           isComposeTweetShown={isComposeTweetShown}
           isAuthModalShown={authModal.isShown}
           isCreateReplyPopupShown={isCreateReplyPopupShown}
           isLikedByPopupShown={isLikedByPopupShown}
+          isEditProfileShown={isEditProfileShown}
         />
-      )}
-
-      {isAuthenticated && (
-        <div
-          className={`ph:hidden absolute ${
-            toastMessage ? 'bottom-24' : 'bottom-20'
-          } right-2 ph_sm:right-4 z-30`}
-        >
-          <TweetComposeButton from='App' />
-        </div>
       )}
 
       {isComposeTweetShown && (
@@ -134,6 +130,9 @@ const App = () => {
 
       {isLikedByPopupShown && <LikedByPopup />}
 
+      {isEditProfileShown && <EditProfilePopup />}
+
+      {/* z-30 */}
       {isAuthenticated && <BottomNavigation />}
 
       {!isAuthenticated && <BottomAuth />}

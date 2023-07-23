@@ -53,6 +53,8 @@ const createUser = async (req, res) => {
     password,
     profilePicture: profilePicture || '',
     bio: '',
+    location: '',
+    website: '',
     followers: [],
     following: [],
   });
@@ -65,7 +67,6 @@ const createUser = async (req, res) => {
       id: user.id,
       twitterHandle: user.handle,
       fullName: user.name,
-      profilePicture: user.profilePicture,
     },
   };
 
@@ -94,25 +95,6 @@ const createUser = async (req, res) => {
   });
 
   res.status(200).send({ accessToken });
-};
-
-// @route GET api/users/bookmarks
-// @desc Get all bookmarks of the logged in user
-// @access Private
-const getBookmarks = async (req, res) => {
-  const user = await User.findById(req.user.id)
-    .select('-password')
-    .lean()
-    .exec();
-
-  const bookmarkedTweets = await getAsyncResultsWithForLoop(
-    user.bookmarks.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1))
-  );
-
-  if (!bookmarkedTweets.length) {
-    return res.status(404).json({ message: 'No bookmarked tweets yet!' });
-  }
-  res.status(200).json(bookmarkedTweets);
 };
 
 // @route GET api/users/basic
@@ -182,12 +164,57 @@ const getProfile = async (req, res) => {
     birthday: user?.birthday || null, // TODO: remove nullable functionality
     joiningDate: user.createdAt,
     numberOfTweets: user.numberOfTweets,
+    location: user.location,
+    website: user.website,
     isFollowedByLoggedInUser,
     numberOfFollowing: user.following.length,
     numberOfFollowers: user.followers.length,
   };
 
   return res.status(200).json(profile);
+};
+
+// @route PUT api/users
+// @desc Edit Profile
+// @access Private (only own profile can be edited)
+const editProfile = async (req, res) => {
+  const { name, bio, location, website, profilePhoto, headerPhoto } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: 'Name is required' });
+  }
+
+  const user = await User.findById(req.user.id).select('-password').exec();
+
+  user.name = name;
+  user.bio = bio;
+  user.location = location;
+  user.website = website;
+  user.profilePicture = profilePhoto;
+  user.headerPhoto = headerPhoto;
+
+  await user.save();
+
+  res.status(200).json({ message: 'Profile edited successfully!' });
+};
+
+// @route GET api/users/bookmarks
+// @desc Get all bookmarks of the logged in user
+// @access Private
+const getBookmarks = async (req, res) => {
+  const user = await User.findById(req.user.id)
+    .select('-password')
+    .lean()
+    .exec();
+
+  const bookmarkedTweets = await getAsyncResultsWithForLoop(
+    user.bookmarks.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1))
+  );
+
+  if (!bookmarkedTweets.length) {
+    return res.status(404).json({ message: 'No bookmarked tweets yet!' });
+  }
+  res.status(200).json(bookmarkedTweets);
 };
 
 // @route GET api/users/tweets/:username
@@ -431,9 +458,10 @@ const getMutualFollowers = async (req, res) => {
 module.exports = {
   getAllUsers,
   createUser,
-  getBookmarks,
   getUserBasicInfo,
   getProfile,
+  editProfile,
+  getBookmarks,
   getTweetsByUsername,
   getRepliesByUsername,
   getMediaTweetsByUsername,

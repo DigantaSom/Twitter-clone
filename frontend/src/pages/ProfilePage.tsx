@@ -25,7 +25,10 @@ const ProfilePage = () => {
     error,
   } = useGetProfileQuery(
     { username, loggedInUserId: auth.user?.id },
-    { pollingInterval: 25000, refetchOnMountOrArgChange: true }
+    {
+      pollingInterval: 25000,
+      refetchOnMountOrArgChange: true,
+    }
   );
 
   const topMostDivRef = useRef<HTMLDivElement>(null);
@@ -84,6 +87,7 @@ const ProfilePage = () => {
       birthday,
       joiningDate,
       numberOfTweets,
+      website,
       isFollowedByLoggedInUser,
       numberOfFollowing,
       numberOfFollowers,
@@ -101,15 +105,13 @@ const ProfilePage = () => {
           loggedInUserId={auth.user?.id}
           profileUserId={_id}
           headerPhoto={headerPhoto}
-          profilePicture={
-            profilePicture ||
-            'https://pbs.twimg.com/profile_images/1673946227736723458/QRU9Z4Cm_400x400.jpg'
-          }
+          profilePicture={profilePicture}
           name={name}
           username={username}
           bio={bio}
           birthday={birthday}
           joiningDate={joiningDate}
+          website={website}
           isFollowedByLoggedInUser={isFollowedByLoggedInUser}
           numberOfFollowing={numberOfFollowing}
           numberOfFollowers={numberOfFollowers}

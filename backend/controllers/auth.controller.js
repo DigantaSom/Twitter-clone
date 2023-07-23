@@ -39,7 +39,6 @@ const login = async (req, res) => {
       id: user._id,
       twitterHandle: user.handle,
       fullName: user.name,
-      profilePicture: user.profilePicture,
     },
   };
 
@@ -102,7 +101,6 @@ const refresh = (req, res) => {
             id: foundUser.id,
             twitterHandle: foundUser.handle,
             fullName: foundUser.name,
-            profilePicture: foundUser.profilePicture,
           },
         },
         process.env.ACCESS_TOKEN_SECRET,

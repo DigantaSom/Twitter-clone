@@ -8,12 +8,13 @@ const router = express.Router();
 router
   .route('/')
   .get(userController.getAllUsers)
-  .post(userController.createUser);
-
-router.route('/bookmarks').get(verifyJWT, userController.getBookmarks);
+  .post(userController.createUser)
+  .put(verifyJWT, userController.editProfile);
 
 router.route('/basic').get(userController.getUserBasicInfo); // contains query variables
 router.route('/profile').get(userController.getProfile); // contains query variables
+
+router.route('/bookmarks').get(verifyJWT, userController.getBookmarks);
 
 router.route('/tweets/:username').get(userController.getTweetsByUsername);
 router.route('/replies/:username').get(userController.getRepliesByUsername);

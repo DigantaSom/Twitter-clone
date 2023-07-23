@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema(
     headerPhoto: { type: String, default: '' },
     bio: { type: String, default: '' },
     birthday: { type: Date },
+    location: { type: String, default: '' },
+    website: { type: String, default: '' },
 
     numberOfTweets: { type: Number, default: 0 },
     bookmarks: [

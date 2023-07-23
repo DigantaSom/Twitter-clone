@@ -16,7 +16,6 @@ export interface TokenPayloadUser {
   id: string;
   twitterHandle: string;
   fullName: string;
-  profilePicture: string;
 }
 
 export interface TokenPayload {
@@ -37,3 +36,5 @@ export type NavigationOption =
 export type ProfilePageTab = 'Tweets' | 'Replies' | 'Media' | 'Likes';
 
 export type FollowPageTab = 'Followers you know' | 'Followers' | 'Following';
+
+export type PhotoType = 'Profile' | 'Header';

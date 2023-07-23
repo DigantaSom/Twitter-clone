@@ -197,7 +197,7 @@ const CreateReplyPopup = () => {
           >
             <div className='w-[12%]'>
               <ProfilePicture
-                uri={currentUser?.profilePicture}
+                uri={''} // TODO: instead of payload, get profile pic from somewhere else
                 username={currentUser?.twitterHandle}
               />
             </div>

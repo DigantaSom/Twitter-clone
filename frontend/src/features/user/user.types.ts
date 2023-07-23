@@ -18,6 +18,8 @@ export interface UserProfile extends UserBasicInfo {
   birthday: string | null; // TODO: remove nullable functionality
   joiningDate: string;
   numberOfTweets: number;
+  location: string;
+  website: string;
 }
 
 export interface UsernameArg {
@@ -33,7 +35,7 @@ export interface FollowUserArgs {
   loggedInUserId: string | undefined;
 }
 
-export interface FollowUserResponse {
+export interface SingleMessageResponse {
   message: string;
 }
 
@@ -42,3 +44,13 @@ export type FollowObjectArray = {
   userId: string;
   addedDate: string;
 }[];
+
+export interface EditProfileRequestBody {
+  userId: string; // just to invalidate the cache after success
+  name: string;
+  bio: string;
+  location: string;
+  website: string;
+  profilePhoto: string;
+  headerPhoto: string;
+}

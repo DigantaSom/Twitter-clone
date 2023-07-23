@@ -5,10 +5,11 @@ import {
   UserBasicInfo,
   UserProfile,
   UsernameArg,
-  FollowUserResponse,
+  SingleMessageResponse,
   GetProfileArgs,
   FollowUserArgs,
   FollowObjectArray,
+  EditProfileRequestBody,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -61,8 +62,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      providesTags: (result, error, arg) => [
-        { type: 'User', id: arg.username },
+      providesTags: result => [{ type: 'User', id: result?._id }],
+    }),
+
+    editProfile: builder.mutation<
+      SingleMessageResponse,
+      EditProfileRequestBody
+    >({
+      query: editProfileData => ({
+        url: USER_URL,
+        method: 'PUT',
+        body: { ...editProfileData },
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'User', id: arg.userId },
       ],
     }),
 
@@ -130,7 +143,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    followUser: builder.mutation<FollowUserResponse, FollowUserArgs>({
+    followUser: builder.mutation<SingleMessageResponse, FollowUserArgs>({
       query: ({ targetUserId }) => ({
         url: `${USER_URL}/follow/${targetUserId}`,
         method: 'PUT',
@@ -183,6 +196,7 @@ export const {
   useGetBookmarksQuery,
   useGetUserBasicInfoByIdQuery,
   useGetProfileQuery,
+  useEditProfileMutation,
   useGetTweetsByUsernameQuery,
   useGetRepliesByUsernameQuery,
   useGetMediaTweetsByUsernameQuery,

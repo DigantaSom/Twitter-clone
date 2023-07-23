@@ -1,7 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { UiState, AuthModalType, LikedByPopup_Payload } from './ui.types';
+import {
+  UiState,
+  AuthModalType,
+  LikedByPopup_Payload,
+  EditProfilePopup_Payload,
+} from './ui.types';
 import { RootState } from '../../app/store';
 
 const initialState: UiState = {
@@ -15,6 +20,10 @@ const initialState: UiState = {
   likedByPopup: {
     isShown: false,
     tweetId: null,
+  },
+  editProfilePopup: {
+    isShown: false,
+    username: undefined,
   },
 };
 
@@ -43,6 +52,17 @@ const uiSlice = createSlice({
       state.likedByPopup.isShown = false;
       state.likedByPopup.tweetId = null;
     },
+    openEditProfilePopup: (
+      state,
+      action: PayloadAction<EditProfilePopup_Payload>
+    ) => {
+      state.editProfilePopup.isShown = true;
+      state.editProfilePopup.username = action.payload.username;
+    },
+    closeEditProfilePopup: state => {
+      state.editProfilePopup.isShown = false;
+      state.editProfilePopup.username = undefined;
+    },
   },
 });
 
@@ -62,6 +82,11 @@ export const selectIsLikedByPopupShown = (state: RootState) =>
 export const selectLikedByPopupTweetId = (state: RootState) =>
   state.ui.likedByPopup.tweetId;
 
+export const selectIsEditProfilePopupShown = (state: RootState) =>
+  state.ui.editProfilePopup.isShown;
+export const selectEditProfilePopupUsername = (state: RootState) =>
+  state.ui.editProfilePopup.username;
+
 export const {
   toggleComposeTweet,
   toggleAuthModal,
@@ -69,6 +94,8 @@ export const {
   toggleCreateReplyPopup,
   openLikedByPopup,
   closeLikedByPopup,
+  openEditProfilePopup,
+  closeEditProfilePopup,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

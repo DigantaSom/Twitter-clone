@@ -33,6 +33,8 @@ import { NavigationOption } from '../types';
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
 
+import constants from '../constants';
+
 const Navigation = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -238,7 +240,7 @@ const Navigation = () => {
             ) : (
               <>
                 <ProfilePicture
-                  uri={auth.user.profilePicture}
+                  uri={constants.placeholder_profilePicture} // TODO:
                   username={auth.user.twitterHandle}
                   disableGoToProfile={true}
                 />

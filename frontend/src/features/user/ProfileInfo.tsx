@@ -1,11 +1,13 @@
 import { FC, useState, useEffect, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { IoBalloonOutline, IoCalendarOutline } from 'react-icons/io5';
 import { AiOutlineLink } from 'react-icons/ai';
 
+import { useAppDispatch } from '../../hooks/redux-hooks';
 import { useGetBirthday, useGetJoiningDate } from '../../hooks/date-hooks';
+import { openEditProfilePopup } from '../ui/ui.slice';
 
 import CustomButton from '../../components/CustomButton';
 import FollowButton from './FollowButton';
@@ -23,6 +25,7 @@ interface ProfileInfoProps {
   bio: string;
   birthday: string | null;
   joiningDate: string;
+  website: string;
   isFollowedByLoggedInUser: boolean;
   numberOfFollowing: number;
   numberOfFollowers: number;
@@ -38,10 +41,14 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
   bio,
   birthday,
   joiningDate,
+  website,
   isFollowedByLoggedInUser,
   numberOfFollowing,
   numberOfFollowers,
 }) => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
   const birthday_toDisplay = useGetBirthday(birthday);
   const joiningDate_toDisplay = useGetJoiningDate(joiningDate);
 
@@ -57,7 +64,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
   }, [profileUserId, loggedInUserId]);
 
   const handleClickEditProfile = () => {
-    // TODO: open edit profile popup from the App.tsx component through RTK
+    dispatch(openEditProfilePopup({ username }));
   };
 
   const toggleShowMorePopup = () => setShowMorePopup(prevState => !prevState);
@@ -68,18 +75,29 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
         {/* Header Photo */}
         <div className='w-full h-[200px]'>
           {!!headerPhoto ? (
-            <img src={headerPhoto} alt='Header' />
+            <Link to='header_photo'>
+              <img
+                src={headerPhoto}
+                alt='Header'
+                className='w-full h-full object-cover'
+              />
+            </Link>
           ) : (
             <div className='w-full h-full bg-gray-300'></div>
           )}
         </div>
 
         {/* Profile Photo */}
-        <div className='absolute left-2 ph_sm:left-4 -bottom-16 w-32 h-32 bg-white rounded-full flex items-center justify-center'>
+        <div
+          onClick={() => profilePicture && navigate('photo')}
+          className={`absolute left-2 ph_sm:left-4 -bottom-16 w-32 h-32 bg-white rounded-full flex items-center justify-center ${
+            profilePicture && 'hover:bg-gray-200 hover:cursor-pointer'
+          }`}
+        >
           <img
             src={profilePicture || constants.placeholder_profilePicture}
             alt='Profile'
-            className='w-[92%] h-[92%] rounded-full'
+            className='w-[92%] h-[92%] object-cover rounded-full'
           />
         </div>
 
@@ -139,15 +157,19 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
               <div>Born {birthday_toDisplay}</div>
             </div>
           )}
-          {/* TODO: website */}
+          {/* website */}
           <div className='flex items-center space-x-1'>
             <AiOutlineLink className='text-lg' />
-            <Link
-              to='https://youtube.com'
+            <a
+              href={
+                website.startsWith('https://') ? website : `https://${website}`
+              }
+              target='_blank'
+              rel='noreferrer'
               className='text-twitter hover:underline'
             >
-              youtube.com
-            </Link>
+              {website}
+            </a>
           </div>
           <div className='flex items-center space-x-1'>
             <IoCalendarOutline />
