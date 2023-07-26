@@ -25,6 +25,7 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/redux-hooks';
+import { useGetMyProfilePhotoQuery } from '../features/user/user.api-slice';
 import { useSendLogoutMutation } from '../features/auth/auth.api-slice';
 import { selectIsAuthenticated } from '../features/auth/auth.slice';
 
@@ -33,8 +34,6 @@ import { NavigationOption } from '../types';
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
 
-import constants from '../constants';
-
 const Navigation = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -42,10 +41,11 @@ const Navigation = () => {
   const auth = useAuth();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
+  const { data: loggedInUserInfo } = useGetMyProfilePhotoQuery();
+  const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
+
   const [selectedOption, setSelectedOption] =
     useState<NavigationOption>('home');
-
-  const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
 
   useEffect(() => {
     if (pathname === '/') {
@@ -240,7 +240,7 @@ const Navigation = () => {
             ) : (
               <>
                 <ProfilePicture
-                  uri={constants.placeholder_profilePicture} // TODO:
+                  uri={loggedInUserInfo?.profilePhoto}
                   username={auth.user.twitterHandle}
                   disableGoToProfile={true}
                 />

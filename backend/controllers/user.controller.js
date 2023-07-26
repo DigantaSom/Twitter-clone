@@ -97,6 +97,26 @@ const createUser = async (req, res) => {
   res.status(200).send({ accessToken });
 };
 
+// @route GET api/users/me/profile_photo
+// @desc Get the currently logged-in user's profile photo
+// @access Private
+const getMyProfilePhoto = async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId)
+    .select('profilePicture')
+    .lean()
+    .exec();
+
+  if (!user) {
+    return res.status(400).json({ message: 'User not found' });
+  }
+  res.status(200).json({
+    userId: user._id,
+    profilePhoto: user.profilePicture,
+  });
+};
+
 // @route GET api/users/basic
 // Query Variables: { userId: string, loggedInUserId: string }
 // @desc Get the basic information of a user by userId
@@ -458,6 +478,7 @@ const getMutualFollowers = async (req, res) => {
 module.exports = {
   getAllUsers,
   createUser,
+  getMyProfilePhoto,
   getUserBasicInfo,
   getProfile,
   editProfile,

@@ -40,11 +40,11 @@ const ProfilePicture: FC<ProfilePictureProps> = ({
 
   return (
     <div onClick={handleGotToProfile}>
-      <div className={`relative ${sizeStyles} hover:cursor-pointer`}>
+      <div className={`${sizeStyles} hover:cursor-pointer`}>
         <img
           src={uri && uri !== '' ? uri : constants.placeholder_profilePicture}
           alt='User'
-          className='w-full h-full rounded-full'
+          className='w-full h-full object-cover rounded-full'
         />
       </div>
     </div>

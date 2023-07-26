@@ -29,7 +29,7 @@ const ProfilePopup: FC<ProfilePopupProps> = ({
 }) => {
   return (
     <div className='bg-white min-w-[280px] max-w-[300px] shadow-2xl p-2 ph_sm:p-4 rounded-2xl flex flex-col space-y-2'>
-      <div className='flex items-start justify-between'>
+      <div className='flex items-center justify-between'>
         <ProfilePicture
           uri={profilePicture}
           username={username}

@@ -10,6 +10,7 @@ import {
   FollowUserArgs,
   FollowObjectArray,
   EditProfileRequestBody,
+  GetMyProfilePhotoResponse,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -26,25 +27,19 @@ export const userApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
 
-    getBookmarks: builder.query<Tweet[], void>({
+    getMyProfilePhoto: builder.query<GetMyProfilePhotoResponse, void>({
       query: () => ({
-        url: `${USER_URL}/bookmarks`,
+        url: `${USER_URL}/me/profile_photo`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      providesTags: result =>
-        result
-          ? [
-              { type: 'Tweet', id: 'LIST' },
-              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
-            ]
-          : [{ type: 'Tweet', id: 'LIST' }],
+      providesTags: result => [{ type: 'User', id: result?.userId }],
     }),
 
     getUserBasicInfoById: builder.query<
       UserBasicInfo,
-      { userId: string; loggedInUserId: string | undefined }
+      { userId: string | undefined; loggedInUserId: string | undefined }
     >({
       query: ({ userId, loggedInUserId }) => ({
         url: `${USER_URL}/basic?userId=${userId}&loggedInUserId=${loggedInUserId}`,
@@ -77,6 +72,22 @@ export const userApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [
         { type: 'User', id: arg.userId },
       ],
+    }),
+
+    getBookmarks: builder.query<Tweet[], void>({
+      query: () => ({
+        url: `${USER_URL}/bookmarks`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
     getTweetsByUsername: builder.query<Tweet[], UsernameArg>({
@@ -193,10 +204,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useSignUpMutation,
-  useGetBookmarksQuery,
+  useGetMyProfilePhotoQuery,
   useGetUserBasicInfoByIdQuery,
   useGetProfileQuery,
   useEditProfileMutation,
+  useGetBookmarksQuery,
   useGetTweetsByUsernameQuery,
   useGetRepliesByUsernameQuery,
   useGetMediaTweetsByUsernameQuery,

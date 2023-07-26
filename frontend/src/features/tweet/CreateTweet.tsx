@@ -13,6 +13,7 @@ import { IoCloseSharp } from 'react-icons/io5';
 
 import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { useGetMyProfilePhotoQuery } from '../user/user.api-slice';
 import { useAddNewTweetMutation } from './tweet.api-slice';
 
 import {
@@ -36,11 +37,15 @@ interface CreateTweetProps {
 const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
   const auth = useAuth();
   const dispatch = useAppDispatch();
+
+  const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
+
+  const { data: loggedInUserInfo } = useGetMyProfilePhotoQuery();
+  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
+
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
   const [imageToPost, setImageToPost] = useState('');
-  const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
-  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
   useEffect(() => {
     if (isComposeTweetShown && text) {
@@ -151,7 +156,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
     >
       {/* left */}
       <ProfilePicture
-        uri={constants.placeholder_profilePicture}
+        uri={loggedInUserInfo?.profilePhoto}
         username={auth.user?.twitterHandle}
       />
 

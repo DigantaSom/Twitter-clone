@@ -11,6 +11,10 @@ router
   .post(userController.createUser)
   .put(verifyJWT, userController.editProfile);
 
+router
+  .route('/me/profile_photo')
+  .get(verifyJWT, userController.getMyProfilePhoto);
+
 router.route('/basic').get(userController.getUserBasicInfo); // contains query variables
 router.route('/profile').get(userController.getProfile); // contains query variables
 
