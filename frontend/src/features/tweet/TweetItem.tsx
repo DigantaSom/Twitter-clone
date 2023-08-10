@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
@@ -7,7 +7,10 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 import { Tweet } from './tweet.types';
 
 import useAuth from '../../hooks/useAuth';
-import { useDeleteTweetMutation } from './tweet.api-slice';
+import {
+  useDeleteTweetMutation,
+  useGetRetweetedPostIdQuery,
+} from './tweet.api-slice';
 import { useGetUserBasicInfoByIdQuery } from '../user/user.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
 
@@ -22,14 +25,17 @@ interface TweetItemProps {
   tweet: Tweet;
   isParentTweetItem: boolean;
   showParentTweet: boolean;
+  retweetedPost: Tweet | null;
 }
 
 const TweetItem: FC<TweetItemProps> = ({
   tweet,
   isParentTweetItem,
   showParentTweet,
+  retweetedPost,
 }) => {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const [
     showProfilePopup_from_profilePic,
@@ -41,12 +47,19 @@ const TweetItem: FC<TweetItemProps> = ({
     useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
-  const auth = useAuth();
-
   const { data: userBasicData } = useGetUserBasicInfoByIdQuery({
     userId: tweet?.userId || '',
     loggedInUserId: auth.user?.id,
   });
+
+  const { data: retweetedPostId_onlyFor_retweetRefTweetItem } =
+    useGetRetweetedPostIdQuery(
+      {
+        refTweetId: tweet._id,
+        loggedInUsername: auth.user?.twitterHandle,
+      },
+      { refetchOnMountOrArgChange: true }
+    );
 
   const [
     deleteTweet,
@@ -157,7 +170,7 @@ const TweetItem: FC<TweetItemProps> = ({
                   className='absolute z-30 top-10 hover:cursor-default'
                 >
                   <ProfilePopup
-                    userId={userId}
+                    userId={userId!}
                     profilePicture={profilePicture}
                     fullName={fullName}
                     username={twitterHandle}
@@ -181,6 +194,17 @@ const TweetItem: FC<TweetItemProps> = ({
 
           {/* Main content */}
           <main className='ml-2 ph_sm:ml-3 pt-2 ph_sm:pt-4 flex-1'>
+            {retweetedPost?.retweetedBy && (
+              <Link
+                to={'/' + retweetedPost?.retweetedBy.username}
+                className='text-sm font-semibold hover:underline'
+              >
+                {retweetedPost?.retweetedBy.userId === auth.user?.id
+                  ? 'You'
+                  : retweetedPost?.retweetedBy.fullName}{' '}
+                Retweeted
+              </Link>
+            )}
             <div className='flex items-start ph_sm:items-center justify-between'>
               <div className='flex items-center space-x-2'>
                 <div className='flex flex-col ph:flex-row ph:items-center ph:space-x-2'>
@@ -201,7 +225,7 @@ const TweetItem: FC<TweetItemProps> = ({
                         className='absolute z-30 top-5 hover:cursor-default'
                       >
                         <ProfilePopup
-                          userId={userId}
+                          userId={userId!}
                           profilePicture={profilePicture}
                           fullName={fullName}
                           username={twitterHandle}
@@ -237,7 +261,7 @@ const TweetItem: FC<TweetItemProps> = ({
                           } hover:cursor-default`}
                         >
                           <ProfilePopup
-                            userId={userId}
+                            userId={userId!}
                             profilePicture={profilePicture}
                             fullName={fullName}
                             username={twitterHandle}
@@ -295,6 +319,11 @@ const TweetItem: FC<TweetItemProps> = ({
                 tweet={tweet}
                 isMediaPresent={isMediaPresent}
                 tweetCreationDate={createdAt}
+                retweetedPostId={
+                  retweetedPost
+                    ? retweetedPost._id
+                    : retweetedPostId_onlyFor_retweetRefTweetItem?.loggedInUser_retweetedPostId
+                }
               />
             )}
           </main>
@@ -315,4 +344,4 @@ const TweetItem: FC<TweetItemProps> = ({
   return <>{content}</>;
 };
 
-export default TweetItem;
+export default memo(TweetItem);

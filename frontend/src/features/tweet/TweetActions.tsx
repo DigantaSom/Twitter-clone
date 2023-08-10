@@ -7,7 +7,6 @@ import { MdIosShare } from 'react-icons/md';
 import { TokenPayloadUser } from '../../types';
 import { Tweet } from './tweet.types';
 
-import useAuth from '../../hooks/useAuth';
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import {
   useLikeTweetMutation,
@@ -19,6 +18,7 @@ import { setCreateReplyPopupData } from '../reply/reply.slice';
 import { toggleCreateReplyPopup } from '../ui/ui.slice';
 
 import ShareTweetPopupContents from './ShareTweetPopupContents';
+import QuoteRetweetPopup from './QuoteRetweetPopup';
 
 import K from '../../constants';
 
@@ -27,6 +27,7 @@ interface TweetActionsProps {
   tweet: Tweet;
   isMediaPresent: boolean;
   tweetCreationDate: string;
+  retweetedPostId: string | undefined;
 }
 
 const TweetActions: FC<TweetActionsProps> = ({
@@ -34,6 +35,7 @@ const TweetActions: FC<TweetActionsProps> = ({
   tweet,
   isMediaPresent,
   tweetCreationDate,
+  retweetedPostId,
 }) => {
   const {
     _id: tweetId,
@@ -46,20 +48,21 @@ const TweetActions: FC<TweetActionsProps> = ({
     bookmarks,
   } = tweet;
 
-  const auth = useAuth();
   const dispatch = useAppDispatch();
 
   const [isLiked_displayOnUI, setIsLiked_displayOnUI] = useState(false);
+  const [isRetweeted_displayOnUI, setIsRetweeted_displayOnUI] = useState(false);
   const [isBookmarked_displayOnUI, setIsBookmarked_displayOnUI] =
     useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
+  const [showQuoteRetweetPopup, setShowQuoteRetweetPopup] = useState(false);
 
   const [likeTweet, { isLoading: isLikeLoading }] = useLikeTweetMutation();
   const [bookmarkTweet, { isLoading: isBookmarkLoading }] =
     useBookmarkTweetMutation();
 
   useEffect(() => {
-    // if the post is liked by the current logged in user
+    // if the tweet is liked by the currently logged in user
     if (likes.some(like => like.userId === currentUser.id)) {
       setIsLiked_displayOnUI(true);
     } else {
@@ -68,13 +71,21 @@ const TweetActions: FC<TweetActionsProps> = ({
   }, [likes, currentUser.id]);
 
   useEffect(() => {
+    if (retweets.some(retweet => retweet.userId === currentUser.id)) {
+      setIsRetweeted_displayOnUI(true);
+    } else {
+      setIsRetweeted_displayOnUI(false);
+    }
+  }, [currentUser.id, retweets]);
+
+  useEffect(() => {
     // if the tweet is bookmarked by the current logged-in user
-    if (bookmarks.some(bookmark => bookmark.userId === auth.user?.id)) {
+    if (bookmarks.some(bookmark => bookmark.userId === currentUser.id)) {
       setIsBookmarked_displayOnUI(true);
     } else {
       setIsBookmarked_displayOnUI(false);
     }
-  }, [bookmarks, auth.user]);
+  }, [bookmarks, currentUser.id]);
 
   const handleClickReplyButton = () => {
     dispatch(
@@ -155,7 +166,6 @@ const TweetActions: FC<TweetActionsProps> = ({
   const handleClickShareButton = () => {
     setShowSharePopup(prevState => !prevState);
   };
-
   const handleCloseSharePopup = () => {
     setShowSharePopup(false);
   };
@@ -163,6 +173,10 @@ const TweetActions: FC<TweetActionsProps> = ({
   const handleClickBookmarkFromSharePopup = () => {
     handleBookmarkTweet();
     handleCloseSharePopup();
+  };
+
+  const toggleQuoteRetweetPopup = () => {
+    setShowQuoteRetweetPopup(prevState => !prevState);
   };
 
   return (
@@ -180,14 +194,33 @@ const TweetActions: FC<TweetActionsProps> = ({
       </div>
 
       {/* Retweet */}
-      <div
-        title='Retweet'
-        className='flex items-center text-gray-500 hover:text-twitter group'
-      >
-        <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-twitter-light ph_sm:mr-2'>
-          <AiOutlineRetweet className='ph_sm:text-xl' />
+      <div onClick={toggleQuoteRetweetPopup} className='relative'>
+        <div className='flex items-center text-gray-500 hover:text-twitter group'>
+          <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-twitter-light ph_sm:mr-2'>
+            <AiOutlineRetweet
+              className={`ph_sm:text-xl ${
+                isRetweeted_displayOnUI && 'text-emerald-500'
+              }`}
+            />
+          </div>
+          <span
+            className={`text-xs ph_sm:text-sm ${
+              isRetweeted_displayOnUI && 'text-emerald-500'
+            }`}
+          >
+            {retweets.length}
+          </span>
         </div>
-        <span className='text-xs ph_sm:text-sm'>{retweets.length}</span>
+
+        {showQuoteRetweetPopup && (
+          <div className='absolute z-40 top-10 w-[125%]'>
+            <QuoteRetweetPopup
+              refTweetId={tweetId}
+              isAlreadyRetweeted={isRetweeted_displayOnUI}
+              retweetedPostId={retweetedPostId}
+            />
+          </div>
+        )}
       </div>
 
       {/* Like */}

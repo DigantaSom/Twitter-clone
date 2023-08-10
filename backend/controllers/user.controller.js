@@ -254,9 +254,16 @@ const getTweetsByUsername = async (req, res) => {
 
   const tweetsByUser = await Tweet.find({
     $and: [
-      { twitterHandle_lowercase: username },
       { degree: 0 },
       { isDeleted: false },
+      {
+        $or: [
+          {
+            $and: [{ twitterHandle_lowercase: username }, { retweetOf: null }],
+          },
+          { 'retweetedBy.username': username },
+        ],
+      },
     ],
   })
     .sort({ creationDate: -1 })
@@ -286,9 +293,9 @@ const getRepliesByUsername = async (req, res) => {
 
   const tweetsByUser = await Tweet.find({
     $and: [
-      { twitterHandle_lowercase: username },
       { degree: { $gt: 0 } },
       { isDeleted: false },
+      { twitterHandle_lowercase: username },
     ],
   })
     .sort({ creationDate: -1 })
@@ -318,9 +325,9 @@ const getMediaTweetsByUsername = async (req, res) => {
 
   const tweetsByUser = await Tweet.find({
     $and: [
-      { twitterHandle_lowercase: username },
       { media: { $ne: [''] } },
       { isDeleted: false },
+      { twitterHandle_lowercase: username },
     ],
   })
     .sort({ creationDate: -1 })

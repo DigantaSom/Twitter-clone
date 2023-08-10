@@ -294,7 +294,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
               {/* Tweet Author Info */}
               <TweetAuthorInfo
                 loggedInUserId={auth.user?.id}
-                userId={userId}
+                userId={userId!}
                 username={twitterHandle}
                 profilePicture={profilePicture}
                 fullName={fullName}

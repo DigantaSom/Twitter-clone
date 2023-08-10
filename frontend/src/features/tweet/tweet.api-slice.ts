@@ -5,9 +5,12 @@ import {
   AddNewTweetArg,
   DeleteTweetArg,
   TweetIdArg,
+  RetweetArgs,
   LikeResponse,
-  BookmarkResponse,
+  SingleMessageResponse,
   GetRepliesArg,
+  GetRetweetedPostId_Response,
+  GetRetweetedPostId_Args,
 } from './tweet.types';
 
 const TWEET_URL = '/api/tweets';
@@ -50,6 +53,28 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'Tweet', id: 'LIST' }],
     }),
 
+    retweet: builder.mutation<SingleMessageResponse, RetweetArgs>({
+      query: ({ refTweetId, retweetedPostId }) => ({
+        url: `${TWEET_URL}/retweet?refTweetId=${refTweetId}&retweetedPostId=${retweetedPostId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: () => [{ type: 'Tweet', id: 'LIST' }],
+    }),
+
+    getRetweetedPostId: builder.query<
+      GetRetweetedPostId_Response,
+      GetRetweetedPostId_Args
+    >({
+      query: ({ refTweetId, loggedInUsername }) => ({
+        url: `${TWEET_URL}/getRetweetedPostId/${refTweetId}?loggedInUsername=${loggedInUsername?.toLowerCase()}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, args) => [
+        { type: 'Tweet', id: args.refTweetId },
+        { type: 'Tweet', id: result?.loggedInUser_retweetedPostId },
+      ],
+    }),
+
     deleteTweet: builder.mutation<any, DeleteTweetArg>({
       query: arg => ({
         url: `${TWEET_URL}/${arg.tweetId}`,
@@ -73,7 +98,7 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
-    bookmarkTweet: builder.mutation<BookmarkResponse, TweetIdArg>({
+    bookmarkTweet: builder.mutation<SingleMessageResponse, TweetIdArg>({
       query: arg => ({
         url: `${TWEET_URL}/bookmark/${arg.tweetId}`,
         method: 'PUT',
@@ -107,6 +132,8 @@ export const {
   useGetTweetsQuery,
   useGetTweetByIdQuery,
   useAddNewTweetMutation,
+  useRetweetMutation,
+  useGetRetweetedPostIdQuery,
   useDeleteTweetMutation,
   useLikeTweetMutation,
   useBookmarkTweetMutation,

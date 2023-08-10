@@ -19,22 +19,44 @@ const TweetItemContainer: FC<TweetItemContainerProps> = ({
     { skip: tweet.degree === 0 || !showParentTweet }
   );
 
-  return (
-    <>
-      {!!parentTweet && !parentTweet.isDeleted && (
-        <TweetItem
-          tweet={parentTweet}
-          isParentTweetItem={true}
-          showParentTweet={false}
-        />
-      )}
-      <TweetItem
-        tweet={tweet}
-        isParentTweetItem={false}
-        showParentTweet={showParentTweet && !parentTweet?.isDeleted}
-      />
-    </>
+  const { data: retweetRefTweet } = useGetTweetByIdQuery(
+    { id: tweet.retweetOf || '' },
+    { skip: !tweet.retweetOf }
   );
+
+  let content = <></>;
+
+  if (tweet.retweetOf && tweet.retweetedBy && retweetRefTweet) {
+    content = (
+      <TweetItem
+        tweet={retweetRefTweet}
+        retweetedPost={tweet}
+        isParentTweetItem={false}
+        showParentTweet={false}
+      />
+    );
+  } else {
+    content = (
+      <>
+        {!!parentTweet && !parentTweet.isDeleted && (
+          <TweetItem
+            tweet={parentTweet}
+            isParentTweetItem={true}
+            showParentTweet={false}
+            retweetedPost={null}
+          />
+        )}
+        <TweetItem
+          tweet={tweet}
+          isParentTweetItem={false}
+          showParentTweet={showParentTweet && !parentTweet?.isDeleted}
+          retweetedPost={null}
+        />
+      </>
+    );
+  }
+
+  return content;
 };
 
 export default TweetItemContainer;
