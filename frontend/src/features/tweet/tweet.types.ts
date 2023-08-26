@@ -19,7 +19,7 @@ export interface Tweet {
   likes: UserID[];
   retweetOf: string | null; // retweet-ref tweet id
   retweetedBy: RetweetedBy;
-  retweets: UserID[];
+  retweets: RetweetObj[];
   bookmarks: UserID[];
   numberOfReplies: number;
   isDeleted: boolean;
@@ -30,6 +30,12 @@ export type RetweetedBy = {
   username: string;
   fullName: string;
 } | null;
+
+export type RetweetObj = {
+  _id: string;
+  userId: string;
+  date: string;
+};
 
 export type AddNewTweetArg = {
   parentTweetId: string | null;

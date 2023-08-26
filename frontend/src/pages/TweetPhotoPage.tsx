@@ -21,12 +21,14 @@ import {
   useGetTweetByIdQuery,
   useLikeTweetMutation,
   useBookmarkTweetMutation,
+  useGetRetweetedPostIdQuery,
 } from '../features/tweet/tweet.api-slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
 import { removeToast, setToast } from '../features/toast/toast.slice';
 
 import TweetPage from './TweetPage';
+import QuoteRetweetPopup from '../features/tweet/QuoteRetweetPopup';
 import ShareTweetPopupContents from '../features/tweet/ShareTweetPopupContents';
 
 import K from '../constants';
@@ -44,6 +46,8 @@ const TweetPhotoPage = () => {
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [isBookmarked_displayOnUI, setIsBookmarked_displayOnUI] =
     useState(false);
+  const [isRetweeted_displayOnUI, setIsRetweeted_displayOnUI] = useState(false);
+  const [showQuoteRetweetPopup, setShowQuoteRetweetPopup] = useState(false);
 
   const {
     data: tweet,
@@ -59,6 +63,15 @@ const TweetPhotoPage = () => {
     }
   );
 
+  const { data: retweetedPostId_onlyFor_retweetRefTweetItem } =
+    useGetRetweetedPostIdQuery(
+      {
+        refTweetId: tweet?._id || '',
+        loggedInUsername: auth.user?.twitterHandle,
+      },
+      { refetchOnMountOrArgChange: true }
+    );
+
   const [likeTweet, { isLoading: isLikeTweetLoading }] = useLikeTweetMutation();
 
   const [bookmarkTweet, { isLoading: isBookmarkTweetLoading }] =
@@ -72,21 +85,36 @@ const TweetPhotoPage = () => {
 
   useEffect(() => {
     // if the tweet is liked by the current logged-in user
-    if (tweet?.likes.some(like => like.userId === auth.user?.id)) {
+    if (auth && tweet?.likes.some(like => like.userId === auth.user?.id)) {
       setIsLiked_displayOnUI(true);
     } else {
       setIsLiked_displayOnUI(false);
     }
-  }, [tweet?.likes, auth.user]);
+  }, [auth, tweet?.likes]);
 
   useEffect(() => {
     // if the tweet is bookmarked by the current logged-in user
-    if (tweet?.bookmarks.some(bookmark => bookmark.userId === auth.user?.id)) {
+    if (
+      auth &&
+      tweet?.bookmarks.some(bookmark => bookmark.userId === auth.user?.id)
+    ) {
       setIsBookmarked_displayOnUI(true);
     } else {
       setIsBookmarked_displayOnUI(false);
     }
-  }, [tweet?.bookmarks, auth.user]);
+  }, [auth, tweet?.bookmarks]);
+
+  useEffect(() => {
+    // if the post is retweeted by the current logged in user
+    if (
+      auth &&
+      tweet?.retweets.some(retweet => retweet.userId === auth.user?.id)
+    ) {
+      setIsRetweeted_displayOnUI(true);
+    } else {
+      setIsRetweeted_displayOnUI(false);
+    }
+  }, [auth, tweet?.retweets]);
 
   if (!tweet) return null;
 
@@ -131,8 +159,6 @@ const TweetPhotoPage = () => {
     dispatch(toggleCreateReplyPopup(true));
     setNumberOfReplies_displayOnUI(prevState => prevState + 1);
   };
-
-  const handleClickRetweetButton = () => {};
 
   const handleClickLikeButton = async () => {
     if (!isLoading || !isLikeTweetLoading) {
@@ -195,6 +221,10 @@ const TweetPhotoPage = () => {
     setShowSharePopup(false);
   };
 
+  const toggleQuoteRetweetPopup = () => {
+    setShowQuoteRetweetPopup(prevState => !prevState);
+  };
+
   let content;
 
   if (isLoading) {
@@ -249,7 +279,7 @@ const TweetPhotoPage = () => {
           {/* Tweet Actions */}
           <div className='h-14 text-white flex items-center justify-center'>
             <div className='w-[90%] ph:w-[80%] md:w-[65%] xl:w-1/2 h-full flex items-center justify-between relative'>
-              {/* Reply button */}
+              {/* Reply */}
               <div
                 title='Reply'
                 onClick={handleClickReplyButton}
@@ -262,20 +292,43 @@ const TweetPhotoPage = () => {
                   {numberOfReplies_displayOnUI}
                 </span>
               </div>
-              {/* Retweet button */}
-              <div
-                title='Retweet'
-                onClick={handleClickRetweetButton}
-                className='flex items-center text-white hover:cursor-pointer group'
-              >
-                <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
-                  <AiOutlineRetweet className='ph_sm:text-xl' />
+
+              {/* Retweet or Quote */}
+              <div className='relative' onClick={toggleQuoteRetweetPopup}>
+                <div
+                  title='Retweet'
+                  className='flex items-center text-white hover:cursor-pointer group'
+                >
+                  <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
+                    <AiOutlineRetweet
+                      className={`ph_sm:text-xl ${
+                        isRetweeted_displayOnUI && 'text-emerald-500 text-bold'
+                      }`}
+                    />
+                  </div>
+                  <span
+                    className={`text-xs ph_sm:text-sm ${
+                      isRetweeted_displayOnUI && 'text-emerald-500 text-bold'
+                    }`}
+                  >
+                    {tweet.retweets.length}
+                  </span>
                 </div>
-                <span className='text-xs ph_sm:text-sm'>
-                  {tweet.retweets.length}
-                </span>
+
+                {showQuoteRetweetPopup && (
+                  <div className='absolute z-40 bottom-10 w-[150px]'>
+                    <QuoteRetweetPopup
+                      refTweetId={_id}
+                      isAlreadyRetweeted={isRetweeted_displayOnUI}
+                      retweetedPostId={
+                        retweetedPostId_onlyFor_retweetRefTweetItem?.loggedInUser_retweetedPostId
+                      }
+                    />
+                  </div>
+                )}
               </div>
-              {/* Like button */}
+
+              {/* Like */}
               {isLikeTweetLoading ? (
                 <ClipLoader
                   color='#F91880' // same as 'like' color
@@ -299,7 +352,8 @@ const TweetPhotoPage = () => {
                   </span>
                 </div>
               )}
-              {/* Share button */}
+
+              {/* Share */}
               <div
                 title='Share'
                 onClick={handleClickShareButton}

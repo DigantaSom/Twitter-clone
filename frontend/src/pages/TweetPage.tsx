@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect, FC } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { PulseLoader } from 'react-spinners';
 
+import { AiOutlineRetweet } from 'react-icons/ai';
 import { BsDot } from 'react-icons/bs';
 
 import { useAppDispatch } from '../hooks/redux-hooks';
@@ -47,6 +48,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   const auth = useAuth();
   const topMostDivRef = useRef<HTMLDivElement>(null);
 
+  const [isRetweeted_displayOnUI, setIsRetweeted_displayOnUI] = useState(false);
   const [isLiked_displayOnUI, setIsLiked_displayOnUI] = useState(false);
   const [isBookmarked_displayOnUI, setIsBookmarked_displayOnUI] =
     useState(false);
@@ -86,6 +88,18 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   useEffect(() => {
     topMostDivRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
+
+  useEffect(() => {
+    // if the post is retweeted by the current logged in user
+    if (
+      auth &&
+      tweet?.retweets.some(retweet => retweet.userId === auth.user?.id)
+    ) {
+      setIsRetweeted_displayOnUI(true);
+    } else {
+      setIsRetweeted_displayOnUI(false);
+    }
+  }, [auth, tweet?.retweets]);
 
   useEffect(() => {
     // if the post is liked by the current logged in user
@@ -286,11 +300,22 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
         {isHeaderNeeded && <Header parentComponent='TweetPage' />}
 
-        <main className='px-2 ph_sm:px-4 pt-3'>
+        <main className='px-2 ph_sm:px-4 mt-3'>
           {isDeleted ? (
             <DeletedTweetPlaceholder />
           ) : (
             <>
+              {/* If the currently logged-in user has retweeted this tweet */}
+              {isRetweeted_displayOnUI && (
+                <Link
+                  to={'/' + auth.user?.twitterHandle}
+                  className='-mt-3 mb-3 flex items-center space-x-2 hover:underline'
+                >
+                  <AiOutlineRetweet />
+                  <div className='text-sm font-semibold'>You Retweeted</div>
+                </Link>
+              )}
+
               {/* Tweet Author Info */}
               <TweetAuthorInfo
                 loggedInUserId={auth.user?.id}
@@ -333,14 +358,15 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
           <hr />
 
           <TweetPageStats
-            retweets={tweet.retweets}
-            likes={tweet.likes}
-            bookmarks={tweet.bookmarks}
+            numberOfRetweets={tweet.retweets.length}
+            numberOfLikes={tweet.likes.length}
+            numberOfBookmarks={tweet.bookmarks.length}
             handleOpenLikedByPopup={handleOpenLikedByPopup}
           />
 
           <TweetPageActions
             tweet={{ _id, username: twitterHandle, isDeleted }}
+            isRetweeted_displayOnUI={isRetweeted_displayOnUI}
             isLikeTweetLoading={isLikeTweetLoading}
             isLiked_displayOnUI={isLiked_displayOnUI}
             isBookmarkTweetLoading={isBookmarkTweetLoading}

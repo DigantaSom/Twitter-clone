@@ -58,7 +58,10 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
         url: `${TWEET_URL}/retweet?refTweetId=${refTweetId}&retweetedPostId=${retweetedPostId}`,
         method: 'POST',
       }),
-      invalidatesTags: () => [{ type: 'Tweet', id: 'LIST' }],
+      invalidatesTags: (result, error, args) => [
+        { type: 'Tweet', id: 'LIST' },
+        { type: 'Tweet', id: args.refTweetId },
+      ],
     }),
 
     getRetweetedPostId: builder.query<

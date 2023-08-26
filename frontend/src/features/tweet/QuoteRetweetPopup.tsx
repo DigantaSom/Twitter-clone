@@ -33,7 +33,7 @@ const QuoteRetweetPopup: FC<QuoteRetweetPopupProps> = ({
   return (
     <SmallPopup>
       <div
-        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+        className='flex items-center p-3 text-black hover:bg-gray-50 hover:cursor-pointer'
         onClick={handleRetweet}
       >
         <AiOutlineRetweet className='text-xl' />
@@ -42,7 +42,7 @@ const QuoteRetweetPopup: FC<QuoteRetweetPopupProps> = ({
         </span>
       </div>
       <div
-        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+        className='flex items-center p-3 text-black hover:bg-gray-50 hover:cursor-pointer'
         onClick={handleQuoteTweet}
       >
         <TbPencil className='text-xl' />
