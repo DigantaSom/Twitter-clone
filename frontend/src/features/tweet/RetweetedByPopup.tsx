@@ -31,7 +31,7 @@ const RetweetedByPopup = () => {
           <IoCloseSharp className='hidden ph:block text-2xl text-gray-700' />
           <IoArrowBack className='ph:hidden text-2xl text-gray-700' />
         </div>
-        <h2 className='font-bold text-xl'>Liked by</h2>
+        <h2 className='font-bold text-xl'>Retweeted by</h2>
       </header>
 
       <main className='flex-1 mt-12 h-full overflow-y-scroll'>
