@@ -4,6 +4,7 @@ interface TweetPageStatusProps {
   numberOfRetweets: number;
   numberOfLikes: number;
   numberOfBookmarks: number;
+  handleOpenRetweetedByPopup: () => void;
   handleOpenLikedByPopup: () => void;
 }
 
@@ -11,12 +12,13 @@ const TweetPageStats: FC<TweetPageStatusProps> = ({
   numberOfRetweets,
   numberOfLikes,
   numberOfBookmarks,
+  handleOpenRetweetedByPopup,
   handleOpenLikedByPopup,
 }) => {
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col ph_xs:flex-row ph_xs:items-center ph_xs:justify-start ph_xs:space-x-6'>
-        <div className='py-3'>
+        <div onClick={handleOpenRetweetedByPopup} className='py-3'>
           <div className='w-fit hover:border-gray-600 hover:border-b-[1px] hover:-mt-[1px] hover:cursor-pointer group'>
             <span className='font-bold'>{numberOfRetweets}</span>
             <span className='pl-1'>

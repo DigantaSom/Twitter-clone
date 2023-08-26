@@ -6,12 +6,9 @@ export interface UiState {
   };
   isSubmitDisabled: boolean;
   isCreateReplyPopupShown: boolean;
-  likedByPopup: LikedByPopup_Payload & {
-    isShown: boolean;
-  };
-  editProfilePopup: EditProfilePopup_Payload & {
-    isShown: boolean;
-  };
+  likedByPopup: LikedByPopup_Payload & { isShown: boolean };
+  retweetedByPopup: RetweetedByPopup_Payload & { isShown: boolean };
+  editProfilePopup: EditProfilePopup_Payload & { isShown: boolean };
 }
 
 export type AuthModalType =
@@ -28,3 +25,5 @@ export type LikedByPopup_Payload = {
 export type EditProfilePopup_Payload = {
   username: string | undefined;
 };
+
+export type RetweetedByPopup_Payload = LikedByPopup_Payload;

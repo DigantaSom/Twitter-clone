@@ -6,6 +6,7 @@ import {
   selectIsComposeTweetShown,
   selectIsCreateReplyPopupShown,
   selectIsLikedByPopupShown,
+  selectIsRetweetedByPopupShown,
   selectIsEditProfilePopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
@@ -29,6 +30,8 @@ import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
 import LikedByPopup from './features/tweet/LikedByPopup';
+import RetweetedByPopup from './features/tweet/RetweetedByPopup';
+import EditProfilePopup from './features/user/EditProfilePopup';
 import ToastMessage from './features/toast/ToastMessage';
 import Explore from './components/Explore';
 import ProfileTweetsContainer from './features/user/ProfileTweetsContainer';
@@ -38,7 +41,6 @@ import ProfileLikesContainer from './features/user/ProfileLikesContainer';
 import MutualFollowerList from './features/user/MutualFollowerList';
 import FollowerList from './features/user/FollowerList';
 import FollowingList from './features/user/FollowingList';
-import EditProfilePopup from './features/user/EditProfilePopup';
 
 const App = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -46,6 +48,7 @@ const App = () => {
   const authModal = useAppSelector(selectAuthModal);
   const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
   const isLikedByPopupShown = useAppSelector(selectIsLikedByPopupShown);
+  const isRetweetedByPopupShown = useAppSelector(selectIsRetweetedByPopupShown);
   const isEditProfileShown = useAppSelector(selectIsEditProfilePopupShown);
   const toastMessage = useAppSelector(selectToastMessage);
 
@@ -110,12 +113,14 @@ const App = () => {
         authModal.isShown ||
         isCreateReplyPopupShown ||
         isLikedByPopupShown ||
+        isRetweetedByPopupShown ||
         isEditProfileShown) && (
         <DarkOverlay
           isComposeTweetShown={isComposeTweetShown}
           isAuthModalShown={authModal.isShown}
           isCreateReplyPopupShown={isCreateReplyPopupShown}
           isLikedByPopupShown={isLikedByPopupShown}
+          isRetweetedByPopupShown={isRetweetedByPopupShown}
           isEditProfileShown={isEditProfileShown}
         />
       )}
@@ -129,6 +134,8 @@ const App = () => {
       {isCreateReplyPopupShown && <CreateReplyPopup />}
 
       {isLikedByPopupShown && <LikedByPopup />}
+
+      {isRetweetedByPopupShown && <RetweetedByPopup />}
 
       {isEditProfileShown && <EditProfilePopup />}
 

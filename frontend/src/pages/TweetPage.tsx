@@ -22,6 +22,7 @@ import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
 import {
   toggleCreateReplyPopup,
   openLikedByPopup,
+  openRetweetedByPopup,
 } from '../features/ui/ui.slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
@@ -255,6 +256,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     }
   };
 
+  const handleOpenRetweetedByPopup = () => {
+    dispatch(openRetweetedByPopup({ tweetId: _id }));
+  };
+
   const handleOpenLikedByPopup = () => {
     dispatch(openLikedByPopup({ tweetId: _id }));
   };
@@ -361,6 +366,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             numberOfRetweets={tweet.retweets.length}
             numberOfLikes={tweet.likes.length}
             numberOfBookmarks={tweet.bookmarks.length}
+            handleOpenRetweetedByPopup={handleOpenRetweetedByPopup}
             handleOpenLikedByPopup={handleOpenLikedByPopup}
           />
 

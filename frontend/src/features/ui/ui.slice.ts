@@ -6,6 +6,7 @@ import {
   AuthModalType,
   LikedByPopup_Payload,
   EditProfilePopup_Payload,
+  RetweetedByPopup_Payload,
 } from './ui.types';
 import { RootState } from '../../app/store';
 
@@ -18,6 +19,10 @@ const initialState: UiState = {
   isSubmitDisabled: true,
   isCreateReplyPopupShown: false,
   likedByPopup: {
+    isShown: false,
+    tweetId: null,
+  },
+  retweetedByPopup: {
     isShown: false,
     tweetId: null,
   },
@@ -52,6 +57,17 @@ const uiSlice = createSlice({
       state.likedByPopup.isShown = false;
       state.likedByPopup.tweetId = null;
     },
+    openRetweetedByPopup: (
+      state,
+      action: PayloadAction<RetweetedByPopup_Payload>
+    ) => {
+      state.retweetedByPopup.isShown = true;
+      state.retweetedByPopup.tweetId = action.payload.tweetId;
+    },
+    closeRetweetedByPopup: state => {
+      state.retweetedByPopup.isShown = false;
+      state.retweetedByPopup.tweetId = null;
+    },
     openEditProfilePopup: (
       state,
       action: PayloadAction<EditProfilePopup_Payload>
@@ -82,6 +98,11 @@ export const selectIsLikedByPopupShown = (state: RootState) =>
 export const selectLikedByPopupTweetId = (state: RootState) =>
   state.ui.likedByPopup.tweetId;
 
+export const selectIsRetweetedByPopupShown = (state: RootState) =>
+  state.ui.retweetedByPopup.isShown;
+export const selectRetweetedByPopupTweetId = (state: RootState) =>
+  state.ui.retweetedByPopup.tweetId;
+
 export const selectIsEditProfilePopupShown = (state: RootState) =>
   state.ui.editProfilePopup.isShown;
 export const selectEditProfilePopupUsername = (state: RootState) =>
@@ -94,6 +115,8 @@ export const {
   toggleCreateReplyPopup,
   openLikedByPopup,
   closeLikedByPopup,
+  openRetweetedByPopup,
+  closeRetweetedByPopup,
   openEditProfilePopup,
   closeEditProfilePopup,
 } = uiSlice.actions;

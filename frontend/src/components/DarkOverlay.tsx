@@ -6,6 +6,7 @@ import {
   toggleAuthModal,
   toggleCreateReplyPopup,
   closeLikedByPopup,
+  closeRetweetedByPopup,
   closeEditProfilePopup,
 } from '../features/ui/ui.slice';
 import { clearCreateReplyPopupData } from '../features/reply/reply.slice';
@@ -15,6 +16,7 @@ interface DarkOverlayProps {
   isAuthModalShown: boolean;
   isCreateReplyPopupShown: boolean;
   isLikedByPopupShown: boolean;
+  isRetweetedByPopupShown: boolean;
   isEditProfileShown: boolean;
 }
 
@@ -23,6 +25,7 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
   isAuthModalShown,
   isCreateReplyPopupShown,
   isLikedByPopupShown,
+  isRetweetedByPopupShown,
   isEditProfileShown,
 }) => {
   const dispatch = useAppDispatch();
@@ -37,6 +40,8 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
       dispatch(toggleCreateReplyPopup(false));
     } else if (isLikedByPopupShown) {
       dispatch(closeLikedByPopup());
+    } else if (isRetweetedByPopupShown) {
+      dispatch(closeRetweetedByPopup());
     } else if (isEditProfileShown) {
       dispatch(closeEditProfilePopup());
     }
