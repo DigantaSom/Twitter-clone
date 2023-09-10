@@ -20,6 +20,8 @@ export interface Tweet {
   retweetOf: string | null; // retweet-ref tweet id
   retweetedBy: RetweetedBy;
   retweets: RetweetObj[];
+  quoteRefTweetId: string | null; // quote-ref tweet id
+  quotes: QuoteObj[];
   bookmarks: UserID[];
   numberOfReplies: number;
   isDeleted: boolean;
@@ -31,9 +33,15 @@ export type RetweetedBy = {
   fullName: string;
 } | null;
 
-export type RetweetObj = {
+type RetweetObj = {
   _id: string;
   userId: string;
+  date: string;
+};
+
+export type QuoteObj = {
+  _id: string;
+  tweetId: string;
   date: string;
 };
 
@@ -62,6 +70,12 @@ export type GetRetweetedPostId_Response = {
 export type GetRetweetedPostId_Args = {
   refTweetId: string;
   loggedInUsername: string | undefined;
+};
+
+export type QuoteTweetArgs = {
+  quoteRefTweetId: string | null;
+  caption: string | null;
+  media: [string]; // default is ['']
 };
 
 export type LikeResponse = { userId: UserID }[];

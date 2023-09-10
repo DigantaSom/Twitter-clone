@@ -5,6 +5,7 @@ import {
   toggleComposeTweet,
   toggleAuthModal,
   toggleCreateReplyPopup,
+  closeQuoteTweetPopup,
   closeLikedByPopup,
   closeRetweetedByPopup,
   closeEditProfilePopup,
@@ -15,6 +16,7 @@ interface DarkOverlayProps {
   isComposeTweetShown: boolean;
   isAuthModalShown: boolean;
   isCreateReplyPopupShown: boolean;
+  isQuoteTweetPopupShown: boolean;
   isLikedByPopupShown: boolean;
   isRetweetedByPopupShown: boolean;
   isEditProfileShown: boolean;
@@ -24,6 +26,7 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
   isComposeTweetShown,
   isAuthModalShown,
   isCreateReplyPopupShown,
+  isQuoteTweetPopupShown,
   isLikedByPopupShown,
   isRetweetedByPopupShown,
   isEditProfileShown,
@@ -38,6 +41,8 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
     } else if (isCreateReplyPopupShown) {
       dispatch(clearCreateReplyPopupData());
       dispatch(toggleCreateReplyPopup(false));
+    } else if (isQuoteTweetPopupShown) {
+      dispatch(closeQuoteTweetPopup());
     } else if (isLikedByPopupShown) {
       dispatch(closeLikedByPopup());
     } else if (isRetweetedByPopupShown) {

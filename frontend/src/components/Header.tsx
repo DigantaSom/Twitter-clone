@@ -12,9 +12,14 @@ import ProfilePicture from './ProfilePicture';
 import constants from '../constants';
 
 interface HeaderProps {
-  parentComponent: 'Feed' | 'TweetPage' | 'BookmarksPage' | 'ProfilePage';
-  name?: string; // from 'ProfilePage'
-  numberOfTweets?: number; // from 'ProfilePage'
+  parentComponent:
+    | 'Feed'
+    | 'TweetPage'
+    | 'BookmarksPage'
+    | 'ProfilePage'
+    | 'QuotesPage';
+  name?: string; // only from 'ProfilePage'
+  numberOfTweets?: number; // only from 'ProfilePage'
 }
 
 const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
@@ -65,7 +70,8 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
     );
   } else if (
     parentComponent === 'TweetPage' ||
-    parentComponent === 'ProfilePage'
+    parentComponent === 'ProfilePage' ||
+    parentComponent === 'QuotesPage'
   ) {
     content = (
       <div className='flex items-center space-x-6'>
@@ -75,9 +81,16 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
         >
           <IoArrowBack className='text-2xl text-gray-700' />
         </div>
-        {parentComponent === 'TweetPage' ? (
+
+        {parentComponent === 'TweetPage' && (
           <h2 className='font-bold text-lg ph:text-xl -mt-[2px]'>Tweet</h2>
-        ) : (
+        )}
+
+        {parentComponent === 'QuotesPage' && (
+          <h2 className='font-bold text-lg ph:text-xl -mt-[2px]'>Quotes</h2>
+        )}
+
+        {parentComponent === 'ProfilePage' && (
           <div className='flex flex-col'>
             <span className='font-bold text-base ph:text-lg -mt-[2px]'>
               {name || 'Profile'}

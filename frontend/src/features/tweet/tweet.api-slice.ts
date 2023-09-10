@@ -11,6 +11,8 @@ import {
   GetRepliesArg,
   GetRetweetedPostId_Response,
   GetRetweetedPostId_Args,
+  QuoteTweetArgs,
+  QuoteObj,
 } from './tweet.types';
 
 const TWEET_URL = '/api/tweets';
@@ -78,6 +80,28 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
       ],
     }),
 
+    quoteTweet: builder.mutation<Tweet | any, QuoteTweetArgs>({
+      query: ({ quoteRefTweetId, caption, media }) => ({
+        url: `${TWEET_URL}/quote/${quoteRefTweetId}`,
+        method: 'POST',
+        body: { caption, media },
+      }),
+      invalidatesTags: (result, error, args) => [
+        { type: 'Tweet', id: 'LIST' },
+        { type: 'Tweet', id: args.quoteRefTweetId || '' },
+      ],
+    }),
+
+    getQuotes: builder.query<QuoteObj[], TweetIdArg>({
+      query: ({ tweetId }) => ({
+        url: `${TWEET_URL}/quote/${tweetId}`,
+        method: 'GET',
+      }),
+      providesTags: (result, error, args) => [
+        { type: 'Tweet', id: args.tweetId },
+      ],
+    }),
+
     deleteTweet: builder.mutation<any, DeleteTweetArg>({
       query: arg => ({
         url: `${TWEET_URL}/${arg.tweetId}`,
@@ -137,6 +161,8 @@ export const {
   useAddNewTweetMutation,
   useRetweetMutation,
   useGetRetweetedPostIdQuery,
+  useQuoteTweetMutation,
+  useGetQuotesQuery,
   useDeleteTweetMutation,
   useLikeTweetMutation,
   useBookmarkTweetMutation,

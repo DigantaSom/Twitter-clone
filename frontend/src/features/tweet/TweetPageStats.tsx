@@ -1,7 +1,11 @@
 import { FC } from 'react';
+import { Link } from 'react-router-dom';
 
 interface TweetPageStatusProps {
+  tweetId: string;
+  authorUsername: string;
   numberOfRetweets: number;
+  numberOfQuotes: number;
   numberOfLikes: number;
   numberOfBookmarks: number;
   handleOpenRetweetedByPopup: () => void;
@@ -9,7 +13,10 @@ interface TweetPageStatusProps {
 }
 
 const TweetPageStats: FC<TweetPageStatusProps> = ({
+  tweetId,
+  authorUsername,
   numberOfRetweets,
+  numberOfQuotes,
   numberOfLikes,
   numberOfBookmarks,
   handleOpenRetweetedByPopup,
@@ -28,12 +35,17 @@ const TweetPageStats: FC<TweetPageStatusProps> = ({
         </div>
         <hr className='ph_xs:hidden' />
 
-        <div className='py-3'>
+        <Link
+          to={`/${authorUsername}/status/${tweetId}/quotes`}
+          className='py-3'
+        >
           <div className='w-fit flex items-center hover:border-gray-600 hover:border-b-[1px] hover:-mt-[1px] hover:cursor-pointer'>
-            <span className='font-bold'>0</span>
-            <span className='pl-1'>Quotes</span>
+            <span className='font-bold'>{numberOfQuotes}</span>
+            <span className='pl-1'>
+              {numberOfQuotes === 1 ? 'Quote' : 'Quotes'}
+            </span>
           </div>
-        </div>
+        </Link>
         <hr className='ph_xs:hidden' />
 
         <div className='hidden ph:block ph:py-3'>

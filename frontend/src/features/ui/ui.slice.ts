@@ -7,6 +7,7 @@ import {
   LikedByPopup_Payload,
   EditProfilePopup_Payload,
   RetweetedByPopup_Payload,
+  QuoteTweetPopup_Payload,
 } from './ui.types';
 import { RootState } from '../../app/store';
 
@@ -16,7 +17,6 @@ const initialState: UiState = {
     isShown: false,
     type: '', // in our logic, type: '' = isShown: false
   },
-  isSubmitDisabled: true,
   isCreateReplyPopupShown: false,
   likedByPopup: {
     isShown: false,
@@ -25,6 +25,10 @@ const initialState: UiState = {
   retweetedByPopup: {
     isShown: false,
     tweetId: null,
+  },
+  quoteTweetPopup: {
+    isShown: false,
+    quoteRefTweetId: null,
   },
   editProfilePopup: {
     isShown: false,
@@ -42,9 +46,6 @@ const uiSlice = createSlice({
     toggleAuthModal: (state, action: PayloadAction<AuthModalType>) => {
       state.authModal.isShown = action.payload === '' ? false : true;
       state.authModal.type = action.payload;
-    },
-    handleSubmitDisabled: (state, action: PayloadAction<boolean>) => {
-      state.isSubmitDisabled = action.payload;
     },
     toggleCreateReplyPopup: (state, action: PayloadAction<boolean>) => {
       state.isCreateReplyPopupShown = action.payload;
@@ -68,6 +69,17 @@ const uiSlice = createSlice({
       state.retweetedByPopup.isShown = false;
       state.retweetedByPopup.tweetId = null;
     },
+    openQuoteTweetPopup: (
+      state,
+      action: PayloadAction<QuoteTweetPopup_Payload>
+    ) => {
+      state.quoteTweetPopup.isShown = true;
+      state.quoteTweetPopup.quoteRefTweetId = action.payload.quoteRefTweetId;
+    },
+    closeQuoteTweetPopup: state => {
+      state.quoteTweetPopup.isShown = false;
+      state.quoteTweetPopup.quoteRefTweetId = null;
+    },
     openEditProfilePopup: (
       state,
       action: PayloadAction<EditProfilePopup_Payload>
@@ -87,9 +99,6 @@ export const selectIsComposeTweetShown = (state: RootState) =>
 
 export const selectAuthModal = (state: RootState) => state.ui.authModal;
 
-export const selectIsSubmitDisabled = (state: RootState) =>
-  state.ui.isSubmitDisabled;
-
 export const selectIsCreateReplyPopupShown = (state: RootState) =>
   state.ui.isCreateReplyPopupShown;
 
@@ -103,6 +112,11 @@ export const selectIsRetweetedByPopupShown = (state: RootState) =>
 export const selectRetweetedByPopupTweetId = (state: RootState) =>
   state.ui.retweetedByPopup.tweetId;
 
+export const selectIsQuoteTweetPopupShown = (state: RootState) =>
+  state.ui.quoteTweetPopup.isShown;
+export const selectQuoteTweetPopupRefTweetId = (state: RootState) =>
+  state.ui.quoteTweetPopup.quoteRefTweetId;
+
 export const selectIsEditProfilePopupShown = (state: RootState) =>
   state.ui.editProfilePopup.isShown;
 export const selectEditProfilePopupUsername = (state: RootState) =>
@@ -111,12 +125,13 @@ export const selectEditProfilePopupUsername = (state: RootState) =>
 export const {
   toggleComposeTweet,
   toggleAuthModal,
-  handleSubmitDisabled,
   toggleCreateReplyPopup,
   openLikedByPopup,
   closeLikedByPopup,
   openRetweetedByPopup,
   closeRetweetedByPopup,
+  openQuoteTweetPopup,
+  closeQuoteTweetPopup,
   openEditProfilePopup,
   closeEditProfilePopup,
 } = uiSlice.actions;

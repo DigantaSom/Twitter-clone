@@ -43,6 +43,18 @@ const tweetSchema = new mongoose.Schema({
     },
   ],
 
+  quoteRefTweetId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'tweet',
+    default: null,
+  },
+  quotes: [
+    {
+      tweetId: { type: mongoose.Schema.Types.ObjectId, ref: 'tweet' },
+      date: { type: Date, default: Date.now() },
+    },
+  ],
+
   bookmarks: [
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },

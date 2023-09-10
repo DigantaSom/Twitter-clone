@@ -34,6 +34,7 @@ import TweetAuthorInfo from '../components/TweetAuthorInfo';
 import CreateReply from '../features/reply/CreateReply';
 import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
 import TweetList from '../features/tweet/TweetList';
+import QuoteRefTweetContainer from '../features/tweet/QuoteRefTweetContainer';
 
 import K from '../constants';
 
@@ -132,6 +133,11 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     caption,
     media,
     isDeleted,
+    retweets,
+    quotes,
+    likes,
+    bookmarks,
+    quoteRefTweetId,
   } = tweet;
 
   const navigateToPostFullScreen = () => {
@@ -350,6 +356,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
                   />
                 </div>
               )}
+
+              {quoteRefTweetId && (
+                <QuoteRefTweetContainer quoteRefTweetId={quoteRefTweetId} />
+              )}
             </>
           )}
 
@@ -363,9 +373,12 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
           <hr />
 
           <TweetPageStats
-            numberOfRetweets={tweet.retweets.length}
-            numberOfLikes={tweet.likes.length}
-            numberOfBookmarks={tweet.bookmarks.length}
+            tweetId={_id}
+            authorUsername={twitterHandle}
+            numberOfRetweets={retweets.length}
+            numberOfQuotes={quotes.length}
+            numberOfLikes={likes.length}
+            numberOfBookmarks={bookmarks.length}
             handleOpenRetweetedByPopup={handleOpenRetweetedByPopup}
             handleOpenLikedByPopup={handleOpenLikedByPopup}
           />

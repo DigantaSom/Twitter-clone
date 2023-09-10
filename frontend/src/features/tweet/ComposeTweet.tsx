@@ -1,44 +1,21 @@
-import { useState } from 'react';
+// The positioning of this component is in its parent component (App.tsx)
+
+import { useRef, useState } from 'react';
 import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 
-import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { useAddNewTweetMutation } from './tweet.api-slice';
+import { useAppDispatch } from '../../hooks/redux-hooks';
+import { toggleComposeTweet } from '../ui/ui.slice';
 
-import { selectIsSubmitDisabled, toggleComposeTweet } from '../ui/ui.slice';
-import { clearNewTweetData, selectNewTweetData } from './tweet.slice';
-
-import CreateTweet from './CreateTweet';
+import CreateTweet, { AddNew_or_Quote_Tweet_Handle } from './CreateTweet';
 import TweetSubmitButton from './TweetSubmitButton';
 
 const ComposeTweet = () => {
-  const isSubmitDisabled = useAppSelector(selectIsSubmitDisabled);
-  const newTweetData = useAppSelector(selectNewTweetData);
   const dispatch = useAppDispatch();
   const [isMediaSet, setIsMediaSet] = useState(false);
+  const createTweet_childRef = useRef<AddNew_or_Quote_Tweet_Handle>(null); // ref to the child component <CreateTweet />, used for clicking only 'handleAddNewTweet()' function inside the child which is defined in 'AddNew_or_Quote_Tweet_Handle' interface
 
-  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
-
-  const handleSubmitTweet = async () => {
-    try {
-      const res = await addNewTweet(newTweetData).unwrap();
-
-      if (res?.isError) {
-        alert(res?.message);
-        return;
-      }
-      dispatch(clearNewTweetData());
-      dispatch(toggleComposeTweet());
-    } catch (err: any) {
-      console.log(err);
-      let errMsg = '';
-
-      if (!err.status) {
-        errMsg = 'No Server Response';
-      } else {
-        errMsg = err.data?.message;
-      }
-      alert(errMsg);
-    }
+  const handleClick_mobileSubmitButton = () => {
+    createTweet_childRef.current?.handleAddNewTweet();
   };
 
   return (
@@ -56,16 +33,20 @@ const ComposeTweet = () => {
           <div className='ph:hidden'>
             <TweetSubmitButton
               type='Tweet'
-              isDisabled={isSubmitDisabled}
-              isLoading={isLoading}
-              handleSubmit={handleSubmitTweet}
+              isDisabled={false}
+              isLoading={false}
+              handleSubmit={handleClick_mobileSubmitButton}
             />
           </div>
         </div>
 
         {/* body */}
         <div className='flex-1'>
-          <CreateTweet from='ComposeTweet' setIsMediaSet={setIsMediaSet} />
+          <CreateTweet
+            from='ComposeTweet'
+            setIsMediaSet={setIsMediaSet}
+            ref={createTweet_childRef}
+          />
         </div>
       </div>
     </div>

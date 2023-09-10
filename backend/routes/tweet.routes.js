@@ -28,4 +28,9 @@ router
   .route('/getRetweetedPostId/:refTweetId')
   .get(tweetController.getRetweetedPostId); // contains a query variable
 
+router
+  .route('/quote/:quoteRefTweetId')
+  .post(verifyJWT, tweetController.quoteTweet);
+router.route('/quote/:tweetId').get(tweetController.getQuotes);
+
 module.exports = router;

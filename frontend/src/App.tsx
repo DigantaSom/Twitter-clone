@@ -7,6 +7,7 @@ import {
   selectIsCreateReplyPopupShown,
   selectIsLikedByPopupShown,
   selectIsRetweetedByPopupShown,
+  selectIsQuoteTweetPopupShown,
   selectIsEditProfilePopupShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
@@ -21,6 +22,7 @@ import TweetPhotoPage from './pages/TweetPhotoPage';
 import ProfilePhotosPage from './pages/ProfilePhotosPage';
 import BookmarksPage from './pages/BookmarksPage';
 import FollowPage from './pages/FollowPage';
+import QuotesPage from './pages/QuotesPage';
 
 import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
@@ -29,6 +31,7 @@ import ComposeTweet from './features/tweet/ComposeTweet';
 import BottomNavigation from './components/BottomNavigation';
 import BottomAuth from './components/BottomAuth';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
+import QuoteTweetPopup from './features/tweet/QuoteTweetPopup';
 import LikedByPopup from './features/tweet/LikedByPopup';
 import RetweetedByPopup from './features/tweet/RetweetedByPopup';
 import EditProfilePopup from './features/user/EditProfilePopup';
@@ -49,6 +52,7 @@ const App = () => {
   const isCreateReplyPopupShown = useAppSelector(selectIsCreateReplyPopupShown);
   const isLikedByPopupShown = useAppSelector(selectIsLikedByPopupShown);
   const isRetweetedByPopupShown = useAppSelector(selectIsRetweetedByPopupShown);
+  const isQuoteTweetPopupShown = useAppSelector(selectIsQuoteTweetPopupShown);
   const isEditProfileShown = useAppSelector(selectIsEditProfilePopupShown);
   const toastMessage = useAppSelector(selectToastMessage);
 
@@ -79,10 +83,13 @@ const App = () => {
                 <Route path='following' element={<FollowingList />} />
               </Route>
 
-              <Route
-                path='status/:tweetId'
-                element={<TweetPage from='App' isHeaderNeeded={true} />}
-              />
+              <Route path='status/:tweetId'>
+                <Route
+                  index
+                  element={<TweetPage from='App' isHeaderNeeded={true} />}
+                />
+                <Route path='quotes' element={<QuotesPage />} />
+              </Route>
             </Route>
 
             <Route path='explore' element={<Explore />} />
@@ -112,6 +119,7 @@ const App = () => {
       {(isComposeTweetShown ||
         authModal.isShown ||
         isCreateReplyPopupShown ||
+        isQuoteTweetPopupShown ||
         isLikedByPopupShown ||
         isRetweetedByPopupShown ||
         isEditProfileShown) && (
@@ -119,6 +127,7 @@ const App = () => {
           isComposeTweetShown={isComposeTweetShown}
           isAuthModalShown={authModal.isShown}
           isCreateReplyPopupShown={isCreateReplyPopupShown}
+          isQuoteTweetPopupShown={isQuoteTweetPopupShown}
           isLikedByPopupShown={isLikedByPopupShown}
           isRetweetedByPopupShown={isRetweetedByPopupShown}
           isEditProfileShown={isEditProfileShown}
@@ -132,6 +141,8 @@ const App = () => {
       )}
 
       {isCreateReplyPopupShown && <CreateReplyPopup />}
+
+      {isQuoteTweetPopupShown && <QuoteTweetPopup />}
 
       {isLikedByPopupShown && <LikedByPopup />}
 

@@ -190,6 +190,72 @@ const getRetweetedPostId = async (req, res) => {
   }
 };
 
+// @route POST api/tweets/quote/:quoteRefTweetId
+// @desc Quote a tweet
+// @access Private
+const quoteTweet = async (req, res) => {
+  const { quoteRefTweetId } = req.params;
+  const userId = req.user.id;
+  const { caption, media } = req.body;
+
+  try {
+    const quoteRefTweet = await Tweet.findById(quoteRefTweetId).exec();
+    const author = await User.findById(userId)
+      .select('-password')
+      .lean()
+      .exec();
+
+    const newTweet = new Tweet({
+      parent: null,
+      degree: 0,
+      quoteRefTweetId,
+      userId: author._id,
+      fullName: author.name,
+      twitterHandle: author.handle,
+      twitterHandle_lowercase: author.handle_lowercase,
+      profilePicture: author.profilePicture || '',
+      caption,
+      media: media || [''],
+    });
+
+    const newlySavedTweet = await newTweet.save();
+
+    quoteRefTweet.quotes.unshift({ tweetId: newlySavedTweet._id });
+    await quoteRefTweet.save();
+
+    res.status(200).json(newlySavedTweet);
+  } catch (error) {
+    console.log(error.message);
+    if (error.kind === 'ObjectId') {
+      res.status(404).json({ message: 'Tweet not found.' });
+    }
+  }
+};
+
+// @route GET api/tweets/quote/:tweetId
+// @desc Get all Quotes of a tweet (just the quote object, not the entire array of tweet objects)
+// @access Public
+const getQuotes = async (req, res) => {
+  const { tweetId } = req.params;
+
+  try {
+    const tweet = await Tweet.findById(tweetId);
+
+    if (!tweet) {
+      return res.status(400).json({ message: 'Tweet not found.' });
+    }
+    if (tweet.quotes.length < 1) {
+      return res.status(400).json({ message: 'No quotes for this tweet yet.' });
+    }
+    res.status(200).json(tweet.quotes);
+  } catch (error) {
+    console.log(error.message);
+    if (error.kind === 'ObjectId') {
+      res.status(404).json({ message: 'Tweet not found.' });
+    }
+  }
+};
+
 // @route DELETE api/tweets/:id (body: parentTweetId?)
 // @desc Delete a tweet
 // @access Private (only the tweet author)
@@ -200,6 +266,7 @@ const deleteTweet = async (req, res) => {
   try {
     const tweet = await Tweet.findById(tweetId).exec();
     const retweetRefTweet = await Tweet.findById(tweet.retweetOf).exec();
+    const quoteRefTweet = await Tweet.findById(tweet.quoteRefTweetId).exec();
     const user = await User.findById(userId).select('-password').exec();
 
     if (!tweet) {
@@ -233,6 +300,14 @@ const deleteTweet = async (req, res) => {
         retweet => retweet.userId.toString() !== userId
       );
       await retweetRefTweet.save();
+    }
+
+    // remove the deleted tweet from the 'quotes' array of its quote-reference tweet
+    if (quoteRefTweet) {
+      quoteRefTweet.quotes = quoteRefTweet.quotes.filter(
+        quote => quote.tweetId.toString() !== tweet._id.toString()
+      );
+      await quoteRefTweet.save();
     }
 
     // decrease the number of tweets of the author user
@@ -334,6 +409,8 @@ module.exports = {
   createTweet,
   retweet,
   getRetweetedPostId,
+  quoteTweet,
+  getQuotes,
   deleteTweet,
   likeTweet,
   bookmarkTweet,

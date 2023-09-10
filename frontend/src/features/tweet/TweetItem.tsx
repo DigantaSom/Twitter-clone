@@ -8,8 +8,8 @@ import { Tweet } from './tweet.types';
 
 import useAuth from '../../hooks/useAuth';
 import {
-  useDeleteTweetMutation,
   useGetRetweetedPostIdQuery,
+  useDeleteTweetMutation,
 } from './tweet.api-slice';
 import { useGetUserBasicInfoByIdQuery } from '../user/user.api-slice';
 import { useGetPostDate } from '../../hooks/date-hooks';
@@ -20,6 +20,7 @@ import ProfilePicture from '../../components/ProfilePicture';
 import TweetActions from './TweetActions';
 import TweetItemMedia from '../../components/TweetItemMedia';
 import DeletedTweetPlaceholder from '../../components/DeletedTweetPlaceholder';
+import QuoteRefTweetContainer from './QuoteRefTweetContainer';
 
 interface TweetItemProps {
   tweet: Tweet;
@@ -310,7 +311,12 @@ const TweetItem: FC<TweetItemProps> = ({
                 tweetId={tweetId}
                 media={media}
                 twitterHandle={twitterHandle}
+                isOnClickDisabled={false}
               />
+            )}
+
+            {tweet.quoteRefTweetId && (
+              <QuoteRefTweetContainer quoteRefTweetId={tweet.quoteRefTweetId} />
             )}
 
             {auth.user && (

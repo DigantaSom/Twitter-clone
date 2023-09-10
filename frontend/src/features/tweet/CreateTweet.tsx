@@ -1,9 +1,11 @@
 import {
   ChangeEvent,
   Dispatch,
-  FC,
+  forwardRef,
+  ForwardRefRenderFunction,
   SetStateAction,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react';
@@ -14,55 +16,72 @@ import { IoCloseSharp } from 'react-icons/io5';
 import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { useGetMyProfilePhotoQuery } from '../user/user.api-slice';
-import { useAddNewTweetMutation } from './tweet.api-slice';
+import {
+  useAddNewTweetMutation,
+  useQuoteTweetMutation,
+} from './tweet.api-slice';
 
 import {
   selectIsComposeTweetShown,
   toggleComposeTweet,
-  handleSubmitDisabled,
+  selectQuoteTweetPopupRefTweetId,
+  closeQuoteTweetPopup,
 } from '../ui/ui.slice';
-import { setNewTweetData, clearNewTweetData } from './tweet.slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
+import QuoteRefTweetContainer from './QuoteRefTweetContainer';
 import CreateTweetAdOns from '../../components/CreateTweetAdOns';
 
 import constants from '../../constants';
 import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 
+export interface AddNew_or_Quote_Tweet_Handle {
+  handleAddNewTweet: () => void;
+  handleQuoteTweet: () => void;
+}
+
 interface CreateTweetProps {
-  from: 'Feed' | 'ComposeTweet';
+  from: 'Feed' | 'ComposeTweet' | 'QuoteTweetPopup';
   setIsMediaSet?: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
+const CreateTweet: ForwardRefRenderFunction<
+  AddNew_or_Quote_Tweet_Handle,
+  CreateTweetProps
+> = (props, forwardRef) => {
+  const { from, setIsMediaSet } = props;
   const auth = useAuth();
   const dispatch = useAppDispatch();
 
   const isComposeTweetShown = useAppSelector(selectIsComposeTweetShown);
+  const quoteTweetPopupRefTweetId = useAppSelector(
+    selectQuoteTweetPopupRefTweetId
+  );
 
   const { data: loggedInUserInfo } = useGetMyProfilePhotoQuery();
-  const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
+  const [addNewTweet, { isLoading: isAddNewTweetLoading }] =
+    useAddNewTweetMutation();
+
+  const [quoteTweet, { isLoading: isQuoteTweetLoading }] =
+    useQuoteTweetMutation();
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hiddenPictureInput = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
   const [imageToPost, setImageToPost] = useState('');
 
   useEffect(() => {
-    if (isComposeTweetShown && text) {
-      dispatch(
-        setNewTweetData({
-          parentTweetId: null,
-          tweetDegree: 0,
-          caption: text,
-          media: [imageToPost],
-        })
-      );
+    if (from !== 'Feed') {
+      textareaRef.current?.focus();
     }
-  }, [isComposeTweetShown, text, imageToPost, dispatch]);
+  }, [from]);
 
-  useEffect(() => {
-    dispatch(handleSubmitDisabled(text === '') || isLoading);
-  }, [dispatch, text, isLoading]);
+  // to trigger this function on a button click from parent (mobile view)
+  useImperativeHandle(forwardRef, () => ({
+    handleAddNewTweet,
+    handleQuoteTweet,
+  }));
 
   const handleClickPictureButton = () => {
     hiddenPictureInput.current?.click();
@@ -91,7 +110,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
   };
 
   const handleRemoveImage = () => {
-    if (!isLoading) {
+    if (!isAddNewTweetLoading) {
       if (window.confirm('Remove image?')) {
         setImageToPost('');
         if (from === 'ComposeTweet' && setIsMediaSet) {
@@ -101,8 +120,8 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
     }
   };
 
-  const handleSubmitTweet = async () => {
-    if (isLoading) {
+  const handleAddNewTweet = async () => {
+    if (isAddNewTweetLoading) {
       return;
     }
     try {
@@ -119,10 +138,40 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
       }
       setText('');
       setImageToPost('');
-      dispatch(clearNewTweetData());
       if (isComposeTweetShown) {
         dispatch(toggleComposeTweet());
       }
+    } catch (err: any) {
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
+    }
+  };
+
+  const handleQuoteTweet = async () => {
+    if (isQuoteTweetLoading) {
+      return;
+    }
+
+    try {
+      const res = await quoteTweet({
+        quoteRefTweetId: quoteTweetPopupRefTweetId,
+        caption: text,
+        media: [imageToPost],
+      }).unwrap();
+
+      if (res?.isError) {
+        alert(res?.message);
+        return;
+      }
+      setText('');
+      setImageToPost('');
+      dispatch(closeQuoteTweetPopup());
     } catch (err: any) {
       let errMsg = '';
 
@@ -144,10 +193,15 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
       'hidden ph:flex py-3 px-4 border-b-[1px] border-gray-200';
     textarea_dynamicStyles = 'focus:border-b-[1px] focus:border-gray-200';
     icon_dynamicStyles = 'hidden sm:block';
-  } else if (from === 'ComposeTweet') {
+  } else {
     container_dynamicStyles = 'flex';
-    textarea_dynamicStyles = 'border-b-[1px] border-gray-200';
     icon_dynamicStyles = 'block';
+
+    if (from === 'ComposeTweet') {
+      textarea_dynamicStyles = 'border-b-[1px] border-gray-200';
+    } else if (from === 'QuoteTweetPopup') {
+      textarea_dynamicStyles = 'border-none';
+    }
   }
 
   return (
@@ -163,7 +217,10 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
       {/* right */}
       <div className='flex flex-col w-full h-full ml-3'>
         <textarea
-          placeholder="What's happening?"
+          ref={textareaRef}
+          placeholder={
+            from === 'QuoteTweetPopup' ? 'Add a comment!' : "What's happening?"
+          }
           rows={2}
           value={text}
           onChange={e => setText(e.target.value)}
@@ -172,7 +229,7 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
 
         {imageToPost && (
           <div className='relative pt-3 pb-2'>
-            {!isLoading && (
+            {!isAddNewTweetLoading && (
               <div
                 title='Remove'
                 onClick={handleRemoveImage}
@@ -189,19 +246,27 @@ const CreateTweet: FC<CreateTweetProps> = ({ from, setIsMediaSet }) => {
           </div>
         )}
 
+        {from === 'QuoteTweetPopup' && (
+          <QuoteRefTweetContainer quoteRefTweetId={quoteTweetPopupRefTweetId} />
+        )}
+
         <CreateTweetAdOns
           type='Tweet'
           icon_dynamicStyles={icon_dynamicStyles}
           hiddenPictureInput={hiddenPictureInput}
           handleClickPictureButton={handleClickPictureButton}
           addImageToPost={addImageToPost}
-          isButtonDisabled={text === '' || isLoading}
-          isLoading={isLoading}
-          handleSubmit={handleSubmitTweet}
+          isButtonDisabled={text === '' || isAddNewTweetLoading}
+          isLoading={isAddNewTweetLoading}
+          handleSubmit={
+            from === 'QuoteTweetPopup' ? handleQuoteTweet : handleAddNewTweet
+          }
         />
+
+        <br />
       </div>
     </div>
   );
 };
 
-export default CreateTweet;
+export default forwardRef(CreateTweet);

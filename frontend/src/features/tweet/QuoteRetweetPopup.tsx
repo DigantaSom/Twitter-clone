@@ -3,8 +3,11 @@ import { FC, memo } from 'react';
 import { AiOutlineRetweet } from 'react-icons/ai';
 import { TbPencil } from 'react-icons/tb';
 
-import SmallPopup from '../../components/SmallPopup';
+import { useAppDispatch } from '../../hooks/redux-hooks';
 import { useRetweetMutation } from './tweet.api-slice';
+import { openQuoteTweetPopup } from '../ui/ui.slice';
+
+import SmallPopup from '../../components/SmallPopup';
 
 interface QuoteRetweetPopupProps {
   refTweetId: string;
@@ -17,6 +20,8 @@ const QuoteRetweetPopup: FC<QuoteRetweetPopupProps> = ({
   isAlreadyRetweeted,
   retweetedPostId,
 }) => {
+  const dispatch = useAppDispatch();
+
   const [retweet, { isLoading: isRetweetLoading }] = useRetweetMutation();
 
   const handleRetweet = () => {
@@ -27,7 +32,7 @@ const QuoteRetweetPopup: FC<QuoteRetweetPopupProps> = ({
   };
 
   const handleQuoteTweet = () => {
-    // TODO: add the quote tweet functionality
+    dispatch(openQuoteTweetPopup({ quoteRefTweetId: refTweetId }));
   };
 
   return (
