@@ -48,10 +48,13 @@ const TweetItem: FC<TweetItemProps> = ({
     useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
-  const { data: userBasicData } = useGetUserBasicInfoByIdQuery({
-    userId: tweet?.userId || '',
-    loggedInUserId: auth.user?.id,
-  });
+  const { data: userBasicData } = useGetUserBasicInfoByIdQuery(
+    {
+      userId: tweet?.userId || '',
+      loggedInUserId: auth.user?.id,
+    },
+    { skip: !tweet }
+  );
 
   const { data: retweetedPostId_onlyFor_retweetRefTweetItem } =
     useGetRetweetedPostIdQuery(
@@ -338,9 +341,16 @@ const TweetItem: FC<TweetItemProps> = ({
         {showOptionsPopup && auth.user && (
           <PostOptions
             from='TweetItem'
-            currentUser={auth.user}
-            authorUsername={twitterHandle}
+            loggedInUser={auth.user}
+            author={{
+              id: userId || '',
+              username: twitterHandle,
+            }}
+            isFollowedByLoggedInUser={
+              userBasicData?.isFollowedByLoggedInUser || false
+            }
             handleDeletePost={handleDeleteTweet}
+            hidePostOptions={() => setShowOptionsPopup(prev => !prev)}
           />
         )}
       </div>

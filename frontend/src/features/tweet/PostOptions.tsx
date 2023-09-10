@@ -1,33 +1,55 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 import { TbTrash, TbMessageCircle2 } from 'react-icons/tb';
 import { BsPin } from 'react-icons/bs';
 import { BiBarChart, BiVolumeMute } from 'react-icons/bi';
 import { HiOutlineEmojiSad, HiOutlineDocumentAdd } from 'react-icons/hi';
-import { FiUserX } from 'react-icons/fi';
+import { FiUserX, FiUserPlus } from 'react-icons/fi';
 import { MdOutlineBlock } from 'react-icons/md';
 import { ImEmbed2 } from 'react-icons/im';
 import { RiFlag2Line } from 'react-icons/ri';
 
 import { TokenPayloadUser } from '../../types';
+import { useFollowUserMutation } from '../user/user.api-slice';
 
 interface PostOptionsProps {
   from: 'TweetItem' | 'TweetPage';
-  currentUser: TokenPayloadUser;
-  authorUsername: string;
+  loggedInUser: TokenPayloadUser;
+  author: {
+    id: string;
+    username: string;
+  };
+  isFollowedByLoggedInUser: boolean;
   handleDeletePost: () => void;
+  hidePostOptions: () => void;
 }
 
 const PostOptions: FC<PostOptionsProps> = ({
   from,
-  currentUser,
-  authorUsername,
+  loggedInUser,
+  author,
+  isFollowedByLoggedInUser,
   handleDeletePost,
+  hidePostOptions,
 }) => {
+  const [followOrUnfollow, { isLoading: isFollowOrUnfollowLoading }] =
+    useFollowUserMutation();
+
+  const handleFollowOrUnfollow = async () => {
+    if (loggedInUser.id === author.id || isFollowOrUnfollowLoading) return;
+
+    await followOrUnfollow({
+      loggedInUserId: loggedInUser.id,
+      targetUserId: author.id,
+    });
+
+    hidePostOptions();
+  };
+
   let content;
 
-  // if the current logged in user is the tweet author
-  if (currentUser.twitterHandle === authorUsername) {
+  // if the currently logged in user is the tweet's author
+  if (loggedInUser.twitterHandle === author.username) {
     content = (
       <>
         <div
@@ -84,10 +106,19 @@ const PostOptions: FC<PostOptionsProps> = ({
 
         <div
           className='flex items-center p-3 hover:bg-gray-50'
-          onClick={() => {}}
+          onClick={handleFollowOrUnfollow}
         >
-          <FiUserX className='text-lg' />
-          <span className='ml-2 text-sm'>Unfollow @{authorUsername}</span>
+          {isFollowedByLoggedInUser ? (
+            <>
+              <FiUserX className='text-lg' />
+              <div className='ml-2 text-sm'>Unfollow @{author.username}</div>
+            </>
+          ) : (
+            <>
+              <FiUserPlus className='text-lg' />
+              <div className='ml-2 text-sm'>Follow @{author.username}</div>
+            </>
+          )}
         </div>
 
         <div
@@ -96,7 +127,7 @@ const PostOptions: FC<PostOptionsProps> = ({
         >
           <HiOutlineDocumentAdd className='text-lg' />
           <span className='ml-2 text-sm'>
-            Add/remove @{authorUsername} from Lists
+            Add/remove @{author.username} from Lists
           </span>
         </div>
 
@@ -105,7 +136,7 @@ const PostOptions: FC<PostOptionsProps> = ({
           onClick={() => {}}
         >
           <BiVolumeMute className='text-lg' />
-          <span className='ml-2 text-sm'>Mute @{authorUsername}</span>
+          <span className='ml-2 text-sm'>Mute @{author.username}</span>
         </div>
 
         <div
@@ -113,7 +144,7 @@ const PostOptions: FC<PostOptionsProps> = ({
           onClick={() => {}}
         >
           <MdOutlineBlock className='text-lg' />
-          <span className='ml-2 text-sm'>Block @{authorUsername}</span>
+          <span className='ml-2 text-sm'>Block @{author.username}</span>
         </div>
 
         <div
@@ -137,11 +168,11 @@ const PostOptions: FC<PostOptionsProps> = ({
 
   return (
     <div
-      className={`absolute right-0 ph_xs:right-2 ph_sm:right-4 ${contentTopStyles} z-10 bg-white shadow-xl rounded-lg font-bold overflow-hidden`}
+      className={`absolute right-0 ph_xs:right-2 ph_sm:right-4 ${contentTopStyles} z-10 bg-white shadow-xl rounded-lg font-bold overflow-hidden hover:cursor-pointer`}
     >
       {content}
     </div>
   );
 };
 
-export default PostOptions;
+export default memo(PostOptions);

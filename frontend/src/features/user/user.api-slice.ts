@@ -154,6 +154,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
+    // follow or unfollow a user
     followUser: builder.mutation<SingleMessageResponse, FollowUserArgs>({
       query: ({ targetUserId }) => ({
         url: `${USER_URL}/follow/${targetUserId}`,

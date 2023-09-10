@@ -14,8 +14,7 @@ import {
   useBookmarkTweetMutation,
   useGetRepliesQuery,
 } from '../features/tweet/tweet.api-slice';
-import { removeToast, setToast } from '../features/toast/toast.slice';
-
+import { useGetUserBasicInfoByIdQuery } from '../features/user/user.api-slice';
 import useAuth from '../hooks/useAuth';
 import { useGetPostDate, useGetPostTime } from '../hooks/date-hooks';
 
@@ -24,6 +23,7 @@ import {
   openLikedByPopup,
   openRetweetedByPopup,
 } from '../features/ui/ui.slice';
+import { removeToast, setToast } from '../features/toast/toast.slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
 import Header from '../components/Header';
@@ -63,6 +63,14 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     isError,
     error,
   } = useGetTweetByIdQuery({ id: tweetId! });
+
+  const { data: userBasicData } = useGetUserBasicInfoByIdQuery(
+    {
+      userId: tweet?.userId || '',
+      loggedInUserId: auth.user?.id,
+    },
+    { skip: !tweet }
+  );
 
   const [deleteTweet, { isLoading: isDeleteTweetLoading }] =
     useDeleteTweetMutation();
@@ -301,9 +309,16 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
         {showOptionsPopup && auth.user && (
           <PostOptions
             from='TweetPage'
-            currentUser={auth.user}
-            authorUsername={twitterHandle}
+            loggedInUser={auth.user}
+            author={{
+              id: tweet.userId || '',
+              username: tweet.twitterHandle,
+            }}
+            isFollowedByLoggedInUser={
+              userBasicData?.isFollowedByLoggedInUser || false
+            }
             handleDeletePost={handleDeleteTweet}
+            hidePostOptions={() => setShowOptionsPopup(prev => !prev)}
           />
         )}
 
