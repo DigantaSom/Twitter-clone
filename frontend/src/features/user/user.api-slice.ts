@@ -11,13 +11,15 @@ import {
   FollowObjectArray,
   EditProfileRequestBody,
   GetMyBasicInfoResponse,
+  AccessToken,
+  SignupArgs,
 } from './user.types';
 
 const USER_URL = '/api/users';
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
-    signUp: builder.mutation({
+    signUp: builder.mutation<AccessToken | any, SignupArgs>({
       query: userData => ({
         url: USER_URL,
         method: 'POST',

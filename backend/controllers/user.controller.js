@@ -19,13 +19,13 @@ const getAllUsers = async (req, res) => {
 // @desc Create a user
 // @access Public
 const createUser = async (req, res) => {
-  const { name, email, handle, password, profilePicture } = req.body;
+  const { name, email, username, password, birthday } = req.body;
 
-  if (!name || !email || !password || !handle) {
+  if (!name || !email || !password || !username) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  if (handle.length < 5 || handle.length > 15) {
+  if (username.length < 5 || username.length > 15) {
     return res
       .status(400)
       .json({ message: 'Username must be between 5 and 15 characters' });
@@ -37,7 +37,7 @@ const createUser = async (req, res) => {
       .json({ message: 'Password must be at least 5 characters long' });
   }
 
-  let user = await User.findOne({ handle_lowercase: handle.toLowerCase() });
+  let user = await User.findOne({ handle_lowercase: username.toLowerCase() });
 
   if (user) {
     return res.status(409).json({
@@ -48,11 +48,12 @@ const createUser = async (req, res) => {
   user = new User({
     name,
     email: email.toLowerCase(),
-    handle,
-    handle_lowercase: handle.toLowerCase(),
+    handle: username,
+    handle_lowercase: username.toLowerCase(),
     password,
-    profilePicture: profilePicture || '',
+    profilePicture: '',
     bio: '',
+    birthday,
     location: '',
     website: '',
     followers: [],
@@ -178,7 +179,7 @@ const getProfile = async (req, res) => {
     profilePicture: user.profilePicture,
     headerPhoto: user.headerPhoto,
     bio: user.bio,
-    birthday: user?.birthday || null, // TODO: remove nullable functionality
+    birthday: user.birthday,
     joiningDate: user.createdAt,
     numberOfTweets: user.numberOfTweets,
     location: user.location,

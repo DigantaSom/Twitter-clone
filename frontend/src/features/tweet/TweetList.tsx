@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 
@@ -49,4 +49,4 @@ const TweetList: FC<TweetListProps> = ({
   return <>{content}</>;
 };
 
-export default TweetList;
+export default memo(TweetList);

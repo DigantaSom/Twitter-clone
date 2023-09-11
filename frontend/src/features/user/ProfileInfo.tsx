@@ -23,7 +23,7 @@ interface ProfileInfoProps {
   name: string;
   username: string;
   bio: string;
-  birthday: string | null;
+  birthday: string;
   joiningDate: string;
   website: string;
   isFollowedByLoggedInUser: boolean;
@@ -147,19 +147,18 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
           </h3>
         </div>
 
-        <p>{bio}</p>
+        {!!bio && <p>{bio}</p>}
 
-        <div className='flex items-center justify-start space-x-5 text-gray-500'>
-          {/* TODO: Backend - add birthday to profile after a user signs up */}
+        <div className='flex items-center justify-start space-y-1 flex-wrap text-gray-500'>
           {!!birthday && (
-            <div className='flex items-center space-x-1'>
+            <div className='flex items-center space-x-1 pr-3 ph:pr-5'>
               <IoBalloonOutline />
               <div>Born {birthday_toDisplay}</div>
             </div>
           )}
           {/* website */}
           {!!website && (
-            <div className='flex items-center space-x-1'>
+            <div className='flex items-center space-x-1 pr-3 ph:pr-5'>
               <AiOutlineLink className='text-lg' />
               <a
                 href={
@@ -175,7 +174,7 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
               </a>
             </div>
           )}
-          <div className='flex items-center space-x-1'>
+          <div className='flex items-center space-x-1 pr-3 ph:pr-5'>
             <IoCalendarOutline />
             <div>Joined {joiningDate_toDisplay}</div>
           </div>

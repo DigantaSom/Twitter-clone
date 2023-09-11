@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     profilePicture: { type: String, default: '' },
     headerPhoto: { type: String, default: '' },
     bio: { type: String, default: '' },
-    birthday: { type: Date },
+    birthday: { type: Date, required: true },
     location: { type: String, default: '' },
     website: { type: String, default: '' },
 

@@ -7,12 +7,12 @@ import { GrStatusGood } from 'react-icons/gr';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 import { useAppDispatch } from '../../hooks/redux-hooks';
-import { useGetDays, useGetYears } from '../../hooks/date-hooks';
-import { toggleAuthModal } from '../ui/ui.slice';
 import { useSignUpMutation } from '../user/user.api-slice';
-import { setCredentials } from './auth.slice';
+import { useGetDays, useGetYears } from '../../hooks/date-hooks';
 
 import { MonthType } from '../../types';
+import { setCredentials } from './auth.slice';
+import { toggleAuthModal } from '../ui/ui.slice';
 
 import InputErrorMessage from '../../components/InputErrorMessage';
 
@@ -145,12 +145,17 @@ const SignUpForm = () => {
   }, [password]);
 
   const handleSignUp = async () => {
+    const birthday = new Date(
+      selectedYear + '-' + selectedMonth + '-' + selectedDay
+    ).toDateString();
+
     try {
       const res = await signUp({
         name: fullName,
         email,
         password,
-        handle: username,
+        username,
+        birthday,
       }).unwrap();
 
       if (res.isError) {

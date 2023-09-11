@@ -2,6 +2,18 @@ export interface UserID {
   userId: string;
 }
 
+export interface AccessToken {
+  accessToken: string;
+}
+
+export interface SignupArgs {
+  name: string;
+  email: string;
+  password: string;
+  username: string;
+  birthday: string;
+}
+
 export interface UserBasicInfo {
   _id: string;
   name: string;
@@ -15,7 +27,7 @@ export interface UserBasicInfo {
 
 export interface UserProfile extends UserBasicInfo {
   headerPhoto: string;
-  birthday: string | null; // TODO: remove nullable functionality
+  birthday: string;
   joiningDate: string;
   numberOfTweets: number;
   location: string;
