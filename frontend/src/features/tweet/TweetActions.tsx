@@ -1,5 +1,6 @@
 import { FC, memo, useEffect, useState } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
+
 import { TbMessageCircle2 } from 'react-icons/tb';
 import { AiOutlineRetweet, AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { MdIosShare } from 'react-icons/md';
@@ -20,10 +21,15 @@ import { toggleCreateReplyPopup } from '../ui/ui.slice';
 import ShareTweetPopupContents from './ShareTweetPopupContents';
 import QuoteRetweetPopup from './QuoteRetweetPopup';
 
-import K from '../../constants';
+import constants from '../../constants';
 
 interface TweetActionsProps {
   currentUser: TokenPayloadUser;
+  author: {
+    username: string;
+    name: string;
+    profilePicture: string;
+  };
   tweet: Tweet;
   isMediaPresent: boolean;
   tweetCreationDate: string;
@@ -32,21 +38,13 @@ interface TweetActionsProps {
 
 const TweetActions: FC<TweetActionsProps> = ({
   currentUser,
+  author: { username, name, profilePicture },
   tweet,
   isMediaPresent,
   tweetCreationDate,
   retweetedPostId,
 }) => {
-  const {
-    _id: tweetId,
-    degree,
-    twitterHandle,
-    fullName,
-    profilePicture,
-    likes,
-    retweets,
-    bookmarks,
-  } = tweet;
+  const { _id: tweetId, degree, likes, retweets, bookmarks } = tweet;
 
   const dispatch = useAppDispatch();
 
@@ -95,8 +93,8 @@ const TweetActions: FC<TweetActionsProps> = ({
         parentTweetDegree: degree,
         replyingTo: {
           profilePicture,
-          fullName,
-          username: twitterHandle,
+          fullName: name,
+          username,
         },
         caption: tweet.caption,
         isMediaPresent,
@@ -147,7 +145,7 @@ const TweetActions: FC<TweetActionsProps> = ({
           }
           setTimeout(() => {
             dispatch(removeToast());
-          }, K.toastDuration);
+          }, constants.toastDuration);
         }
       } catch (err: any) {
         console.log(err);
@@ -268,7 +266,7 @@ const TweetActions: FC<TweetActionsProps> = ({
       {showSharePopup && (
         <div className='absolute z-20 bottom-14 right-0 text-black'>
           <ShareTweetPopupContents
-            tweet={{ _id: tweetId, twitterHandle }}
+            tweet={{ _id: tweetId, username }}
             isBookmarked_displayOnUI={isBookmarked_displayOnUI}
             handleBookmarkTweet={handleClickBookmarkFromSharePopup}
             handleClosePopup={handleCloseSharePopup}

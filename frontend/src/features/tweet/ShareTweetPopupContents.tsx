@@ -9,12 +9,12 @@ import { setToast, removeToast } from '../toast/toast.slice';
 import SmallPopup from '../../components/SmallPopup';
 
 import copyTextToClipboard from '../../utils/copyTextToClipboard.util';
-import K from '../../constants';
+import constants from '../../constants';
 
 interface ShareTweetPopupContentsProps {
   tweet: {
     _id: string;
-    twitterHandle: string;
+    username: string;
   };
   isBookmarked_displayOnUI: boolean;
   handleBookmarkTweet: () => void;
@@ -31,7 +31,7 @@ const ShareTweetPopupContents: FC<ShareTweetPopupContentsProps> = ({
 
   const handleCopyLinkToTweet = () => {
     copyTextToClipboard(
-      `http://localhost:3000/${tweet.twitterHandle}/status/${tweet._id}`
+      `http://localhost:3000/${tweet.username}/status/${tweet._id}`
     );
     handleClosePopup();
 
@@ -40,7 +40,7 @@ const ShareTweetPopupContents: FC<ShareTweetPopupContentsProps> = ({
     );
     setTimeout(() => {
       dispatch(removeToast());
-    }, K.toastDuration);
+    }, constants.toastDuration);
   };
 
   return (

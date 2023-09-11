@@ -22,6 +22,8 @@ import TweetItemMedia from '../../components/TweetItemMedia';
 import DeletedTweetPlaceholder from '../../components/DeletedTweetPlaceholder';
 import QuoteRefTweetContainer from './QuoteRefTweetContainer';
 
+import constants from '../../constants';
+
 interface TweetItemProps {
   tweet: Tweet;
   isParentTweetItem: boolean;
@@ -48,7 +50,7 @@ const TweetItem: FC<TweetItemProps> = ({
     useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
 
-  const { data: userBasicData } = useGetUserBasicInfoByIdQuery(
+  const { data: authorInfo } = useGetUserBasicInfoByIdQuery(
     {
       userId: tweet?.userId || '',
       loggedInUserId: auth.user?.id,
@@ -84,20 +86,17 @@ const TweetItem: FC<TweetItemProps> = ({
 
   const {
     _id: tweetId,
-    userId,
-    twitterHandle,
-    profilePicture,
-    fullName,
     caption,
     media,
     isDeleted,
     parent: parentTweetId,
+    userId,
   } = tweet;
 
   const isMediaPresent = media.length > 0 && media[0] !== '';
 
   const navigateToPost = () => {
-    navigate(`/${twitterHandle}/status/${tweetId}`);
+    navigate(`/${authorInfo?.username}/status/${tweetId}`);
   };
 
   const handleToggleOptions = () => {
@@ -165,7 +164,10 @@ const TweetItem: FC<TweetItemProps> = ({
                 onMouseOver={handleMouseOverProfilePic}
                 onMouseLeave={handleMouseLeaveProfilePic}
               >
-                <ProfilePicture uri={profilePicture} username={twitterHandle} />
+                <ProfilePicture
+                  uri={authorInfo?.profilePicture}
+                  username={authorInfo?.username}
+                />
               </div>
               {showProfilePopup_from_profilePic && (
                 <div
@@ -175,15 +177,15 @@ const TweetItem: FC<TweetItemProps> = ({
                 >
                   <ProfilePopup
                     userId={userId!}
-                    profilePicture={profilePicture}
-                    fullName={fullName}
-                    username={twitterHandle}
-                    bio={userBasicData?.bio}
+                    profilePicture={authorInfo?.profilePicture}
+                    fullName={authorInfo?.name || ''}
+                    username={authorInfo?.username || ''}
+                    bio={authorInfo?.bio}
                     isFollowedByLoggedInUser={
-                      userBasicData?.isFollowedByLoggedInUser
+                      authorInfo?.isFollowedByLoggedInUser
                     }
-                    numberOfFollowers={userBasicData?.numberOfFollowers}
-                    numberOfFollowing={userBasicData?.numberOfFollowing}
+                    numberOfFollowers={authorInfo?.numberOfFollowers}
+                    numberOfFollowing={authorInfo?.numberOfFollowing}
                   />
                 </div>
               )}
@@ -215,12 +217,12 @@ const TweetItem: FC<TweetItemProps> = ({
                   {/* Full Name */}
                   <div className='relative'>
                     <Link
-                      to={'/' + twitterHandle}
+                      to={'/' + authorInfo?.username}
                       onMouseOver={handleMouseOverFullname}
                       onMouseLeave={handleMouseLeaveFullname}
                       className='font-bold truncate hover:underline'
                     >
-                      {fullName}
+                      {authorInfo?.name}
                     </Link>
                     {showProfilePopup_from_fullName && (
                       <div
@@ -230,15 +232,15 @@ const TweetItem: FC<TweetItemProps> = ({
                       >
                         <ProfilePopup
                           userId={userId!}
-                          profilePicture={profilePicture}
-                          fullName={fullName}
-                          username={twitterHandle}
-                          bio={userBasicData?.bio}
+                          profilePicture={authorInfo?.profilePicture}
+                          fullName={authorInfo?.name || ''}
+                          username={authorInfo?.username || ''}
+                          bio={authorInfo?.bio}
                           isFollowedByLoggedInUser={
-                            userBasicData?.isFollowedByLoggedInUser
+                            authorInfo?.isFollowedByLoggedInUser
                           }
-                          numberOfFollowers={userBasicData?.numberOfFollowers}
-                          numberOfFollowing={userBasicData?.numberOfFollowing}
+                          numberOfFollowers={authorInfo?.numberOfFollowers}
+                          numberOfFollowing={authorInfo?.numberOfFollowing}
                         />
                       </div>
                     )}
@@ -247,14 +249,14 @@ const TweetItem: FC<TweetItemProps> = ({
                     {/* Username */}
                     <div className='relative'>
                       <Link
-                        to={'/' + twitterHandle}
+                        to={'/' + authorInfo?.username}
                         onMouseOver={handleMouseOverUsername}
                         onMouseLeave={() =>
                           setShowProfilePopup_from_username(false)
                         }
                         className='text-gray-500 truncate'
                       >
-                        @{twitterHandle}
+                        @{authorInfo?.username}
                       </Link>
                       {showProfilePopup_from_username && (
                         <div
@@ -266,15 +268,15 @@ const TweetItem: FC<TweetItemProps> = ({
                         >
                           <ProfilePopup
                             userId={userId!}
-                            profilePicture={profilePicture}
-                            fullName={fullName}
-                            username={twitterHandle}
-                            bio={userBasicData?.bio}
+                            profilePicture={authorInfo?.profilePicture}
+                            fullName={authorInfo?.name || ''}
+                            username={authorInfo?.username || ''}
+                            bio={authorInfo?.bio}
                             isFollowedByLoggedInUser={
-                              userBasicData?.isFollowedByLoggedInUser
+                              authorInfo?.isFollowedByLoggedInUser
                             }
-                            numberOfFollowers={userBasicData?.numberOfFollowers}
-                            numberOfFollowing={userBasicData?.numberOfFollowing}
+                            numberOfFollowers={authorInfo?.numberOfFollowers}
+                            numberOfFollowing={authorInfo?.numberOfFollowing}
                           />
                         </div>
                       )}
@@ -282,7 +284,7 @@ const TweetItem: FC<TweetItemProps> = ({
                     <BsDot />
                     {/* Created At */}
                     <Link
-                      to={`/${twitterHandle}/status/${tweetId}`}
+                      to={`/${authorInfo?.username}/status/${tweetId}`}
                       className='text-gray-500 truncate hover:underline'
                     >
                       {createdAt}
@@ -313,7 +315,7 @@ const TweetItem: FC<TweetItemProps> = ({
               <TweetItemMedia
                 tweetId={tweetId}
                 media={media}
-                twitterHandle={twitterHandle}
+                twitterHandle={authorInfo?.username || ''}
                 isOnClickDisabled={false}
               />
             )}
@@ -325,6 +327,13 @@ const TweetItem: FC<TweetItemProps> = ({
             {auth.user && (
               <TweetActions
                 currentUser={auth.user}
+                author={{
+                  username: authorInfo?.username || '',
+                  name: authorInfo?.name || '',
+                  profilePicture:
+                    authorInfo?.profilePicture ||
+                    constants.placeholder_profilePicture,
+                }}
                 tweet={tweet}
                 isMediaPresent={isMediaPresent}
                 tweetCreationDate={createdAt}
@@ -344,10 +353,10 @@ const TweetItem: FC<TweetItemProps> = ({
             loggedInUser={auth.user}
             author={{
               id: userId || '',
-              username: twitterHandle,
+              username: authorInfo?.username || '',
             }}
             isFollowedByLoggedInUser={
-              userBasicData?.isFollowedByLoggedInUser || false
+              authorInfo?.isFollowedByLoggedInUser || false
             }
             handleDeletePost={handleDeleteTweet}
             hidePostOptions={() => setShowOptionsPopup(prev => !prev)}

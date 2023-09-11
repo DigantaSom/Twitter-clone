@@ -15,7 +15,7 @@ import { IoCloseSharp } from 'react-icons/io5';
 
 import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { useGetMyProfilePhotoQuery } from '../user/user.api-slice';
+import { useGetMyBasicInfoQuery } from '../user/user.api-slice';
 import {
   useAddNewTweetMutation,
   useQuoteTweetMutation,
@@ -58,7 +58,7 @@ const CreateTweet: ForwardRefRenderFunction<
     selectQuoteTweetPopupRefTweetId
   );
 
-  const { data: loggedInUserInfo } = useGetMyProfilePhotoQuery();
+  const { data: loggedInUserInfo } = useGetMyBasicInfoQuery();
 
   const [addNewTweet, { isLoading: isAddNewTweetLoading }] =
     useAddNewTweetMutation();
@@ -210,7 +210,7 @@ const CreateTweet: ForwardRefRenderFunction<
     >
       {/* left */}
       <ProfilePicture
-        uri={loggedInUserInfo?.profilePhoto}
+        uri={loggedInUserInfo?.profilePicture}
         username={auth.user?.twitterHandle}
       />
 

@@ -36,7 +36,7 @@ import DeletedTweetPlaceholder from '../components/DeletedTweetPlaceholder';
 import TweetList from '../features/tweet/TweetList';
 import QuoteRefTweetContainer from '../features/tweet/QuoteRefTweetContainer';
 
-import K from '../constants';
+import constants from '../constants';
 
 interface TweetPageProps {
   from: 'App' | 'TweetPhotoPage';
@@ -64,7 +64,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     error,
   } = useGetTweetByIdQuery({ id: tweetId! });
 
-  const { data: userBasicData } = useGetUserBasicInfoByIdQuery(
+  const { data: authorInfo } = useGetUserBasicInfoByIdQuery(
     {
       userId: tweet?.userId || '',
       loggedInUserId: auth.user?.id,
@@ -134,10 +134,6 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   const {
     _id,
     degree,
-    userId,
-    profilePicture,
-    fullName,
-    twitterHandle,
     caption,
     media,
     isDeleted,
@@ -146,12 +142,13 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
     likes,
     bookmarks,
     quoteRefTweetId,
+    userId,
   } = tweet;
 
   const navigateToPostFullScreen = () => {
     if (isDeleted) return;
     // TODO: change the photoIndex from '1' to dynamic
-    navigate(`/${twitterHandle}/status/${_id}/photo/1`);
+    navigate(`/${authorInfo?.username}/status/${_id}/photo/1`);
   };
 
   const handleToggleOptions = () => {
@@ -168,9 +165,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
         parentTweetId: _id,
         parentTweetDegree: degree,
         replyingTo: {
-          profilePicture,
-          fullName,
-          username: twitterHandle,
+          profilePicture:
+            authorInfo?.profilePicture || constants.placeholder_profilePicture,
+          fullName: authorInfo?.name || '',
+          username: authorInfo?.username || '',
         },
         caption,
         isMediaPresent: media.length > 0 && media[0] !== '',
@@ -254,7 +252,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
           }
           setTimeout(() => {
             dispatch(removeToast());
-          }, K.toastDuration);
+          }, constants.toastDuration);
         }
       } catch (err: any) {
         console.log(err);
@@ -312,10 +310,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             loggedInUser={auth.user}
             author={{
               id: tweet.userId || '',
-              username: tweet.twitterHandle,
+              username: authorInfo?.username || '',
             }}
             isFollowedByLoggedInUser={
-              userBasicData?.isFollowedByLoggedInUser || false
+              authorInfo?.isFollowedByLoggedInUser || false
             }
             handleDeletePost={handleDeleteTweet}
             hidePostOptions={() => setShowOptionsPopup(prev => !prev)}
@@ -346,9 +344,12 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
               <TweetAuthorInfo
                 loggedInUserId={auth.user?.id}
                 userId={userId!}
-                username={twitterHandle}
-                profilePicture={profilePicture}
-                fullName={fullName}
+                username={authorInfo?.username || ''}
+                profilePicture={
+                  authorInfo?.profilePicture ||
+                  constants.placeholder_profilePicture
+                }
+                fullName={authorInfo?.name || ''}
                 showOptionsPopup={showOptionsPopup}
                 handleToggleOptions={handleToggleOptions}
               />
@@ -389,7 +390,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
 
           <TweetPageStats
             tweetId={_id}
-            authorUsername={twitterHandle}
+            authorUsername={authorInfo?.username || ''}
             numberOfRetweets={retweets.length}
             numberOfQuotes={quotes.length}
             numberOfLikes={likes.length}
@@ -399,7 +400,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
           />
 
           <TweetPageActions
-            tweet={{ _id, username: twitterHandle, isDeleted }}
+            tweet={{ _id, username: authorInfo?.username || '', isDeleted }}
             isRetweeted_displayOnUI={isRetweeted_displayOnUI}
             isLikeTweetLoading={isLikeTweetLoading}
             isLiked_displayOnUI={isLiked_displayOnUI}
@@ -421,8 +422,10 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
           <CreateReply
             parentTweetId={_id}
             parentTweetDegree={degree}
-            profilePicture={profilePicture}
-            tweetAuthorUsername={twitterHandle}
+            profilePicture={
+              authorInfo?.profilePicture || constants.placeholder_profilePicture
+            }
+            tweetAuthorUsername={authorInfo?.username || ''}
           />
         </main>
 

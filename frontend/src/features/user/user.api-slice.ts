@@ -10,7 +10,7 @@ import {
   FollowUserArgs,
   FollowObjectArray,
   EditProfileRequestBody,
-  GetMyProfilePhotoResponse,
+  GetMyBasicInfoResponse,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -27,14 +27,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
 
-    getMyProfilePhoto: builder.query<GetMyProfilePhotoResponse, void>({
+    getMyBasicInfo: builder.query<GetMyBasicInfoResponse, void>({
       query: () => ({
-        url: `${USER_URL}/me/profile_photo`,
+        url: `${USER_URL}/me/basic`,
         method: 'GET',
         validateStatus: (response, result) =>
           response.status === 200 && !result.isError,
       }),
-      providesTags: result => [{ type: 'User', id: result?.userId }],
+      providesTags: result => [{ type: 'User', id: result?._id }],
     }),
 
     getUserBasicInfoById: builder.query<
@@ -90,7 +90,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getTweetsByUsername: builder.query<Tweet[], UsernameArg>({
+    getTweetsOfUser: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/tweets/${username}`,
         method: 'GET',
@@ -106,7 +106,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getRepliesByUsername: builder.query<Tweet[], UsernameArg>({
+    getRepliesOfUser: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/replies/${username}`,
         method: 'GET',
@@ -122,7 +122,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getMediaTweetsByUsername: builder.query<Tweet[], UsernameArg>({
+    getMediaTweetsOfUser: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/media-tweets/${username}`,
         method: 'GET',
@@ -138,7 +138,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
 
-    getLikedTweetsByUsername: builder.query<Tweet[], UsernameArg>({
+    getLikedTweetsOfUser: builder.query<Tweet[], UsernameArg>({
       query: ({ username }) => ({
         url: `${USER_URL}/liked-tweets/${username}`,
         method: 'GET',
@@ -205,15 +205,15 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useSignUpMutation,
-  useGetMyProfilePhotoQuery,
+  useGetMyBasicInfoQuery,
   useGetUserBasicInfoByIdQuery,
   useGetProfileQuery,
   useEditProfileMutation,
   useGetBookmarksQuery,
-  useGetTweetsByUsernameQuery,
-  useGetRepliesByUsernameQuery,
-  useGetMediaTweetsByUsernameQuery,
-  useGetLikedTweetsByUsernameQuery,
+  useGetTweetsOfUserQuery,
+  useGetRepliesOfUserQuery,
+  useGetMediaTweetsOfUserQuery,
+  useGetLikedTweetsOfUserQuery,
   useFollowUserMutation,
   useGetFollowersQuery,
   useGetFollowingQuery,

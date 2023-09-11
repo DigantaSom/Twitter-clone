@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { useGetTweetsByUsernameQuery } from './user.api-slice';
+import { useGetTweetsOfUserQuery } from './user.api-slice';
 
 import TweetList from '../tweet/TweetList';
 
@@ -13,7 +13,7 @@ const ProfileTweetsContainer = () => {
     isSuccess,
     isError,
     error,
-  } = useGetTweetsByUsernameQuery(
+  } = useGetTweetsOfUserQuery(
     { username },
     { pollingInterval: 30000, refetchOnReconnect: true }
   );

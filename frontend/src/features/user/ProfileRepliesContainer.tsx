@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { useGetRepliesByUsernameQuery } from './user.api-slice';
+import { useGetRepliesOfUserQuery } from './user.api-slice';
 
 import TweetList from '../tweet/TweetList';
 
@@ -13,7 +13,7 @@ const ProfileRepliesContainer = () => {
     isSuccess,
     isError,
     error,
-  } = useGetRepliesByUsernameQuery(
+  } = useGetRepliesOfUserQuery(
     { username },
     { pollingInterval: 30000, refetchOnReconnect: true }
   );

@@ -55,7 +55,8 @@ export interface EditProfileRequestBody {
   headerPhoto: string;
 }
 
-export interface GetMyProfilePhotoResponse {
-  userId: string;
-  profilePhoto: string;
+export interface GetMyBasicInfoResponse {
+  _id: string;
+  name: string;
+  profilePicture: string;
 }

@@ -72,10 +72,6 @@ const createTweet = async (req, res) => {
     retweetOf: null,
     retweetedBy: null,
     userId: req.user.id,
-    fullName: user.name,
-    twitterHandle: user.handle,
-    twitterHandle_lowercase: user.handle.toLowerCase(),
-    profilePicture: user.profilePicture || '',
     caption: req.body.caption,
     media: req.body.media || [''],
     numberOfReplies: 0,
@@ -134,9 +130,6 @@ const retweet = async (req, res) => {
       degree: 0,
       // the below fields are empty because we will get the reference tweet in the frontend with 'retweetOf' id
       userId: null,
-      fullName: '',
-      twitterHandle: '',
-      twitterHandle_lowercase: '',
       caption: '',
       media: [''],
     });
@@ -210,10 +203,6 @@ const quoteTweet = async (req, res) => {
       degree: 0,
       quoteRefTweetId,
       userId: author._id,
-      fullName: author.name,
-      twitterHandle: author.handle,
-      twitterHandle_lowercase: author.handle_lowercase,
-      profilePicture: author.profilePicture || '',
       caption,
       media: media || [''],
     });

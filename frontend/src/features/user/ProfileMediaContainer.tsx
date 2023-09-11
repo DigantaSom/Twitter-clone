@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { useGetMediaTweetsByUsernameQuery } from './user.api-slice';
+import { useGetMediaTweetsOfUserQuery } from './user.api-slice';
 
 import TweetList from '../tweet/TweetList';
 
@@ -13,7 +13,7 @@ const ProfileMediaContainer = () => {
     isSuccess,
     isError,
     error,
-  } = useGetMediaTweetsByUsernameQuery(
+  } = useGetMediaTweetsOfUserQuery(
     { username },
     { pollingInterval: 30000, refetchOnReconnect: true }
   );

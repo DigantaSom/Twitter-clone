@@ -23,6 +23,8 @@ import {
   useBookmarkTweetMutation,
   useGetRetweetedPostIdQuery,
 } from '../features/tweet/tweet.api-slice';
+import { useGetUserBasicInfoByIdQuery } from '../features/user/user.api-slice';
+
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
 import { removeToast, setToast } from '../features/toast/toast.slice';
@@ -31,7 +33,7 @@ import TweetPage from './TweetPage';
 import QuoteRetweetPopup from '../features/tweet/QuoteRetweetPopup';
 import ShareTweetPopupContents from '../features/tweet/ShareTweetPopupContents';
 
-import K from '../constants';
+import constants from '../constants';
 
 const TweetPhotoPage = () => {
   const { tweetId: tweetIdFromParams } = useParams();
@@ -61,6 +63,14 @@ const TweetPhotoPage = () => {
       refetchOnFocus: true,
       refetchOnMountOrArgChange: true,
     }
+  );
+
+  const { data: authorInfo } = useGetUserBasicInfoByIdQuery(
+    {
+      userId: tweet?.userId || '',
+      loggedInUserId: auth.user?.id,
+    },
+    { skip: !tweet }
   );
 
   const { data: retweetedPostId_onlyFor_retweetRefTweetItem } =
@@ -118,15 +128,7 @@ const TweetPhotoPage = () => {
 
   if (!tweet) return null;
 
-  const {
-    _id,
-    degree,
-    media,
-    profilePicture,
-    fullName,
-    twitterHandle,
-    creationDate,
-  } = tweet;
+  const { _id, degree, media, creationDate } = tweet;
 
   const handleClickClose = () => {
     navigate(-1);
@@ -147,9 +149,10 @@ const TweetPhotoPage = () => {
         parentTweetId: _id,
         parentTweetDegree: degree,
         replyingTo: {
-          profilePicture,
-          fullName,
-          username: twitterHandle,
+          profilePicture:
+            authorInfo?.profilePicture || constants.placeholder_profilePicture,
+          fullName: authorInfo?.name || '',
+          username: authorInfo?.username || '',
         },
         caption: tweet.caption,
         isMediaPresent: true,
@@ -204,7 +207,7 @@ const TweetPhotoPage = () => {
           }
           setTimeout(() => {
             dispatch(removeToast());
-          }, K.toastDuration);
+          }, constants.toastDuration);
         }
       } catch (err: any) {
         console.log(err);
@@ -367,7 +370,7 @@ const TweetPhotoPage = () => {
               {showSharePopup && (
                 <div className='absolute z-20 bottom-14 right-0 text-black'>
                   <ShareTweetPopupContents
-                    tweet={{ _id, twitterHandle }}
+                    tweet={{ _id, username: authorInfo?.username || '' }}
                     isBookmarked_displayOnUI={isBookmarked_displayOnUI}
                     handleBookmarkTweet={handleBookmarkTweet}
                     handleClosePopup={handleCloseSharePopup}

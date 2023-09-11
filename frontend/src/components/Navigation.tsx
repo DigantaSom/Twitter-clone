@@ -25,11 +25,11 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 
 import useAuth from '../hooks/useAuth';
 import { useAppSelector } from '../hooks/redux-hooks';
-import { useGetMyProfilePhotoQuery } from '../features/user/user.api-slice';
 import { useSendLogoutMutation } from '../features/auth/auth.api-slice';
-import { selectIsAuthenticated } from '../features/auth/auth.slice';
+import { useGetMyBasicInfoQuery } from '../features/user/user.api-slice';
 
 import { NavigationOption } from '../types';
+import { selectIsAuthenticated } from '../features/auth/auth.slice';
 
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
@@ -41,7 +41,7 @@ const Navigation = () => {
   const auth = useAuth();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
-  const { data: loggedInUserInfo } = useGetMyProfilePhotoQuery();
+  const { data: loggedInUserInfo } = useGetMyBasicInfoQuery();
   const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
 
   const [selectedOption, setSelectedOption] =
@@ -240,13 +240,13 @@ const Navigation = () => {
             ) : (
               <>
                 <ProfilePicture
-                  uri={loggedInUserInfo?.profilePhoto}
+                  uri={loggedInUserInfo?.profilePicture}
                   username={auth.user.twitterHandle}
                   disableGoToProfile={true}
                 />
                 <div className='hidden xl:flex xl:flex-col xl:flex-1 xl:ml-3'>
                   <span className='font-bold text-sm'>
-                    {auth.user.fullName}
+                    {loggedInUserInfo?.name}
                   </span>
                   <span className='text-gray-600 text-sm'>
                     @{auth.user.twitterHandle}

@@ -169,7 +169,7 @@ const TweetPageActions: FC<TweetPageActionsProps> = ({
       {showSharePopup && (
         <div className='absolute z-20 bottom-14 right-0 text-black'>
           <ShareTweetPopupContents
-            tweet={{ _id: tweetId, twitterHandle: username }}
+            tweet={{ _id: tweetId, username }}
             isBookmarked_displayOnUI={isBookmarked_displayOnUI}
             handleBookmarkTweet={handleClickBookmarkFromSharePopup}
             handleClosePopup={handleCloseSharePopup}

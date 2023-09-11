@@ -97,24 +97,21 @@ const createUser = async (req, res) => {
   res.status(200).send({ accessToken });
 };
 
-// @route GET api/users/me/profile_photo
-// @desc Get the currently logged-in user's profile photo
+// @route GET api/users/me/basic
+// @desc Get the currently logged-in user's basic info
 // @access Private
-const getMyProfilePhoto = async (req, res) => {
+const getMyBasicInfo = async (req, res) => {
   const userId = req.user.id;
 
   const user = await User.findById(userId)
-    .select('profilePicture')
+    .select('name profilePicture')
     .lean()
     .exec();
 
   if (!user) {
     return res.status(400).json({ message: 'User not found' });
   }
-  res.status(200).json({
-    userId: user._id,
-    profilePhoto: user.profilePicture,
-  });
+  res.status(200).json(user);
 };
 
 // @route GET api/users/basic
@@ -127,7 +124,7 @@ const getUserBasicInfo = async (req, res) => {
   try {
     const user = await User.findById(userId).select('-password').lean().exec();
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return;
 
     const isFollowedByLoggedInUser = checkIfFollowedByLoggedInUser(
       loggedInUserId,
@@ -238,9 +235,9 @@ const getBookmarks = async (req, res) => {
 };
 
 // @route GET api/users/tweets/:username
-// @desc Fetch all tweets of a user by their username
+// @desc Fetch all tweets of a user
 // @access Public
-const getTweetsByUsername = async (req, res) => {
+const getTweetsOfUser = async (req, res) => {
   const username = req.params.username?.toLowerCase();
 
   const user = await User.findOne({
@@ -259,7 +256,7 @@ const getTweetsByUsername = async (req, res) => {
       {
         $or: [
           {
-            $and: [{ twitterHandle_lowercase: username }, { retweetOf: null }],
+            $and: [{ userId: user._id }, { retweetOf: null }],
           },
           { 'retweetedBy.username': username },
         ],
@@ -277,9 +274,9 @@ const getTweetsByUsername = async (req, res) => {
 };
 
 // @route GET api/users/replies/:username
-// @desc Fetch all replies of a user by their username
+// @desc Fetch all replies of a user
 // @access Public
-const getRepliesByUsername = async (req, res) => {
+const getRepliesOfUser = async (req, res) => {
   const username = req.params.username?.toLowerCase();
 
   const user = await User.findOne({
@@ -292,11 +289,7 @@ const getRepliesByUsername = async (req, res) => {
   if (!user) return res.status(400).json({ message: 'User not found.' });
 
   const tweetsByUser = await Tweet.find({
-    $and: [
-      { degree: { $gt: 0 } },
-      { isDeleted: false },
-      { twitterHandle_lowercase: username },
-    ],
+    $and: [{ degree: { $gt: 0 } }, { isDeleted: false }, { userId: user._id }],
   })
     .sort({ creationDate: -1 })
     .lean()
@@ -309,9 +302,9 @@ const getRepliesByUsername = async (req, res) => {
 };
 
 // @route GET api/users/media-tweets/:username
-// @desc Fetch all media tweets of a user by their username
+// @desc Fetch all media tweets of a user
 // @access Public
-const getMediaTweetsByUsername = async (req, res) => {
+const getMediaTweetsOfUser = async (req, res) => {
   const username = req.params.username?.toLowerCase();
 
   const user = await User.findOne({
@@ -341,9 +334,9 @@ const getMediaTweetsByUsername = async (req, res) => {
 };
 
 // @route GET api/users/liked-tweets/:username
-// @desc Fetch all liked tweets of a user by their username
+// @desc Fetch all liked tweets of a user
 // @access Public
-const getLikedTweetsByUsername = async (req, res) => {
+const getLikedTweetsOfUser = async (req, res) => {
   const username = req.params.username?.toLowerCase();
   const user = await User.findOne({ handle_lowercase: username })
     .select('-password')
@@ -485,16 +478,15 @@ const getMutualFollowers = async (req, res) => {
 module.exports = {
   getAllUsers,
   createUser,
-  getMyProfilePhoto,
+  getMyBasicInfo,
   getUserBasicInfo,
   getProfile,
   editProfile,
   getBookmarks,
-  getTweetsByUsername,
-  getRepliesByUsername,
-  getMediaTweetsByUsername,
-  getLikedTweetsByUsername,
-  getLikedTweetsByUsername,
+  getTweetsOfUser,
+  getRepliesOfUser,
+  getMediaTweetsOfUser,
+  getLikedTweetsOfUser,
   followUser,
   getFollowers,
   getFollowing,

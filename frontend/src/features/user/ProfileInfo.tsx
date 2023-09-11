@@ -158,19 +158,23 @@ const ProfileInfo: FC<ProfileInfoProps> = ({
             </div>
           )}
           {/* website */}
-          <div className='flex items-center space-x-1'>
-            <AiOutlineLink className='text-lg' />
-            <a
-              href={
-                website.startsWith('https://') ? website : `https://${website}`
-              }
-              target='_blank'
-              rel='noreferrer'
-              className='text-twitter hover:underline'
-            >
-              {website}
-            </a>
-          </div>
+          {!!website && (
+            <div className='flex items-center space-x-1'>
+              <AiOutlineLink className='text-lg' />
+              <a
+                href={
+                  website.startsWith('https://')
+                    ? website
+                    : `https://${website}`
+                }
+                target='_blank'
+                rel='noreferrer'
+                className='text-twitter hover:underline'
+              >
+                {website}
+              </a>
+            </div>
+          )}
           <div className='flex items-center space-x-1'>
             <IoCalendarOutline />
             <div>Joined {joiningDate_toDisplay}</div>

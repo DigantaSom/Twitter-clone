@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 
-import { useGetLikedTweetsByUsernameQuery } from './user.api-slice';
+import { useGetLikedTweetsOfUserQuery } from './user.api-slice';
 
 import TweetList from '../tweet/TweetList';
 
@@ -13,7 +13,7 @@ const ProfileLikesContainer = () => {
     isSuccess,
     isError,
     error,
-  } = useGetLikedTweetsByUsernameQuery(
+  } = useGetLikedTweetsOfUserQuery(
     { username },
     { pollingInterval: 30000, refetchOnReconnect: true }
   );

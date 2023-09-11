@@ -9,9 +9,6 @@ export interface Tweet {
   parent: string | null;
   degree: number;
   userId: string | null; // nullable only in case of retweet or quote
-  fullName: string;
-  twitterHandle: string;
-  profilePicture: string;
   caption: string;
   text: string;
   media: string[];
