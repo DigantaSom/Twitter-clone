@@ -4,7 +4,7 @@ import { PulseLoader } from 'react-spinners';
 import { useGetQuotesQuery } from '../features/tweet/tweet.api-slice';
 
 import Header from '../components/Header';
-import TweetItem_withIndividualRequest from '../features/tweet/TweetItem_withIndividualRequest';
+import TweetItemWithIndividualRequest from '../features/tweet/TweetItemWithIndividualRequest';
 
 const QuotesPage = () => {
   const { tweetId } = useParams();
@@ -38,10 +38,7 @@ const QuotesPage = () => {
     );
   } else if (isSuccess && quotes?.length) {
     bodyContent = quotes.map(quote => (
-      <TweetItem_withIndividualRequest
-        key={quote._id}
-        tweetId={quote.tweetId}
-      />
+      <TweetItemWithIndividualRequest key={quote._id} tweetId={quote.tweetId} />
     ));
   }
 
