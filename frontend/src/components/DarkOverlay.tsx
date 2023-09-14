@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 import { useAppDispatch } from '../hooks/redux-hooks';
 import {
@@ -9,6 +9,7 @@ import {
   closeLikedByPopup,
   closeRetweetedByPopup,
   closeEditProfilePopup,
+  togglePhoneSideNavigation,
 } from '../features/ui/ui.slice';
 import { clearCreateReplyPopupData } from '../features/reply/reply.slice';
 
@@ -20,6 +21,7 @@ interface DarkOverlayProps {
   isLikedByPopupShown: boolean;
   isRetweetedByPopupShown: boolean;
   isEditProfileShown: boolean;
+  is_PhoneSideNavigation_Shown: boolean;
 }
 
 const DarkOverlay: FC<DarkOverlayProps> = ({
@@ -30,6 +32,7 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
   isLikedByPopupShown,
   isRetweetedByPopupShown,
   isEditProfileShown,
+  is_PhoneSideNavigation_Shown,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -49,6 +52,8 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
       dispatch(closeRetweetedByPopup());
     } else if (isEditProfileShown) {
       dispatch(closeEditProfilePopup());
+    } else if (is_PhoneSideNavigation_Shown) {
+      dispatch(togglePhoneSideNavigation());
     }
   };
 
@@ -60,4 +65,4 @@ const DarkOverlay: FC<DarkOverlayProps> = ({
   );
 };
 
-export default DarkOverlay;
+export default memo(DarkOverlay);

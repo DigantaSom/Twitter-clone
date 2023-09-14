@@ -9,6 +9,7 @@ import {
   selectIsRetweetedByPopupShown,
   selectIsQuoteTweetPopupShown,
   selectIsEditProfilePopupShown,
+  selectIsPhoneSideNavigationShown,
 } from './features/ui/ui.slice';
 import { selectIsAuthenticated } from './features/auth/auth.slice';
 import { selectToastMessage } from './features/toast/toast.slice';
@@ -26,10 +27,11 @@ import QuotesPage from './pages/QuotesPage';
 
 import Feed from './components/Feed';
 import AuthModal from './features/auth/AuthModal';
+import BottomAuth from './components/BottomAuth';
 import DarkOverlay from './components/DarkOverlay';
 import ComposeTweet from './features/tweet/ComposeTweet';
-import BottomNavigation from './components/BottomNavigation';
-import BottomAuth from './components/BottomAuth';
+import PhoneBottomNavigation from './components/PhoneBottomNavigation';
+import PhoneSideNavigation from './components/PhoneSideNavigation';
 import CreateReplyPopup from './features/reply/CreateReplyPopup';
 import QuoteTweetPopup from './features/tweet/QuoteTweetPopup';
 import LikedByPopup from './features/tweet/LikedByPopup';
@@ -55,6 +57,9 @@ const App = () => {
   const isQuoteTweetPopupShown = useAppSelector(selectIsQuoteTweetPopupShown);
   const isEditProfileShown = useAppSelector(selectIsEditProfilePopupShown);
   const toastMessage = useAppSelector(selectToastMessage);
+  const is_PhoneSideNavigation_Shown = useAppSelector(
+    selectIsPhoneSideNavigationShown
+  );
 
   return (
     <div className='relative'>
@@ -122,7 +127,8 @@ const App = () => {
         isQuoteTweetPopupShown ||
         isLikedByPopupShown ||
         isRetweetedByPopupShown ||
-        isEditProfileShown) && (
+        isEditProfileShown ||
+        is_PhoneSideNavigation_Shown) && (
         <DarkOverlay
           isComposeTweetShown={isComposeTweetShown}
           isAuthModalShown={authModal.isShown}
@@ -131,6 +137,7 @@ const App = () => {
           isLikedByPopupShown={isLikedByPopupShown}
           isRetweetedByPopupShown={isRetweetedByPopupShown}
           isEditProfileShown={isEditProfileShown}
+          is_PhoneSideNavigation_Shown={is_PhoneSideNavigation_Shown}
         />
       )}
 
@@ -150,8 +157,11 @@ const App = () => {
 
       {isEditProfileShown && <EditProfilePopup />}
 
-      {/* z-30 */}
-      {isAuthenticated && <BottomNavigation />}
+      {/* z-40 and it won't be visible from 'ph' screen size onwards */}
+      <PhoneSideNavigation />
+
+      {/* z-30 and it won't be visible from 'ph' screen size onwards */}
+      {isAuthenticated && <PhoneBottomNavigation />}
 
       {!isAuthenticated && <BottomAuth />}
 

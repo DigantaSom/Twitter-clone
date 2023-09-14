@@ -9,6 +9,7 @@ export interface UiState {
   retweetedByPopup: RetweetedByPopup_Payload & { isShown: boolean };
   quoteTweetPopup: QuoteTweetPopup_Payload & { isShown: boolean };
   editProfilePopup: EditProfilePopup_Payload & { isShown: boolean };
+  is_PhoneSideNavigation_Shown: boolean;
 }
 
 export type AuthModalType =

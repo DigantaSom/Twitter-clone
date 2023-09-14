@@ -1,15 +1,17 @@
 import { FC, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { BsTwitter } from 'react-icons/bs';
 import { IoArrowBack } from 'react-icons/io5';
-import { HiOutlineSparkles } from 'react-icons/hi';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 import useAuth from '../hooks/useAuth';
+import { useAppDispatch } from '../hooks/redux-hooks';
+import { useGetMyBasicInfoQuery } from '../features/user/user.api-slice';
+
+import { togglePhoneSideNavigation } from '../features/ui/ui.slice';
 
 import ProfilePicture from './ProfilePicture';
-
-import constants from '../constants';
 
 interface HeaderProps {
   parentComponent:
@@ -25,6 +27,8 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
   const navigate = useNavigate();
   const auth = useAuth();
+  const dispatch = useAppDispatch();
+  const { data: loggedInUserInfo } = useGetMyBasicInfoQuery();
 
   const handleClickGoBack = () => {
     navigate(-1);
@@ -37,19 +41,29 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
 
   if (parentComponent === 'Feed') {
     content = (
-      <div className='flex items-center justify-between w-full'>
-        <Link to='/' className='flex items-center'>
-          <div className='block ph:hidden mr-3'>
-            <ProfilePicture
-              uri={constants.placeholder_profilePicture}
-              username={auth.user?.twitterHandle}
-            />
+      <div className='flex items-center w-full'>
+        <div
+          onClick={() => dispatch(togglePhoneSideNavigation())}
+          className='block ph:hidden'
+        >
+          <ProfilePicture
+            uri={loggedInUserInfo?.profilePicture}
+            username={auth.user?.twitterHandle}
+            disableGoToProfile
+          />
+        </div>
+        <div className='flex-1'>
+          <Link
+            to='/'
+            className='hidden ph:block font-bold text-lg ph:text-xl w-fit'
+          >
+            Home
+          </Link>
+          <div className='ph:hidden flex justify-center'>
+            <Link to='/' className='w-fit'>
+              <BsTwitter className='text-twitter w-8 h-8' />
+            </Link>
           </div>
-          <span className='font-bold text-lg ph:text-xl -mt-1'>Home</span>
-        </Link>
-
-        <div className={rightIconStyles}>
-          <HiOutlineSparkles className='text-xl' />
         </div>
       </div>
     );
@@ -109,7 +123,7 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
   }
 
   return (
-    <div className='sticky top-0 z-30 bg-white opacity-90 h-12 ph:h-14 px-2 ph_sm:px-4 flex items-center'>
+    <div className='sticky top-0 z-30 bg-white opacity-90 h-14 ph:16 px-2 ph_sm:px-4 flex items-center'>
       {content}
     </div>
   );

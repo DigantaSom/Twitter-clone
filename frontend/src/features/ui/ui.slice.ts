@@ -34,6 +34,7 @@ const initialState: UiState = {
     isShown: false,
     username: undefined,
   },
+  is_PhoneSideNavigation_Shown: false,
 };
 
 const uiSlice = createSlice({
@@ -91,6 +92,9 @@ const uiSlice = createSlice({
       state.editProfilePopup.isShown = false;
       state.editProfilePopup.username = undefined;
     },
+    togglePhoneSideNavigation: state => {
+      state.is_PhoneSideNavigation_Shown = !state.is_PhoneSideNavigation_Shown;
+    },
   },
 });
 
@@ -122,6 +126,9 @@ export const selectIsEditProfilePopupShown = (state: RootState) =>
 export const selectEditProfilePopupUsername = (state: RootState) =>
   state.ui.editProfilePopup.username;
 
+export const selectIsPhoneSideNavigationShown = (state: RootState) =>
+  state.ui.is_PhoneSideNavigation_Shown;
+
 export const {
   toggleComposeTweet,
   toggleAuthModal,
@@ -134,6 +141,7 @@ export const {
   closeQuoteTweetPopup,
   openEditProfilePopup,
   closeEditProfilePopup,
+  togglePhoneSideNavigation,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
