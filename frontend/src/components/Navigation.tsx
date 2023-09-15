@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import PulseLoader from 'react-spinners/PulseLoader';
+
+import { CircleLoader } from 'react-spinners';
 
 import { BsTwitter } from 'react-icons/bs';
 import {
@@ -34,6 +35,8 @@ import { selectIsAuthenticated } from '../features/auth/auth.slice';
 import TweetComposeButton from './TweetComposeButton';
 import ProfilePicture from './ProfilePicture';
 
+import constants from '../constants';
+
 const Navigation = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -42,7 +45,10 @@ const Navigation = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const { data: loggedInUserInfo } = useGetMyBasicInfoQuery();
-  const [sendLogout, { isLoading, isError, error }] = useSendLogoutMutation();
+  const [
+    sendLogout,
+    { isLoading: isLogoutLoading, isError: isLogoutError, error: logoutError },
+  ] = useSendLogoutMutation();
 
   const [selectedOption, setSelectedOption] =
     useState<NavigationOption>('home');
@@ -86,8 +92,8 @@ const Navigation = () => {
       navigate('/', { replace: true });
       setSelectedOption('explore');
 
-      if (isError) {
-        console.log('Error logging out:', error);
+      if (isLogoutError) {
+        console.log('Error logging out:', logoutError);
         alert('Error logging out');
       }
     }
@@ -235,8 +241,11 @@ const Navigation = () => {
             onClick={handleLogout}
             className='absolute bottom-0 w-full hover:xl:bg-gray-200 hover:cursor-pointer rounded-full flex items-center xl:px-2 xl:py-3 ml-1 mb-6'
           >
-            {isLoading ? (
-              <PulseLoader color='#111' />
+            {isLogoutLoading ? (
+              <CircleLoader
+                color={constants.colors.twitter_default}
+                size={30}
+              />
             ) : (
               <>
                 <ProfilePicture

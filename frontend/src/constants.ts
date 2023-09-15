@@ -11,6 +11,11 @@ const constants = {
   },
 
   toastDuration: 5000, // ms
+
+  colors: {
+    twitter_default: '#1D9BF0',
+    like_default: '#F91880',
+  },
 };
 
 export default constants;

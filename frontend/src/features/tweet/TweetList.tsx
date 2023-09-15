@@ -2,10 +2,9 @@ import { FC, memo } from 'react';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 
-import PulseLoader from 'react-spinners/PulseLoader';
-
 import { Tweet } from './tweet.types';
 
+import CustomLoadingSpinner from '../../components/CustomLoadingSpinner';
 import TweetItemContainer from './TweetItemContainer';
 
 interface TweetListProps {
@@ -28,7 +27,7 @@ const TweetList: FC<TweetListProps> = ({
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    content = <CustomLoadingSpinner marginTopClass='mt-[10vh]' />;
   } else if (isError) {
     console.log('Error loading tweets', error);
     content = (

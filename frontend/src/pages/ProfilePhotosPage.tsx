@@ -1,11 +1,12 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { PulseLoader } from 'react-spinners';
 import { IoCloseSharp } from 'react-icons/io5';
 
 import { PhotoType } from '../types';
 
 import useAuth from '../hooks/useAuth';
 import { useGetProfileQuery } from '../features/user/user.api-slice';
+
+import CustomLoadingSpinner from '../components/CustomLoadingSpinner';
 
 import constants from '../constants';
 
@@ -22,9 +23,7 @@ const ProfilePhotosPage = () => {
 
   let content;
 
-  if (isLoading) {
-    content = <PulseLoader color='white' />;
-  } else if (isError) {
+  if (isError) {
     content = (
       <div className='text-white text-2xl'>Error loading profile photo.</div>
     );
@@ -32,6 +31,8 @@ const ProfilePhotosPage = () => {
     const { profilePicture, headerPhoto } = data;
 
     const handleGoBack = () => {
+      if (isLoading) return;
+
       if (username) {
         navigate('/' + username);
       }
@@ -71,10 +72,16 @@ const ProfilePhotosPage = () => {
             <IoCloseSharp className='text-2xl text-gray-200' />
           </div>
         </div>
+
         <div
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${photoContainerDimensionStyles}`}
         >
-          {photoType === 'Header' && !headerPhoto ? (
+          {isLoading ? (
+            <CustomLoadingSpinner
+              marginTopClass={photoType === 'Profile' ? 'mt-[10vh]' : 'mt-0'}
+              color='white'
+            />
+          ) : photoType === 'Header' && !headerPhoto ? (
             <div className='w-full h-[50vh] bg-black'></div>
           ) : (
             <img

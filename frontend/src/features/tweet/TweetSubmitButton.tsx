@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import PulseLoader from 'react-spinners/PulseLoader';
+import { PulseLoader } from 'react-spinners';
 
 interface TweetSubmitButtonProps {
   type: 'Tweet' | 'Reply';
@@ -18,9 +18,9 @@ const TweetSubmitButton: FC<TweetSubmitButtonProps> = ({
     <button
       onClick={handleSubmit}
       disabled={isDisabled}
-      className='font-medium text-sm ph_sm:text-base text-white bg-twitter hover:bg-twitter-dark rounded-full px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-twitter'
+      className='min-w-[80px] font-medium text-sm ph_sm:text-base text-white bg-twitter hover:bg-twitter-dark rounded-full px-2 ph:px-4 py-1 ph:py-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-twitter'
     >
-      {isLoading ? <PulseLoader color='#fff' /> : type}
+      {isLoading ? <PulseLoader color='#fff' size={8} /> : type}
     </button>
   );
 };

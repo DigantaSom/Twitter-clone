@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import PulseLoader from 'react-spinners/PulseLoader';
 
 import { IoCloseSharp, IoArrowBack } from 'react-icons/io5';
 import { GrStatusGood } from 'react-icons/gr';
@@ -14,6 +13,7 @@ import { MonthType } from '../../types';
 import { setCredentials } from './auth.slice';
 import { toggleAuthModal } from '../ui/ui.slice';
 
+import CustomLoadingSpinner from '../../components/CustomLoadingSpinner';
 import InputErrorMessage from '../../components/InputErrorMessage';
 
 const SignUpForm = () => {
@@ -184,7 +184,7 @@ const SignUpForm = () => {
     }
   };
 
-  if (isLoading) return <PulseLoader color='#fff' />;
+  if (isLoading) return <CustomLoadingSpinner marginTopClass='mt-[25vh]' />;
 
   return (
     <div className='h-full'>

@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
-import { PulseLoader } from 'react-spinners';
-
-import { ProfilePageTab } from '../types';
 
 import useAuth from '../hooks/useAuth';
 import { useAppDispatch } from '../hooks/redux-hooks';
 import { useGetProfileQuery } from '../features/user/user.api-slice';
+
+import { ProfilePageTab } from '../types';
 import { closeLikedByPopup } from '../features/ui/ui.slice';
 
+import CustomLoadingSpinner from '../components/CustomLoadingSpinner';
 import Header from '../components/Header';
 import ProfileInfo from '../features/user/ProfileInfo';
 
@@ -68,7 +68,7 @@ const ProfilePage = () => {
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    content = <CustomLoadingSpinner marginTopClass='mt-[50vh]' />;
   } else if (isError) {
     console.log('Error loading replies', error);
     content = (

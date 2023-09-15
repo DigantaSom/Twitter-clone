@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
-import { PulseLoader } from 'react-spinners';
 
 import { FollowObjectArray } from './user.types';
 import useAuth from '../../hooks/useAuth';
 
 import UserListItem from './UserListItem';
+import CustomLoadingSpinner from '../../components/CustomLoadingSpinner';
 
 interface FollowListContainerProps {
   type: 'Mututal Followers' | 'Followers' | 'Following';
@@ -30,7 +30,7 @@ const FollowListContainer: FC<FollowListContainerProps> = ({
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    content = <CustomLoadingSpinner marginTopClass='mt-[10vh]' />;
   } else if (isError) {
     console.log(`Error loading ${type} list: ${JSON.stringify(error)}`);
     content = (

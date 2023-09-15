@@ -1,6 +1,5 @@
 import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import PulseLoader from 'react-spinners/PulseLoader';
 
 import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 import { BsTwitter } from 'react-icons/bs';
@@ -12,6 +11,7 @@ import { useLoginMutation } from './auth.api-slice';
 import { setCredentials } from './auth.slice';
 import { toggleAuthModal } from '../ui/ui.slice';
 
+import CustomLoadingSpinner from '../../components/CustomLoadingSpinner';
 import SignUpForm from './SignUpForm';
 import InputErrorMessage from '../../components/InputErrorMessage';
 
@@ -26,7 +26,9 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
 
   const [login, { isLoading }] = useLoginMutation();
 
-  if (isLoading) return <PulseLoader color='#fff' />;
+  if (isLoading) {
+    return <CustomLoadingSpinner marginTopClass='mt-[25vh]' color='white' />;
+  }
 
   const handleClickNext = () => {
     if (twitterHandle !== '') {

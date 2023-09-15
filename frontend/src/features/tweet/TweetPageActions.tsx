@@ -12,6 +12,8 @@ import { useGetRetweetedPostIdQuery } from './tweet.api-slice';
 import ShareTweetPopupContents from './ShareTweetPopupContents';
 import QuoteRetweetPopup from './QuoteRetweetPopup';
 
+import constants from '../../constants';
+
 interface TweetPageActionsProps {
   tweet: {
     _id: string;
@@ -105,10 +107,7 @@ const TweetPageActions: FC<TweetPageActionsProps> = ({
 
           {/* Like */}
           {isLikeTweetLoading ? (
-            <ClipLoader
-              color='#F91880' // same as 'like' color
-              size={25}
-            />
+            <ClipLoader color={constants.colors.like_default} size={25} />
           ) : (
             <div
               title={isLiked_displayOnUI ? 'Unlike' : 'Like'}
@@ -129,10 +128,7 @@ const TweetPageActions: FC<TweetPageActionsProps> = ({
 
           {/* Bookmark */}
           {isBookmarkTweetLoading ? (
-            <ClipLoader
-              color='#1D9BF0' // same as twitter-default color
-              size={25}
-            />
+            <ClipLoader color={constants.colors.twitter_default} size={25} />
           ) : (
             <div
               title={

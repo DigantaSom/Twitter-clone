@@ -1,8 +1,6 @@
 import { useRef, useState, useEffect, FC } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
-import { PulseLoader } from 'react-spinners';
-
 import { AiOutlineRetweet } from 'react-icons/ai';
 import { BsDot } from 'react-icons/bs';
 
@@ -26,6 +24,7 @@ import {
 import { removeToast, setToast } from '../features/toast/toast.slice';
 import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 
+import CustomLoadingSpinner from '../components/CustomLoadingSpinner';
 import Header from '../components/Header';
 import PostOptions from '../features/tweet/PostOptions';
 import TweetPageStats from '../features/tweet/TweetPageStats';
@@ -292,7 +291,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    content = <CustomLoadingSpinner marginTopClass='mt-[25vh]' />;
   } else if (isError) {
     console.log('Error loading replies', error);
     content = (

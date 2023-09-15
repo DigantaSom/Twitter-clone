@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import PulseLoader from 'react-spinners/PulseLoader';
 
 import { useAppSelector } from '../../hooks/redux-hooks';
 import { useRefreshMutation } from './auth.api-slice';
 import { selectIsAuthenticated } from './auth.slice';
+
+import CustomLoadingSpinner from '../../components/CustomLoadingSpinner';
 
 const PersistLogin = () => {
   const persist = !!localStorage.getItem('persist');
@@ -41,14 +42,14 @@ const PersistLogin = () => {
     // eslint-disable-next-line
   }, []);
 
-  let content;
+  let content = <></>;
 
   if (!persist) {
     // persist: false
     content = <Outlet />;
   } else if (isLoading) {
     // persist: true, isAuthenticated: false
-    content = <PulseLoader color='#FFF' />;
+    content = <CustomLoadingSpinner marginTopClass='mt-[10vh]' />;
   } else if (isError) {
     // persist: true, isAuthenticated: false
     if (error && 'data' in error) {
@@ -64,7 +65,7 @@ const PersistLogin = () => {
     content = <Outlet />;
   }
 
-  return content as JSX.Element;
+  return content;
 };
 
 export default PersistLogin;

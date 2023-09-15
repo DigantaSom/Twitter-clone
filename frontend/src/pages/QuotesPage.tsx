@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { PulseLoader } from 'react-spinners';
 
 import { useGetQuotesQuery } from '../features/tweet/tweet.api-slice';
 
+import CustomLoadingSpinner from '../components/CustomLoadingSpinner';
 import Header from '../components/Header';
 import TweetItemWithIndividualRequest from '../features/tweet/TweetItemWithIndividualRequest';
 
@@ -28,7 +28,7 @@ const QuotesPage = () => {
   let bodyContent;
 
   if (isLoading) {
-    bodyContent = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    bodyContent = <CustomLoadingSpinner marginTopClass='mt-[25vh]' />;
   } else if (isError) {
     console.log('Error loading tweets', error);
     bodyContent = (

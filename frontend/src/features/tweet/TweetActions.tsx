@@ -1,4 +1,5 @@
 import { FC, memo, useEffect, useState } from 'react';
+
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import { TbMessageCircle2 } from 'react-icons/tb';
@@ -223,10 +224,7 @@ const TweetActions: FC<TweetActionsProps> = ({
 
       {/* Like */}
       {isLikeLoading ? (
-        <ClipLoader
-          color='#F91880' // same as 'like' color
-          size={25}
-        />
+        <ClipLoader color={constants.colors.like_default} size={25} />
       ) : (
         <div
           title={isLiked_displayOnUI ? 'Unlike' : 'Like'}

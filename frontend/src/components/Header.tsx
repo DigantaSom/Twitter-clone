@@ -41,7 +41,7 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
 
   if (parentComponent === 'Feed') {
     content = (
-      <div className='flex items-center w-full'>
+      <div className='relative w-full'>
         <div
           onClick={() => dispatch(togglePhoneSideNavigation())}
           className='block ph:hidden'
@@ -52,18 +52,16 @@ const Header: FC<HeaderProps> = ({ parentComponent, name, numberOfTweets }) => {
             disableGoToProfile
           />
         </div>
-        <div className='flex-1'>
-          <Link
-            to='/'
-            className='hidden ph:block font-bold text-lg ph:text-xl w-fit'
-          >
-            Home
+        <Link
+          to='/'
+          className='hidden ph:block font-bold text-lg ph:text-xl w-fit'
+        >
+          Home
+        </Link>
+        <div className='ph:hidden absolute top-1/2 -translate-y-1/2 w-full flex justify-center'>
+          <Link to='/' className='w-fit'>
+            <BsTwitter className='text-twitter w-8 h-8' />
           </Link>
-          <div className='ph:hidden flex justify-center'>
-            <Link to='/' className='w-fit'>
-              <BsTwitter className='text-twitter w-8 h-8' />
-            </Link>
-          </div>
         </div>
       </div>
     );

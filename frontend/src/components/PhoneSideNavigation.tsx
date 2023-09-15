@@ -21,6 +21,8 @@ import {
 
 import ProfilePicture from './ProfilePicture';
 
+import constants from '../constants';
+
 const PhoneSideNavigation = () => {
   const navigate = useNavigate();
   const auth = useAuth();
@@ -173,7 +175,7 @@ const PhoneSideNavigation = () => {
           </div>
           <div className='py-2 ph_sm:py-3'>
             {isLogoutLoading ? (
-              <ClipLoader color='#1D9BF0' size={22} /> // same as twitter-default color
+              <ClipLoader color={constants.colors.twitter_default} size={22} />
             ) : (
               <div
                 onClick={handleClickLogout}

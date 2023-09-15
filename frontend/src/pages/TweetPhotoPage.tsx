@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { ClipLoader, PulseLoader } from 'react-spinners';
+import { ClipLoader } from 'react-spinners';
 
 import { IoCloseSharp } from 'react-icons/io5';
 import {
@@ -29,6 +29,7 @@ import { setCreateReplyPopupData } from '../features/reply/reply.slice';
 import { toggleCreateReplyPopup } from '../features/ui/ui.slice';
 import { removeToast, setToast } from '../features/toast/toast.slice';
 
+import CustomLoadingSpinner from '../components/CustomLoadingSpinner';
 import TweetPage from './TweetPage';
 import QuoteRetweetPopup from '../features/tweet/QuoteRetweetPopup';
 import ShareTweetPopupContents from '../features/tweet/ShareTweetPopupContents';
@@ -231,7 +232,7 @@ const TweetPhotoPage = () => {
   let content;
 
   if (isLoading) {
-    content = <PulseLoader color='#1D9BF0' />; // same as twitter-default color
+    content = <CustomLoadingSpinner marginTopClass='mt-[25vh]' />;
   } else if (isError) {
     console.log('Error loading replies', error);
     content = (
@@ -333,10 +334,7 @@ const TweetPhotoPage = () => {
 
               {/* Like */}
               {isLikeTweetLoading ? (
-                <ClipLoader
-                  color='#F91880' // same as 'like' color
-                  size={25}
-                />
+                <ClipLoader color={constants.colors.like_default} size={25} />
               ) : (
                 <div
                   title={isLiked_displayOnUI ? 'Unlike' : 'Like'}
