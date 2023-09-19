@@ -75,7 +75,7 @@ export type QuoteTweetArgs = {
   media: [string]; // default is ['']
 };
 
-export type LikeResponse = { userId: UserID }[];
+export type LikeResponse = UserID[];
 
 export type SingleMessageResponse = { message: string };
 

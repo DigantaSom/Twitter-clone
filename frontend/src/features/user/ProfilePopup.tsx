@@ -1,6 +1,6 @@
 // The positioning of this popup component is done on its parent component.
 
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { Link } from 'react-router-dom';
 
 import ProfilePicture from '../../components/ProfilePicture';
@@ -33,7 +33,7 @@ const ProfilePopup: FC<ProfilePopupProps> = ({
         <ProfilePicture
           uri={profilePicture}
           username={username}
-          desktopSize={18}
+          desktopSize={16}
         />
         <FollowButton
           isFollowedByLoggedInUser={isFollowedByLoggedInUser || false}
@@ -72,4 +72,4 @@ const ProfilePopup: FC<ProfilePopupProps> = ({
   );
 };
 
-export default ProfilePopup;
+export default memo(ProfilePopup);

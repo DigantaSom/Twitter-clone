@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppDispatch } from '../hooks/redux-hooks';
@@ -51,4 +51,4 @@ const ProfilePicture: FC<ProfilePictureProps> = ({
   );
 };
 
-export default ProfilePicture;
+export default memo(ProfilePicture);

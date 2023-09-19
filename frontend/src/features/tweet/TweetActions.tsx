@@ -50,6 +50,8 @@ const TweetActions: FC<TweetActionsProps> = ({
   const dispatch = useAppDispatch();
 
   const [isLiked_displayOnUI, setIsLiked_displayOnUI] = useState(false);
+  const [numOfLikes_displayOnUI, setNumOfLikes_displayOnUI] = useState(0);
+
   const [isRetweeted_displayOnUI, setIsRetweeted_displayOnUI] = useState(false);
   const [isBookmarked_displayOnUI, setIsBookmarked_displayOnUI] =
     useState(false);
@@ -68,6 +70,10 @@ const TweetActions: FC<TweetActionsProps> = ({
       setIsLiked_displayOnUI(false);
     }
   }, [likes, currentUser.id]);
+
+  useEffect(() => {
+    setNumOfLikes_displayOnUI(tweet.likes.length);
+  }, [tweet.likes.length]);
 
   useEffect(() => {
     if (retweets.some(retweet => retweet.userId === currentUser.id)) {
@@ -106,59 +112,68 @@ const TweetActions: FC<TweetActionsProps> = ({
   };
 
   const handleLikeTweet = async () => {
-    if (!isLikeLoading) {
-      try {
-        const res = await likeTweet({ tweetId }).unwrap();
+    if (isLikeLoading) return;
 
-        if ((res as any)?.isError) {
-          alert((res as any)?.message);
-          return;
-        }
-      } catch (err: any) {
-        console.log(err);
-        let errMsg = '';
-
-        if (!err.status) {
-          errMsg = 'No Server Response';
-        } else {
-          errMsg = err.data?.message;
-        }
-        alert(errMsg);
+    if (!isLiked_displayOnUI) {
+      setNumOfLikes_displayOnUI(prev => prev + 1);
+    } else {
+      if (numOfLikes_displayOnUI !== 0) {
+        setNumOfLikes_displayOnUI(prev => prev - 1);
       }
+    }
+    setIsLiked_displayOnUI(prev => !prev);
+
+    try {
+      const res = await likeTweet({ tweetId }).unwrap();
+
+      if ((res as any)?.isError) {
+        alert((res as any)?.message);
+        return;
+      }
+    } catch (err: any) {
+      console.log(err);
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
     }
   };
 
   const handleBookmarkTweet = async () => {
-    if (!isBookmarkLoading) {
-      try {
-        const res = await bookmarkTweet({ tweetId }).unwrap();
+    if (isBookmarkLoading) return;
 
-        if ((res as any)?.isError) {
-          alert((res as any)?.message);
-          return;
-        } else {
-          if (res.message.toLowerCase() === 'tweet added to your bookmarks') {
-            dispatch(setToast({ type: 'bookmark-add', message: res.message }));
-          } else {
-            dispatch(
-              setToast({ type: 'bookmark-remove', message: res.message })
-            );
-          }
-          setTimeout(() => {
-            dispatch(removeToast());
-          }, constants.toastDuration);
-        }
-      } catch (err: any) {
-        console.log(err);
-        let errMsg = '';
+    setIsBookmarked_displayOnUI(prev => !prev);
 
-        if (!err.status) {
-          errMsg = 'No Server Response';
+    try {
+      const res = await bookmarkTweet({ tweetId }).unwrap();
+
+      if ((res as any)?.isError) {
+        alert((res as any)?.message);
+        return;
+      } else {
+        if (res.message.toLowerCase() === 'tweet added to your bookmarks') {
+          dispatch(setToast({ type: 'bookmark-add', message: res.message }));
         } else {
-          errMsg = err.data?.message;
+          dispatch(setToast({ type: 'bookmark-remove', message: res.message }));
         }
-        alert(errMsg);
+        setTimeout(() => {
+          dispatch(removeToast());
+        }, constants.toastDuration);
       }
+    } catch (err: any) {
+      console.log(err);
+      let errMsg = '';
+
+      if (!err.status) {
+        errMsg = 'No Server Response';
+      } else {
+        errMsg = err.data?.message;
+      }
+      alert(errMsg);
     }
   };
 
@@ -245,7 +260,7 @@ const TweetActions: FC<TweetActionsProps> = ({
               isLiked_displayOnUI && 'text-like'
             }`}
           >
-            {likes.length}
+            {numOfLikes_displayOnUI}
           </span>
         </div>
       )}

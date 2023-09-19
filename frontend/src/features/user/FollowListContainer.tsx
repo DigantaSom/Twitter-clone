@@ -32,7 +32,7 @@ const FollowListContainer: FC<FollowListContainerProps> = ({
   if (isLoading) {
     content = <CustomLoadingSpinner marginTopClass='mt-[10vh]' />;
   } else if (isError) {
-    console.log(`Error loading ${type} list: ${JSON.stringify(error)}`);
+    // console.log(`Error loading ${type} list: ${JSON.stringify(error)}`);
     content = (
       <div className='p-2 ph_sm:p-4'>
         {(error as any)?.data?.message || `Error loading ${type} list.`}

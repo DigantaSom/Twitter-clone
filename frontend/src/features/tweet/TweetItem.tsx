@@ -49,6 +49,8 @@ const TweetItem: FC<TweetItemProps> = ({
   const [showProfilePopup_from_username, setShowProfilePopup_from_username] =
     useState(false);
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
+  const [isTweetDeleted_displayOnUI, setIsTweetDeleted_displayOnUI] =
+    useState(false);
 
   const { data: authorInfo } = useGetUserBasicInfoByIdQuery(
     {
@@ -73,6 +75,10 @@ const TweetItem: FC<TweetItemProps> = ({
   ] = useDeleteTweetMutation();
 
   useEffect(() => {
+    setIsTweetDeleted_displayOnUI(tweet.isDeleted);
+  }, [tweet.isDeleted]);
+
+  useEffect(() => {
     if (isDeleteTweetError && deleteTweetError) {
       if ('data' in deleteTweetError) {
         alert((deleteTweetError.data as any).message || 'Error deleting tweet');
@@ -84,14 +90,7 @@ const TweetItem: FC<TweetItemProps> = ({
 
   if (!tweet) return null;
 
-  const {
-    _id: tweetId,
-    caption,
-    media,
-    isDeleted,
-    parent: parentTweetId,
-    userId,
-  } = tweet;
+  const { _id: tweetId, caption, media, parent: parentTweetId, userId } = tweet;
 
   const isMediaPresent = media.length > 0 && media[0] !== '';
 
@@ -106,6 +105,7 @@ const TweetItem: FC<TweetItemProps> = ({
   const handleDeleteTweet = async () => {
     await deleteTweet({ tweetId, parentTweetId });
     setShowOptionsPopup(false);
+    setIsTweetDeleted_displayOnUI(true);
   };
 
   const handleMouseOverProfilePic = () => {
@@ -137,7 +137,7 @@ const TweetItem: FC<TweetItemProps> = ({
 
   let content;
 
-  if (isDeleted) {
+  if (isTweetDeleted_displayOnUI) {
     content = <DeletedTweetPlaceholder />;
   } else {
     content = (
