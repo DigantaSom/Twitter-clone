@@ -7,11 +7,6 @@ const tweetSchema = new mongoose.Schema({
   // the rest of the author info will be fetched on the frontend with separate request (getUserBasicInfo endpoint)
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', nullable: true }, // nullable only in case of retweet or quote
 
-  // fullName: { type: String }, // required field
-  // twitterHandle: { type: String }, // required field
-  // twitterHandle_lowercase: { type: String }, // required field
-  // profilePicture: { type: String },
-
   // any one of the caption and media is a required field at a time; will validate manually
   caption: { type: String },
   media: [String],

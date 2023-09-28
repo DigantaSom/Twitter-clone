@@ -321,7 +321,7 @@ const getMediaTweetsOfUser = async (req, res) => {
     $and: [
       { media: { $ne: [''] } },
       { isDeleted: false },
-      { twitterHandle_lowercase: username },
+      { userId: user._id },
     ],
   })
     .sort({ creationDate: -1 })
