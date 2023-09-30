@@ -281,102 +281,105 @@ const TweetPhotoPage = () => {
           </div>
 
           {/* Tweet Actions */}
-          <div className='h-14 text-white flex items-center justify-center'>
-            <div className='w-[90%] ph:w-[80%] md:w-[65%] xl:w-1/2 h-full flex items-center justify-between relative'>
-              {/* Reply */}
-              <div
-                title='Reply'
-                onClick={handleClickReplyButton}
-                className='flex items-center text-white hover:cursor-pointer group'
-              >
-                <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
-                  <TbMessageCircle2 className='ph_sm:text-xl' />
-                </div>
-                <span className='text-xs ph_sm:text-sm'>
-                  {numberOfReplies_displayOnUI}
-                </span>
-              </div>
-
-              {/* Retweet or Quote */}
-              <div className='relative' onClick={toggleQuoteRetweetPopup}>
+          {auth.user && (
+            <div className='h-14 text-white flex items-center justify-center'>
+              <div className='w-[90%] ph:w-[80%] md:w-[65%] xl:w-1/2 h-full flex items-center justify-between relative'>
+                {/* Reply */}
                 <div
-                  title='Retweet'
+                  title='Reply'
+                  onClick={handleClickReplyButton}
                   className='flex items-center text-white hover:cursor-pointer group'
                 >
                   <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
-                    <AiOutlineRetweet
-                      className={`ph_sm:text-xl ${
-                        isRetweeted_displayOnUI && 'text-emerald-500 text-bold'
-                      }`}
-                    />
+                    <TbMessageCircle2 className='ph_sm:text-xl' />
                   </div>
-                  <span
-                    className={`text-xs ph_sm:text-sm ${
-                      isRetweeted_displayOnUI && 'text-emerald-500 text-bold'
-                    }`}
-                  >
-                    {tweet.retweets.length}
+                  <span className='text-xs ph_sm:text-sm'>
+                    {numberOfReplies_displayOnUI}
                   </span>
                 </div>
 
-                {showQuoteRetweetPopup && (
-                  <div className='absolute z-40 bottom-10 w-[150px]'>
-                    <QuoteRetweetPopup
-                      refTweetId={_id}
-                      isAlreadyRetweeted={isRetweeted_displayOnUI}
-                      retweetedPostId={
-                        retweetedPostId_onlyFor_retweetRefTweetItem?.loggedInUser_retweetedPostId
-                      }
+                {/* Retweet or Quote */}
+                <div className='relative' onClick={toggleQuoteRetweetPopup}>
+                  <div
+                    title='Retweet'
+                    className='flex items-center text-white hover:cursor-pointer group'
+                  >
+                    <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
+                      <AiOutlineRetweet
+                        className={`ph_sm:text-xl ${
+                          isRetweeted_displayOnUI &&
+                          'text-emerald-500 text-bold'
+                        }`}
+                      />
+                    </div>
+                    <span
+                      className={`text-xs ph_sm:text-sm ${
+                        isRetweeted_displayOnUI && 'text-emerald-500 text-bold'
+                      }`}
+                    >
+                      {tweet.retweets.length}
+                    </span>
+                  </div>
+
+                  {showQuoteRetweetPopup && (
+                    <div className='absolute z-40 bottom-10 w-[150px]'>
+                      <QuoteRetweetPopup
+                        refTweetId={_id}
+                        isAlreadyRetweeted={isRetweeted_displayOnUI}
+                        retweetedPostId={
+                          retweetedPostId_onlyFor_retweetRefTweetItem?.loggedInUser_retweetedPostId
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Like */}
+                {isLikeTweetLoading ? (
+                  <ClipLoader color={constants.colors.like_default} size={25} />
+                ) : (
+                  <div
+                    title={isLiked_displayOnUI ? 'Unlike' : 'Like'}
+                    onClick={handleClickLikeButton}
+                    className='flex items-center text-white hover:cursor-pointer group'
+                  >
+                    <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
+                      {isLiked_displayOnUI ? (
+                        <AiFillHeart className='text-white ph_sm:text-xl' />
+                      ) : (
+                        <AiOutlineHeart className='ph_sm:text-xl' />
+                      )}
+                    </div>
+                    <span className='text-xs ph_sm:text-sm'>
+                      {tweet.likes.length}
+                    </span>
+                  </div>
+                )}
+
+                {/* Share */}
+                <div
+                  title='Share'
+                  onClick={handleClickShareButton}
+                  className='flex items-center text-white hover:cursor-pointer group'
+                >
+                  <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 ph_sm:mr-2'>
+                    <MdIosShare className='ph_sm:text-xl' />
+                  </div>
+                </div>
+
+                {showSharePopup && (
+                  <div className='absolute z-20 bottom-14 right-0 text-black'>
+                    <ShareTweetPopupContents
+                      tweet={{ _id, username: authorInfo?.username || '' }}
+                      isBookmarked_displayOnUI={isBookmarked_displayOnUI}
+                      handleBookmarkTweet={handleBookmarkTweet}
+                      handleClosePopup={handleCloseSharePopup}
                     />
                   </div>
                 )}
               </div>
-
-              {/* Like */}
-              {isLikeTweetLoading ? (
-                <ClipLoader color={constants.colors.like_default} size={25} />
-              ) : (
-                <div
-                  title={isLiked_displayOnUI ? 'Unlike' : 'Like'}
-                  onClick={handleClickLikeButton}
-                  className='flex items-center text-white hover:cursor-pointer group'
-                >
-                  <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 mr-1 ph_sm:mr-2'>
-                    {isLiked_displayOnUI ? (
-                      <AiFillHeart className='text-white ph_sm:text-xl' />
-                    ) : (
-                      <AiOutlineHeart className='ph_sm:text-xl' />
-                    )}
-                  </div>
-                  <span className='text-xs ph_sm:text-sm'>
-                    {tweet.likes.length}
-                  </span>
-                </div>
-              )}
-
-              {/* Share */}
-              <div
-                title='Share'
-                onClick={handleClickShareButton}
-                className='flex items-center text-white hover:cursor-pointer group'
-              >
-                <div className='w-6 h-6 ph_sm:w-8 ph_sm:h-8 ph:w-10 ph:h-10 rounded-full flex items-center justify-center group-hover:bg-gray-800 ph_sm:mr-2'>
-                  <MdIosShare className='ph_sm:text-xl' />
-                </div>
-              </div>
-
-              {showSharePopup && (
-                <div className='absolute z-20 bottom-14 right-0 text-black'>
-                  <ShareTweetPopupContents
-                    tweet={{ _id, username: authorInfo?.username || '' }}
-                    isBookmarked_displayOnUI={isBookmarked_displayOnUI}
-                    handleBookmarkTweet={handleBookmarkTweet}
-                    handleClosePopup={handleCloseSharePopup}
-                  />
-                </div>
-              )}
             </div>
-          </div>
+          )}
         </div>
 
         {!isFullScreen && (

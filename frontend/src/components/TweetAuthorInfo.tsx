@@ -171,14 +171,16 @@ const TweetAuthorInfo: FC<TweetAuthorInfoProps> = ({
         </div>
       </div>
 
-      <div
-        className={`w-8 h-8 rounded-full  hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center ${
-          showOptionsPopup ? 'text-twitter bg-twitter-light' : 'text-gray-500'
-        }`}
-        onClick={handleToggleOptions}
-      >
-        <FiMoreHorizontal className='text-xl ph:text-2xl' />
-      </div>
+      {loggedInUserId && (
+        <div
+          className={`w-8 h-8 rounded-full  hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center ${
+            showOptionsPopup ? 'text-twitter bg-twitter-light' : 'text-gray-500'
+          }`}
+          onClick={handleToggleOptions}
+        >
+          <FiMoreHorizontal className='text-xl ph:text-2xl' />
+        </div>
+      )}
     </div>
   );
 };

@@ -48,7 +48,7 @@ const FollowButton: FC<FollowButtonProps> = ({
     setShowUnfollowButton(false);
   };
 
-  if (loggedInUserId === targetUserId) return null;
+  if (!auth.user || loggedInUserId === targetUserId) return null;
 
   return (
     <div onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>

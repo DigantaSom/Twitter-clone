@@ -7,6 +7,7 @@ import { CgPin } from 'react-icons/cg';
 import { IoCloseSharp } from 'react-icons/io5';
 
 import useAuth from '../../hooks/useAuth';
+import { useGetMyBasicInfoQuery } from '../user/user.api-slice';
 import { useAddNewTweetMutation } from '../tweet/tweet.api-slice';
 
 import ProfilePicture from '../../components/ProfilePicture';
@@ -18,14 +19,12 @@ import convertBlobToBase64 from '../../utils/convertBlobToBase64.util';
 interface CreateReplyProps {
   parentTweetId: string;
   parentTweetDegree: number;
-  profilePicture: string;
   tweetAuthorUsername: string;
 }
 
 const CreateReply: FC<CreateReplyProps> = ({
   parentTweetId,
   parentTweetDegree,
-  profilePicture,
   tweetAuthorUsername,
 }) => {
   const auth = useAuth();
@@ -37,6 +36,8 @@ const CreateReply: FC<CreateReplyProps> = ({
   const [showHelperOptions, setShowHelperOptions] = useState(false);
   const [imageToPost, setImageToPost] = useState('');
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
+
+  const { data: loggedInUserInfo } = useGetMyBasicInfoQuery();
 
   const [addNewTweet, { isLoading }] = useAddNewTweetMutation();
 
@@ -140,7 +141,7 @@ const CreateReply: FC<CreateReplyProps> = ({
         className={`flex items-start ${constants.profilePicture_info_gap_style}`}
       >
         <ProfilePicture
-          uri={profilePicture}
+          uri={loggedInUserInfo?.profilePicture}
           username={auth.user?.twitterHandle}
         />
 

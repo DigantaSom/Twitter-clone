@@ -151,7 +151,7 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
   };
 
   const handleToggleOptions = () => {
-    if (isDeleted) return;
+    if (!auth.user || isDeleted) return;
     setShowOptionsPopup(prevState => !prevState);
   };
 
@@ -398,37 +398,38 @@ const TweetPage: FC<TweetPageProps> = ({ from, isHeaderNeeded }) => {
             handleOpenLikedByPopup={handleOpenLikedByPopup}
           />
 
-          <TweetPageActions
-            tweet={{ _id, username: authorInfo?.username || '', isDeleted }}
-            isRetweeted_displayOnUI={isRetweeted_displayOnUI}
-            isLikeTweetLoading={isLikeTweetLoading}
-            isLiked_displayOnUI={isLiked_displayOnUI}
-            isBookmarkTweetLoading={isBookmarkTweetLoading}
-            isBookmarked_displayOnUI={isBookmarked_displayOnUI}
-            showSharePopup={showSharePopup}
-            handleClickReplyButton={handleClickReplyButton}
-            handleLikeTweet={handleLikeTweet}
-            handleBookmarkTweet={handleBookmarkTweet}
-            handleClickShareButton={handleClickShareButton}
-            handleClickBookmarkFromSharePopup={
-              handleClickBookmarkFromSharePopup
-            }
-            handleCloseSharePopup={handleCloseSharePopup}
-          />
+          {auth.user && (
+            <>
+              <TweetPageActions
+                tweet={{ _id, username: authorInfo?.username || '', isDeleted }}
+                isRetweeted_displayOnUI={isRetweeted_displayOnUI}
+                isLikeTweetLoading={isLikeTweetLoading}
+                isLiked_displayOnUI={isLiked_displayOnUI}
+                isBookmarkTweetLoading={isBookmarkTweetLoading}
+                isBookmarked_displayOnUI={isBookmarked_displayOnUI}
+                showSharePopup={showSharePopup}
+                handleClickReplyButton={handleClickReplyButton}
+                handleLikeTweet={handleLikeTweet}
+                handleBookmarkTweet={handleBookmarkTweet}
+                handleClickShareButton={handleClickShareButton}
+                handleClickBookmarkFromSharePopup={
+                  handleClickBookmarkFromSharePopup
+                }
+                handleCloseSharePopup={handleCloseSharePopup}
+              />
 
-          <hr />
+              <hr />
 
-          <CreateReply
-            parentTweetId={_id}
-            parentTweetDegree={degree}
-            profilePicture={
-              authorInfo?.profilePicture || constants.placeholder_profilePicture
-            }
-            tweetAuthorUsername={authorInfo?.username || ''}
-          />
+              <CreateReply
+                parentTweetId={_id}
+                parentTweetDegree={degree}
+                tweetAuthorUsername={authorInfo?.username || ''}
+              />
+            </>
+          )}
         </main>
 
-        <hr />
+        {auth.user && <hr />}
 
         {/* Reply list of this particular tweet */}
         <TweetList

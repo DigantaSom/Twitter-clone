@@ -70,7 +70,7 @@ const QuoteRefTweetContainer: FC<QuoteRefTweetContainerProps> = ({
     <div
       onClick={handleGoToTweet}
       className={`mt-2 p-3 border-[1px] border-gray-300 rounded-2xl ${
-        !isQuoteTweetPopupShown && 'hover:bg-gray-200'
+        !isQuoteTweetPopupShown && 'hover:bg-gray-200 hover:cursor-pointer'
       }`}
     >
       <div className='flex items-start space-x-2'>

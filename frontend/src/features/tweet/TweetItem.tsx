@@ -199,7 +199,11 @@ const TweetItem: FC<TweetItemProps> = ({
           </div>
 
           {/* Main content */}
-          <main className='ml-2 ph_sm:ml-3 pt-2 ph_sm:pt-4 flex-1'>
+          <main
+            className={`ml-2 ph_sm:ml-3 pt-2 ph_sm:pt-4 
+            ${!auth.user && 'pb-1'} 
+            flex-1`}
+          >
             {retweetedPost?.retweetedBy && (
               <Link
                 to={'/' + retweetedPost?.retweetedBy.username}
@@ -293,18 +297,20 @@ const TweetItem: FC<TweetItemProps> = ({
                 </div>
               </div>
               <div onClick={navigateToPost} className='flex-1'></div>
-              <div
-                className={`w-8 h-8 rounded-full hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
+              {auth.user && (
+                <div
+                  className={`w-8 h-8 rounded-full hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center
                 ${
                   showOptionsPopup
                     ? 'text-twitter bg-twitter-light'
                     : 'text-gray-500'
                 }
               `}
-                onClick={handleToggleOptions}
-              >
-                <FiMoreHorizontal className='text-xl ph:text-2xl' />
-              </div>
+                  onClick={handleToggleOptions}
+                >
+                  <FiMoreHorizontal className='text-xl ph:text-2xl' />
+                </div>
+              )}
             </div>
 
             <p onClick={navigateToPost} className='mt-1 ph_sm:mt-[2px]'>

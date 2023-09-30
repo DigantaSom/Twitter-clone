@@ -28,7 +28,7 @@ const Feed = () => {
     // this margin-bottom is to compensate for the height of <BottomNavigation /> i.e. h-12
     <div className='mb-12'>
       <Header parentComponent='Feed' />
-      <CreateTweet from='Feed' />
+      {isAuthenticated && <CreateTweet from='Feed' />}
       <TweetList
         showParentTweet={false}
         tweets={tweets}

@@ -38,7 +38,7 @@ import LikedByPopup from './features/tweet/LikedByPopup';
 import RetweetedByPopup from './features/tweet/RetweetedByPopup';
 import EditProfilePopup from './features/user/EditProfilePopup';
 import ToastMessage from './features/toast/ToastMessage';
-import Explore from './components/Explore';
+import ExplorePage from './pages/ExplorePage';
 import ProfileTweetsContainer from './features/user/ProfileTweetsContainer';
 import ProfileRepliesContainer from './features/user/ProfileRepliesContainer';
 import ProfileMediaContainer from './features/user/ProfileMediaContainer';
@@ -97,7 +97,7 @@ const App = () => {
               </Route>
             </Route>
 
-            <Route path='explore' element={<Explore />} />
+            <Route path='explore' element={<ExplorePage />} />
 
             <Route path='bookmarks' element={<BookmarksPage />} />
           </Route>
@@ -163,6 +163,7 @@ const App = () => {
       {/* z-30 and it won't be visible from 'ph' screen size onwards */}
       {isAuthenticated && <PhoneBottomNavigation />}
 
+      {/* FIXME: The positioning of this component in the TweetPhotoPage */}
       {!isAuthenticated && <BottomAuth />}
 
       {toastMessage && <ToastMessage />}

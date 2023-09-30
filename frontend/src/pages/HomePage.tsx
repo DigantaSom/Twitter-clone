@@ -6,7 +6,6 @@ import { selectIsAuthenticated } from '../features/auth/auth.slice';
 import Navigation from '../components/Navigation';
 import Trending from '../features/trending/Trending';
 import SignUp from '../components/SignUp';
-import Explore from '../components/Explore';
 
 const HomePage = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -18,7 +17,7 @@ const HomePage = () => {
       </div>
       <div className='flex-1 xl:w-[75%] flex'>
         <div className='w-full md:min-w-[600px] overflow-y-scroll ph:border-x-[1px] ph:border-gray-200'>
-          <div>{isAuthenticated ? <Outlet /> : <Explore />}</div>
+          <Outlet />
         </div>
         <div className='hidden lg2:block w-full pl-6 lg:pl-3 pb-14 overflow-y-scroll'>
           {isAuthenticated ? <Trending /> : <SignUp />}

@@ -4,7 +4,8 @@ import { AiOutlineLink } from 'react-icons/ai';
 import { MdOutlineBlock } from 'react-icons/md';
 import { RiFlag2Line } from 'react-icons/ri';
 
-import { useAppDispatch } from '../../hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { selectIsAuthenticated } from '../auth/auth.slice';
 import { setToast, removeToast } from '../toast/toast.slice';
 
 import SmallPopup from '../../components/SmallPopup';
@@ -21,6 +22,7 @@ const ProfileMorePopupContents: FC<ProfileMorePopupContentsProps> = ({
   username,
   handleClosePopup,
 }) => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useAppDispatch();
 
   const handleCopyLinkToProfile = () => {
@@ -44,20 +46,27 @@ const ProfileMorePopupContents: FC<ProfileMorePopupContentsProps> = ({
         <AiOutlineLink className='text-xl' />
         <span className='ml-2 text-sm'>Copy link to Profile</span>
       </div>
-      <div
-        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
-        onClick={() => {}}
-      >
-        <MdOutlineBlock className='text-xl' />
-        <span className='ml-2 text-sm'>Block @{username}</span>
-      </div>
-      <div
-        className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
-        onClick={() => {}}
-      >
-        <RiFlag2Line className='text-xl' />
-        <span className='ml-2 text-sm'>Report @{username}</span>
-      </div>
+
+      {!isAuthenticated ? (
+        <></>
+      ) : (
+        <>
+          <div
+            className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+            onClick={() => {}}
+          >
+            <MdOutlineBlock className='text-xl' />
+            <span className='ml-2 text-sm'>Block @{username}</span>
+          </div>
+          <div
+            className='flex items-center p-3 hover:bg-gray-50 hover:cursor-pointer'
+            onClick={() => {}}
+          >
+            <RiFlag2Line className='text-xl' />
+            <span className='ml-2 text-sm'>Report @{username}</span>
+          </div>
+        </>
+      )}
     </SmallPopup>
   );
 };

@@ -55,7 +55,11 @@ const Navigation = () => {
 
   useEffect(() => {
     if (pathname === '/') {
-      setSelectedOption('home');
+      if (isAuthenticated) {
+        setSelectedOption('home');
+      } else {
+        setSelectedOption('explore');
+      }
     } else if (
       pathname.substring(1).startsWith(auth.user?.twitterHandle as string) &&
       !pathname
@@ -66,13 +70,19 @@ const Navigation = () => {
     } else {
       setSelectedOption(pathname.substring(1) as NavigationOption);
     }
-  }, [pathname, auth.user?.twitterHandle]);
+  }, [pathname, isAuthenticated, auth.user?.twitterHandle]);
 
   const handleSelectOption = (option: NavigationOption) => {
     setSelectedOption(option);
 
     if (option === 'home') {
       navigate('/');
+    } else if (option === 'explore') {
+      if (isAuthenticated) {
+        navigate('/explore');
+      } else {
+        navigate('/');
+      }
     } else if (option === 'profile' && auth.user) {
       navigate('/' + auth.user.twitterHandle);
     } else if (option === 'more') {
@@ -85,6 +95,7 @@ const Navigation = () => {
   const handleSetOptionTextStyle = (option: NavigationOption) =>
     `hidden xl:block text-xl ${selectedOption === option && 'font-bold'}`;
 
+  // FIXME: after logging out, the Feed is loading continuously.
   const handleLogout = async () => {
     if (window.confirm('Are you sure that you want to logout?')) {
       await sendLogout(undefined);
