@@ -20,8 +20,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(logout());
-          // clears cache, query subscriptions and everything to do with our 'apiSlice'
-          dispatch(apiSlice.util.resetApiState());
+          // The below line is used to clear the redux apiSlice state completely. But we do not need to do it because even non-logged-in users have viewer access to almost everything in our application. That's why, the below line is commented out.
+          // dispatch(apiSlice.util.resetApiState());
         } catch (err) {
           console.log('Error while logging out:', err);
         }

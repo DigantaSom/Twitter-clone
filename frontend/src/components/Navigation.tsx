@@ -95,12 +95,10 @@ const Navigation = () => {
   const handleSetOptionTextStyle = (option: NavigationOption) =>
     `hidden xl:block text-xl ${selectedOption === option && 'font-bold'}`;
 
-  // FIXME: after logging out, the Feed is loading continuously.
   const handleLogout = async () => {
     if (window.confirm('Are you sure that you want to logout?')) {
       await sendLogout(undefined);
 
-      navigate('/', { replace: true });
       setSelectedOption('explore');
 
       if (isLogoutError) {
