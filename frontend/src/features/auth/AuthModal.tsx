@@ -1,9 +1,10 @@
-import { FC, useState } from 'react';
+import { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { IoArrowBack, IoCloseSharp } from 'react-icons/io5';
 import { BsTwitter } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 
 import { AuthModalType } from '../ui/ui.types';
 import { useAppDispatch } from '../../hooks/redux-hooks';
@@ -21,29 +22,47 @@ interface AuthModalProps {
 
 const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
   const dispatch = useAppDispatch();
-  const [twitterHandle, setTwitterHandle] = useState('');
+
+  const usernameInputRef = useRef<HTMLInputElement>(null);
+  const [username, setUsername] = useState('');
+
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [login, { isLoading }] = useLoginMutation();
+
+  useEffect(() => {
+    if (modalType === 'login') {
+      usernameInputRef.current?.focus();
+    } else if (modalType === 'login-form') {
+      passwordInputRef.current?.focus();
+    }
+  }, [modalType]);
 
   if (isLoading) {
     return <CustomLoadingSpinner marginTopClass='mt-[25vh]' color='white' />;
   }
 
+  const handleClickBackArrow = () => {
+    setIsPasswordVisible(false);
+    dispatch(toggleAuthModal('login'));
+  };
+
   const handleClickNext = () => {
-    if (twitterHandle !== '') {
+    if (username !== '') {
       dispatch(toggleAuthModal('login-form'));
     }
   };
 
   const handleClickLogin = async () => {
-    if (twitterHandle !== '' && password !== '') {
+    if (username !== '' && password !== '') {
       try {
         const { accessToken } = await login({
-          handle: twitterHandle,
+          handle: username,
           password,
         }).unwrap();
-        setTwitterHandle('');
+        setUsername('');
         setPassword('');
         dispatch(setCredentials({ accessToken }));
         dispatch(toggleAuthModal(''));
@@ -58,6 +77,17 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
         }
         alert(errMsg);
       }
+    }
+  };
+
+  const onKeyUpUsernameInput = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleClickNext();
+    }
+  };
+  const onKeyUpPasswordInput = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleClickLogin();
     }
   };
 
@@ -80,7 +110,7 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
                 {modalType === 'login-form' ? (
                   <IoArrowBack
                     className='text-2xl text-gray-700'
-                    onClick={() => dispatch(toggleAuthModal('login'))}
+                    onClick={handleClickBackArrow}
                   />
                 ) : (
                   <IoCloseSharp
@@ -152,21 +182,23 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
                 {modalType === 'login' && (
                   <>
                     <input
+                      ref={usernameInputRef}
                       type='text'
                       placeholder='Username or Twitter Handle'
-                      value={twitterHandle}
-                      onChange={e => setTwitterHandle(e.target.value)}
+                      value={username}
+                      onChange={e => setUsername(e.target.value)}
                       className='border-[1px] border-gray-200 w-full p-4 rounded-md 
                     focus:outline-twitter'
+                      onKeyUp={onKeyUpUsernameInput}
                     />
-                    {twitterHandle === '' && (
+                    {username === '' && (
                       <InputErrorMessage message='Username must not be empty' />
                     )}
                     <button
                       onClick={handleClickNext}
-                      disabled={twitterHandle === ''}
+                      disabled={username === ''}
                       className={`my-6 bg-black text-white font-semibold w-full p-2 rounded-full hover:opacity-80 ${
-                        twitterHandle === '' &&
+                        username === '' &&
                         'opacity-50 hover:opacity-50 hover:cursor-not-allowed'
                       }`}
                     >
@@ -211,21 +243,36 @@ const AuthModal: FC<AuthModalProps> = ({ modalType }) => {
             {modalType === 'login-form' && (
               <div className='mt-8'>
                 <div>
-                  <input
-                    type='text'
-                    value={twitterHandle}
-                    className='bg-gray-100 border-[1px] border-gray-200 w-full p-4 mb-2 rounded-md focus:outline-none hover:cursor-not-allowed'
-                    disabled
-                  />
-                  <input
-                    type='password'
-                    placeholder='Password'
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className='border-[1px] border-gray-200 w-full p-4 rounded-md 
-                    focus:outline-twitter mt-2 mb-1'
-                    required
-                  />
+                  <div
+                    onClick={handleClickBackArrow}
+                    className='bg-gray-100 border-[1px] border-gray-200 w-full p-4 mb-2 rounded-md focus:outline-none hover:cursor-text'
+                  >
+                    {username}
+                  </div>
+                  <div className='mt-2 mb-1 px-4 flex items-center justify-between w-full rounded-md overflow-hidden border-2 border-twitter'>
+                    <input
+                      ref={passwordInputRef}
+                      type={isPasswordVisible ? 'text' : 'password'}
+                      placeholder='Password'
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      className='py-4 w-[90%] border-none outline-none'
+                      required
+                      onKeyUp={onKeyUpPasswordInput}
+                    />
+                    <div
+                      onClick={() =>
+                        setIsPasswordVisible(prevState => !prevState)
+                      }
+                      className='text-xl rounded-full p-[2px] hover:bg-gray-200 hover:cursor-pointer'
+                    >
+                      {isPasswordVisible ? (
+                        <AiOutlineEyeInvisible />
+                      ) : (
+                        <AiOutlineEye />
+                      )}
+                    </div>
+                  </div>
                   {password.length < 5 && (
                     <InputErrorMessage message='Password should be at least 5 characters long' />
                   )}
