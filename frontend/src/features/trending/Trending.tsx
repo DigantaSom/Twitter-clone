@@ -1,58 +1,39 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
-import { GrSearch } from 'react-icons/gr';
-import { IoCloseSharp } from 'react-icons/io5';
-import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { BsFillArrowUpRightSquareFill } from 'react-icons/bs';
 
 import useAuth from '../../hooks/useAuth';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import {
-  selectWhatsHappening,
-  selectWhoToFollow,
-  showWhatsHappening,
+  getTrendingList,
+  selectTrendingList,
   showWhoToFollow,
+  selectWhoToFollow,
 } from './trending.slice';
 
+import SearchBar from '../ui/SearchBar';
+import TrendingList from './TrendingList';
 import ProfilePicture from '../../components/ProfilePicture';
-import TrendMorePopup from './TrendMorePopup';
 
 import constants from '../../constants';
 
 const Trending = () => {
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const dispatch = useAppDispatch();
-  const whatsHappening = useAppSelector(selectWhatsHappening);
+  const trendingData = useAppSelector(selectTrendingList);
   const whoToFollow = useAppSelector(selectWhoToFollow);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedTrendId, setSelectedTrendId] = useState<string | undefined>();
-
   useEffect(() => {
-    dispatch(showWhatsHappening());
-    dispatch(showWhoToFollow());
-    setSelectedTrendId(whatsHappening[0]?.id);
-  }, [dispatch, whatsHappening]);
-
-  // TODO: we'll do more with this function when we'll implement the search functionality
-  const handleSearch = (title: string) => {
-    let t = title;
-    const firstLetter = title[0];
-    if (firstLetter === '#') {
-      t = title.substring(1);
+    if (location.pathname !== '/explore') {
+      dispatch(getTrendingList({ type: 'whats-happening' }));
     }
-    navigate(`/search?q=${t}`);
-  };
-
-  const handleClickTrendingMore = (id: string) => {
-    setSelectedTrendId(id);
-    setShowPopup(prevState => !prevState);
-  };
+    dispatch(showWhoToFollow());
+  }, [location.pathname, dispatch]);
 
   const handleGoToProfile = (twitterHandle: string) => {
     navigate('/' + twitterHandle);
@@ -62,79 +43,22 @@ const Trending = () => {
     <>
       {/* Search Bar */}
       <section className='h-12 flex items-center'>
-        <div className='w-full flex items-center px-4 bg-gray-100 rounded-full'>
-          <GrSearch />
-          <input
-            type='text'
-            placeholder='Search Twitter'
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className='bg-gray-100 flex-1 py-2 px-3 focus:outline-none'
-          />
-          {searchTerm !== '' && (
-            <div
-              onClick={() => setSearchTerm('')}
-              className='bg-twitter p-1 -mr-1 rounded-full hover:cursor-pointer hover:bg-twitter-dark'
-            >
-              <IoCloseSharp className='text-white' />
-            </div>
-          )}
-        </div>
+        <SearchBar />
       </section>
 
       {/* Section: What's Happening */}
-      <section className='bg-gray-100 rounded-2xl pt-3 mt-6'>
-        <h2 className='text-xl font-extrabold px-4 mb-6'>What's Happening</h2>
-
-        {whatsHappening.map(item => (
+      {location.pathname !== '/explore' && (
+        <section className='bg-gray-100 rounded-2xl pt-3 mt-6'>
+          <h2 className='text-xl font-extrabold px-4 mb-6'>What's Happening</h2>
+          <TrendingList trendingData={trendingData} />
           <div
-            key={item.id}
-            className='relative p-4 flex items-start hover:bg-gray-200 hover:cursor-pointer'
+            onClick={() => navigate('/explore')}
+            className='p-4 hover:bg-gray-200 hover:cursor-pointer rounded-bl-2xl rounded-br-2xl'
           >
-            <div
-              onClick={() => handleSearch(item.title)}
-              className='flex flex-col flex-1 space-y-1'
-            >
-              <div className='flex items-center space-x-1 text-[13px] text-gray-600'>
-                {item.context && <span>{item.context}</span>}
-                {(item.time || item.isTrending) && <BsDot />}
-                {item.time && !item.isTrending && <span>{item.time}</span>}
-                {item.isTrending && !item.time && <span>Trending</span>}
-              </div>
-              <span className='font-bold text-[15px] text-gray-700'>
-                {item.title}
-              </span>
-              {item.numberOfTweets && (
-                <span className='text-[13px] text-gray-600'>
-                  {item.numberOfTweets} Tweets
-                </span>
-              )}
-            </div>
-
-            <div className='max-w-[25%]'>
-              {item.image ? (
-                <img src={item.image} width={68} height={68} alt='FIFA' />
-              ) : (
-                <div
-                  onClick={() => handleClickTrendingMore(item.id)}
-                  className='w-8 h-8 -mr-2 -mt-1 rounded-full hover:text-twitter hover:bg-twitter-light hover:cursor-pointer flex items-center justify-center'
-                >
-                  <FiMoreHorizontal className='text-lg' />
-                </div>
-              )}
-            </div>
-            {showPopup && selectedTrendId === item.id && (
-              <TrendMorePopup itemId={item.id} />
-            )}
+            <span className='text-twitter text-[15px]'>Show more</span>
           </div>
-        ))}
-        <div
-          onClick={() => navigate('/explore')}
-          className='p-4 hover:bg-gray-200 hover:cursor-pointer rounded-bl-2xl rounded-br-2xl'
-        >
-          <span className='text-twitter text-[15px]'>Show more</span>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Section: Who to follow */}
       <section className='bg-gray-100 rounded-2xl pt-3 mt-6'>
@@ -213,7 +137,9 @@ const Trending = () => {
             <FiMoreHorizontal className='pl-1 pt-[3px]' />
           </Link>
         </div>
-        <span>&copy; {new Date().getFullYear()} Twitter Clone, Inc.</span>
+        <span>
+          &copy; {new Date().getFullYear()} Twitter Clone by Diganta Som
+        </span>
       </section>
     </>
   );

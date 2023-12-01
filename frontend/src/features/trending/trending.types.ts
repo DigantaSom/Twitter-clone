@@ -1,5 +1,10 @@
-export interface IWhatsHappening {
-  id: string;
+export interface TrendingState {
+  trendingList: Trending_ListItem[];
+  whoToFollow: IWhoToFollow[];
+}
+
+export interface Trending_ListItem {
+  id: number;
   title: string;
   context?: string;
   isTrending?: boolean;
@@ -16,7 +21,10 @@ export interface IWhoToFollow {
   isPromoted: boolean;
 }
 
-export interface TrendingState {
-  whatsHappening: IWhatsHappening[];
-  whoToFollow: IWhoToFollow[];
+export interface GetTrendingListPayload {
+  type: 'trending-list' | 'whats-happening';
+}
+
+export interface RemoveATrendingItemPayload {
+  itemId: number;
 }

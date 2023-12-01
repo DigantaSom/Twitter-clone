@@ -38,7 +38,11 @@ import LikedByPopup from './features/tweet/LikedByPopup';
 import RetweetedByPopup from './features/tweet/RetweetedByPopup';
 import EditProfilePopup from './features/user/EditProfilePopup';
 import ToastMessage from './features/toast/ToastMessage';
+
+import ExploreAndSearchContainer from './features/trending/ExploreAndSearchContainer';
 import ExplorePage from './pages/ExplorePage';
+import SearchPage from './pages/SearchPage';
+
 import ProfileTweetsContainer from './features/user/ProfileTweetsContainer';
 import ProfileRepliesContainer from './features/user/ProfileRepliesContainer';
 import ProfileMediaContainer from './features/user/ProfileMediaContainer';
@@ -97,7 +101,10 @@ const App = () => {
               </Route>
             </Route>
 
-            <Route path='explore' element={<ExplorePage />} />
+            <Route element={<ExploreAndSearchContainer />}>
+              <Route path='explore' element={<ExplorePage />} />
+              <Route path='search' element={<SearchPage />} />
+            </Route>
 
             <Route path='bookmarks' element={<BookmarksPage />} />
           </Route>
