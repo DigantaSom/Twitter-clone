@@ -1,28 +1,40 @@
-import { useState, KeyboardEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, KeyboardEvent, memo, FC, useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { GrSearch } from 'react-icons/gr';
 import { IoCloseSharp } from 'react-icons/io5';
 
-const SearchBar = () => {
+interface SearchBarProps {
+  src: 'trending' | 'explore';
+}
+
+const SearchBar: FC<SearchBarProps> = ({ src }) => {
   const navigate = useNavigate();
-  const [text, setText] = useState('');
+  const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+  const [text, setText] = useState<string>('');
 
-  const onPressEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && text.length > 3) {
-      let t = text;
-      const firstLetter = text[0];
-      if (firstLetter === '#') {
-        t = text.substring(1);
-      }
-      navigate(`/search?q=${t}`);
-
+  useEffect(() => {
+    if (pathname === '/search') {
+      setText(searchParams.get('q') ?? '');
+    } else {
       setText('');
+    }
+  }, [pathname, searchParams]);
+
+  // handleSearch
+  const onPressEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && text.length >= 2) {
+      if (src === 'trending') {
+        navigate(`/search?src=home&q=${encodeURIComponent(text)}`);
+      } else {
+        navigate(`/search?src=explore&q=${encodeURIComponent(text)}`);
+      }
     }
   };
 
   return (
-    <div className='w-full flex items-center px-4 bg-gray-100 rounded-full'>
+    <div className='w-full flex items-center px-4 my-1 bg-gray-100 rounded-full'>
       <GrSearch />
       <input
         type='text'
@@ -44,4 +56,4 @@ const SearchBar = () => {
   );
 };
 
-export default SearchBar;
+export default memo(SearchBar);

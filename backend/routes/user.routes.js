@@ -34,4 +34,6 @@ router
   .route('/mutual-followers/:username')
   .get(verifyJWT, userController.getMutualFollowers);
 
+router.route('/search').get(userController.getSearchedUsers); // contains a query variable
+
 module.exports = router;

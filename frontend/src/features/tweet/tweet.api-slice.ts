@@ -13,6 +13,7 @@ import {
   GetRetweetedPostId_Args,
   QuoteTweetArgs,
   QuoteObj,
+  GetSearchedTweetsArg,
 } from './tweet.types';
 
 const TWEET_URL = '/api/tweets';
@@ -151,6 +152,38 @@ export const tweetApiSlice = apiSlice.injectEndpoints({
             ]
           : [{ type: 'Tweet', id: 'LIST' }],
     }),
+
+    getSearchedTweets: builder.query<Tweet[], GetSearchedTweetsArg>({
+      query: ({ q }) => ({
+        url: `${TWEET_URL}/search?q=${q}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
+
+    getSearchedMediaTweets: builder.query<Tweet[], GetSearchedTweetsArg>({
+      query: ({ q }) => ({
+        url: `${TWEET_URL}/media/search?q=${q}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'Tweet', id: 'LIST' },
+              ...result.map(({ _id }) => ({ type: 'Tweet' as const, _id })),
+            ]
+          : [{ type: 'Tweet', id: 'LIST' }],
+    }),
   }),
   overrideExisting: true,
 });
@@ -167,4 +200,6 @@ export const {
   useLikeTweetMutation,
   useBookmarkTweetMutation,
   useGetRepliesQuery,
+  useGetSearchedTweetsQuery,
+  useGetSearchedMediaTweetsQuery,
 } = tweetApiSlice;

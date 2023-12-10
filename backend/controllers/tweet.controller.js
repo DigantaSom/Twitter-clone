@@ -343,7 +343,7 @@ const likeTweet = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     if (error.kind === 'ObjectId') {
-      res.status(404).json({ message: 'Tweet not found' });
+      res.status(404).json({ message: 'Tweet not found.' });
     }
   }
 };
@@ -391,6 +391,80 @@ const bookmarkTweet = async (req, res) => {
   }
 };
 
+// @route PUT api/tweets/search
+// @Query variables: {q: string}
+// @desc Search tweets
+// @access Public
+const getSearchedTweets = async (req, res) => {
+  const { q } = req.query;
+
+  if (!q) {
+    return;
+  }
+  if (q.length < 2) {
+    return res
+      .status(400)
+      .json({ message: 'Please enter 2 or more characters to search.' });
+  }
+
+  // case insenstitive search using the caption of a tweet
+  const searchResults = await Tweet.find({
+    caption: {
+      $regex: q,
+      $options: 'i',
+    },
+  })
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
+  if (!searchResults.length) {
+    return res.status(404).json({ message: 'No search results found.' });
+  }
+
+  return res.status(200).json(searchResults);
+};
+
+// @route PUT api/tweets/media/search
+// @Query variables: {q: string}
+// @desc Search tweets with media
+// @access Public
+const getSearchedMediaTweets = async (req, res) => {
+  const { q } = req.query;
+
+  if (!q) {
+    return;
+  }
+  if (q.length < 2) {
+    return res
+      .status(400)
+      .json({ message: 'Please enter 2 or more characters to search.' });
+  }
+
+  const searchResults = await Tweet.find({
+    $and: [
+      {
+        media: { $ne: [''] },
+      },
+      {
+        caption: {
+          $regex: q,
+          $options: 'i',
+        },
+      },
+    ],
+  })
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
+  if (!searchResults.length) {
+    return res.status(404).json({ message: 'No search results found.' });
+  }
+
+  return res.status(200).json(searchResults);
+};
+
 module.exports = {
   getAllTweets,
   getTweetById,
@@ -403,4 +477,6 @@ module.exports = {
   deleteTweet,
   likeTweet,
   bookmarkTweet,
+  getSearchedTweets,
+  getSearchedMediaTweets,
 };

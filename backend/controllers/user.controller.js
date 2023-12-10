@@ -476,6 +476,51 @@ const getMutualFollowers = async (req, res) => {
     .json(result.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1)));
 };
 
+// @route PUT api/users/search
+// @Query variables: {q: string}
+// @desc Search users
+// @access Public
+const getSearchedUsers = async (req, res) => {
+  const { q } = req.query;
+
+  if (!q) {
+    return;
+  }
+
+  const searchResults = await User.find({
+    $or: [
+      {
+        name: {
+          $regex: q,
+          $options: 'i',
+        },
+      },
+      {
+        email: {
+          $regex: q,
+          $options: 'i',
+        },
+      },
+      {
+        handle: {
+          $regex: q,
+          $options: 'i',
+        },
+      },
+    ],
+  })
+    .select('_id')
+    .sort({ creationDate: -1 })
+    .lean()
+    .exec();
+
+  if (!searchResults?.length) {
+    return res.status(404).json({ message: 'No search results found.' });
+  }
+
+  return res.status(200).json(searchResults);
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -492,4 +537,5 @@ module.exports = {
   getFollowers,
   getFollowing,
   getMutualFollowers,
+  getSearchedUsers,
 };

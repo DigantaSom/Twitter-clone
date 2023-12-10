@@ -13,6 +13,8 @@ import {
   GetMyBasicInfoResponse,
   AccessToken,
   SignupArgs,
+  GetSearchedUsersResponse,
+  GetSearchedUsersArg,
 } from './user.types';
 
 const USER_URL = '/api/users';
@@ -201,6 +203,28 @@ export const userApiSlice = apiSlice.injectEndpoints({
             ]
           : [{ type: 'User', id: 'LIST' }],
     }),
+
+    getSearchedUsers: builder.query<
+      GetSearchedUsersResponse,
+      GetSearchedUsersArg
+    >({
+      query: ({ q }) => ({
+        url: `${USER_URL}/search?q=${q}`,
+        method: 'GET',
+        validateStatus: (response, result) =>
+          response.status === 200 && !result.isError,
+      }),
+      providesTags: result =>
+        result
+          ? [
+              { type: 'User', id: 'LIST' },
+              ...result.map(({ _id }) => ({
+                type: 'User' as const,
+                _id,
+              })),
+            ]
+          : [{ type: 'User', id: 'LIST' }],
+    }),
   }),
   overrideExisting: true,
 });
@@ -220,4 +244,5 @@ export const {
   useGetFollowersQuery,
   useGetFollowingQuery,
   useGetMututalFollowersQuery,
+  useGetSearchedUsersQuery,
 } = userApiSlice;

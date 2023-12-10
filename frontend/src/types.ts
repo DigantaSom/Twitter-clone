@@ -37,4 +37,6 @@ export type ProfilePageTab = 'Tweets' | 'Replies' | 'Media' | 'Likes';
 
 export type FollowPageTab = 'Followers you know' | 'Followers' | 'Following';
 
+export type SearchPageTab = 'Tweets' | 'People' | 'Media';
+
 export type PhotoType = 'Profile' | 'Header';

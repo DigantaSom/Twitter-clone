@@ -82,3 +82,7 @@ export type SingleMessageResponse = { message: string };
 export interface GetRepliesArg {
   parentTweetId: string | undefined;
 }
+
+export interface GetSearchedTweetsArg {
+  q: string | null;
+}

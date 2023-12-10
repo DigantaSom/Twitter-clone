@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useGetUserBasicInfoByIdQuery } from './user.api-slice';
@@ -203,4 +203,4 @@ const UserListItem: FC<UserListItemProps> = ({ userId, loggedInUserId }) => {
   return <>{content}</>;
 };
 
-export default UserListItem;
+export default memo(UserListItem);

@@ -10,6 +10,9 @@ router
   .get(tweetController.getAllTweets)
   .post(verifyJWT, tweetController.createTweet);
 
+router.route('/search').get(tweetController.getSearchedTweets); // contains a query variable
+router.route('/media/search').get(tweetController.getSearchedMediaTweets); // contains a query variable
+
 router
   .route('/:id')
   .get(tweetController.getTweetById)

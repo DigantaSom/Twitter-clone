@@ -72,3 +72,10 @@ export interface GetMyBasicInfoResponse {
   name: string;
   profilePicture: string;
 }
+
+export type GetSearchedUsersResponse = {
+  _id: string;
+}[];
+export interface GetSearchedUsersArg {
+  q: string | null;
+}

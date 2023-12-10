@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 import { FiMoreHorizontal } from 'react-icons/fi';
@@ -28,6 +28,8 @@ const Trending = () => {
   const trendingData = useAppSelector(selectTrendingList);
   const whoToFollow = useAppSelector(selectWhoToFollow);
 
+  const [showSearchbar, setShowSearchbar] = useState(false);
+
   useEffect(() => {
     if (location.pathname !== '/explore') {
       dispatch(getTrendingList({ type: 'whats-happening' }));
@@ -35,20 +37,42 @@ const Trending = () => {
     dispatch(showWhoToFollow());
   }, [location.pathname, dispatch]);
 
+  useEffect(() => {
+    if (location.pathname === '/explore' || location.pathname === '/search') {
+      setShowSearchbar(false);
+    } else {
+      setShowSearchbar(true);
+    }
+  }, [location.pathname]);
+
   const handleGoToProfile = (twitterHandle: string) => {
     navigate('/' + twitterHandle);
   };
 
+  let whoToFollow_marginTopStyles = '';
+
+  if (location.pathname === '/explore') {
+    whoToFollow_marginTopStyles = 'mt-2';
+  } else {
+    whoToFollow_marginTopStyles = 'mt-6';
+  }
+
   return (
     <>
       {/* Search Bar */}
-      <section className='h-12 flex items-center'>
-        <SearchBar />
-      </section>
+      {showSearchbar && (
+        <section className='h-12 pt-1 flex items-center'>
+          <SearchBar src='trending' />
+        </section>
+      )}
 
       {/* Section: What's Happening */}
       {location.pathname !== '/explore' && (
-        <section className='bg-gray-100 rounded-2xl pt-3 mt-6'>
+        <section
+          className={`bg-gray-100 rounded-2xl pt-3 ${
+            showSearchbar ? 'mt-6' : 'mt-2'
+          }`}
+        >
           <h2 className='text-xl font-extrabold px-4 mb-6'>What's Happening</h2>
           <TrendingList trendingData={trendingData} />
           <div
@@ -61,7 +85,9 @@ const Trending = () => {
       )}
 
       {/* Section: Who to follow */}
-      <section className='bg-gray-100 rounded-2xl pt-3 mt-6'>
+      <section
+        className={`bg-gray-100 rounded-2xl pt-3 ${whoToFollow_marginTopStyles}`}
+      >
         <h2 className='text-xl font-extrabold px-4 mb-6'>Who to follow</h2>
 
         {whoToFollow.map(item => (

@@ -1,9 +1,9 @@
 import { FC, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BsDot } from 'react-icons/bs';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
-import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { removeATrendingItem } from './trending.slice';
 
@@ -16,6 +16,7 @@ interface TrendingListProps {
 }
 
 const TrendingList: FC<TrendingListProps> = ({ trendingData }) => {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -23,12 +24,11 @@ const TrendingList: FC<TrendingListProps> = ({ trendingData }) => {
   const [selectedTrendId, setSelectedTrendId] = useState<number | undefined>();
 
   const handleSearch = (text: string) => {
-    let t = text;
-    const firstLetter = text[0];
-    if (firstLetter === '#') {
-      t = text.substring(1);
+    if (pathname === '/search') {
+      navigate(`/search?src=explore&q=${encodeURIComponent(text)}`);
+    } else {
+      navigate(`/search?src=home&q=${encodeURIComponent(text)}`);
     }
-    navigate(`/search?q=${t}`);
   };
 
   const handleClickTrendingMore = (id: number) => {
