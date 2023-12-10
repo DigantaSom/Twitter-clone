@@ -391,7 +391,7 @@ const bookmarkTweet = async (req, res) => {
   }
 };
 
-// @route PUT api/tweets/search
+// @route GET api/tweets/search
 // @Query variables: {q: string}
 // @desc Search tweets
 // @access Public
@@ -425,7 +425,7 @@ const getSearchedTweets = async (req, res) => {
   return res.status(200).json(searchResults);
 };
 
-// @route PUT api/tweets/media/search
+// @route GET api/tweets/media/search
 // @Query variables: {q: string}
 // @desc Search tweets with media
 // @access Public

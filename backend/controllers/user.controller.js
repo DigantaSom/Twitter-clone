@@ -476,7 +476,7 @@ const getMutualFollowers = async (req, res) => {
     .json(result.sort((a, b) => (a.addedDate < b.addedDate ? 1 : -1)));
 };
 
-// @route PUT api/users/search
+// @route GET api/users/search
 // @Query variables: {q: string}
 // @desc Search users
 // @access Public
